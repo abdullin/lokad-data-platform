@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Platform.TestClient.Commands;
+using ServiceStack.Common;
 using ServiceStack.ServiceClient.Web;
 
 namespace Platform.TestClient
@@ -9,13 +11,17 @@ namespace Platform.TestClient
     {
         private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
         public ClientOptions Options;
-        private readonly CommandProcessor _commands = new CommandProcessor(Log);
         public readonly JsonServiceClient JsonClinet = new JsonServiceClient();
+
+        private readonly CommandProcessor _commands = new CommandProcessor(Log);
+        private readonly bool _interactiveMode;
 
         public Client(ClientOptions clientOptions)
         {
             Options = clientOptions;
             JsonClinet = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
+
+            _interactiveMode = clientOptions.Command.IsEmpty();
 
             RegisterCommand();
         }
@@ -29,6 +35,12 @@ namespace Platform.TestClient
 
         public void Run()
         {
+            if(!_interactiveMode)
+            {
+                Execute(Options.Command.ToArray());
+                return;
+            }
+
             Console.Write(">>> ");
             string line;
             while ((line = Console.ReadLine()) != null)
