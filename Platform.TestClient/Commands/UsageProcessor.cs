@@ -16,7 +16,7 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, string[] args)
         {
             var allCommands = string.Join("\n\n", _commands.RegisteredProcessors.Select(x => x.Usage.ToUpper()));
-            //todo show log
+            context.Log.Info("Available commands:\n{0}", allCommands);
             return true;
         }
     }

@@ -6,6 +6,7 @@
         public string Usage { get { return Key; } }
         public bool Execute(CommandProcessorContext context, string[] args)
         {
+            context.Log.Info("Exiting...");
             Application.Exit(ExitCode.Success, "Exit processor called");
             return true;
         }

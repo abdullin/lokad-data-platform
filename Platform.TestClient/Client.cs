@@ -7,8 +7,9 @@ namespace Platform.TestClient
 {
     public class Client
     {
+        private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
         public ClientOptions Options;
-        private readonly CommandProcessor _commands = new CommandProcessor();
+        private readonly CommandProcessor _commands = new CommandProcessor(Log);
         public readonly JsonServiceClient JsonClinet = new JsonServiceClient();
 
         public Client(ClientOptions clientOptions)
@@ -23,6 +24,7 @@ namespace Platform.TestClient
         {
             _commands.Register(new ExitProcessor());
             _commands.Register(new WriteEventsFloodProcessor());
+            _commands.Register(new UsageProcessor(_commands));
         }
 
         public void Run()
@@ -42,8 +44,7 @@ namespace Platform.TestClient
                 {
                     var args = ParseCommandLine(line);
 
-                    if(!Execute(args))
-                        Console.WriteLine("Fail");
+                    Execute(args);
                 }
                 catch (Exception exception)
                 {
@@ -51,7 +52,7 @@ namespace Platform.TestClient
                     Console.Write(exception.Message);
                     Console.WriteLine();
                 }
-                Console.Write(">>> ");
+                //Console.Write(">>> ");
             }
         }
 
@@ -62,9 +63,10 @@ namespace Platform.TestClient
 
         private bool Execute(string[] args)
         {
-            var context = new CommandProcessorContext(this,new ManualResetEvent(true));
+            Log.Info("Processing command: {0}.", string.Join(" ", args));
+            var context = new CommandProcessorContext(this, Log, new ManualResetEvent(true));
 
-            return  _commands.TryProcess(context, args);
+            return _commands.TryProcess(context, args);
         }
     }
 }
