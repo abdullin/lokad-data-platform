@@ -34,7 +34,7 @@ namespace Platform.TestClient.Commands
                     {
                         for (int i = 0; i < size; i++)
                         {
-                            context.Client.JsonClinet.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
+                            context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
                                 {
                                     Data = Encoding.UTF8.GetBytes("This is some test message to load the server"),
                                     Stream = "name",

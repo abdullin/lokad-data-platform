@@ -9,12 +9,12 @@ namespace Platform.TestClient
     {
         public ClientOptions Options;
         private readonly CommandProcessor _commands = new CommandProcessor();
-        public readonly JsonServiceClient JsonClinet = new JsonServiceClient();
+        public readonly JsonServiceClient JsonClient = new JsonServiceClient();
 
         public Client(ClientOptions clientOptions)
         {
             Options = clientOptions;
-            JsonClinet = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
+            JsonClient = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
 
             RegisterCommand();
         }
