@@ -11,7 +11,7 @@ namespace Platform.TestClient
     {
         private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
         public ClientOptions Options;
-        public readonly JsonServiceClient JsonClinet = new JsonServiceClient();
+        public readonly JsonServiceClient JsonClient = new JsonServiceClient();
 
         private readonly CommandProcessor _commands = new CommandProcessor(Log);
         private readonly bool _interactiveMode;
@@ -19,7 +19,7 @@ namespace Platform.TestClient
         public Client(ClientOptions clientOptions)
         {
             Options = clientOptions;
-            JsonClinet = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
+            JsonClient = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
 
             _interactiveMode = clientOptions.Command.IsEmpty();
 
