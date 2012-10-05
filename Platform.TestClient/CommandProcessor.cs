@@ -49,6 +49,7 @@ namespace Platform.TestClient
             });
 
             executedEvent.WaitOne(1000);
+            context.WaitForCompletion();
 
             return result;
         }

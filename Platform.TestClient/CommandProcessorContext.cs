@@ -17,5 +17,15 @@ namespace Platform.TestClient
         {
             _resetEvent.Reset();
         }
+
+        public void Completed()
+        {
+            _resetEvent.Set();
+        }
+
+        public void WaitForCompletion()
+        {
+            _resetEvent.WaitOne();
+        }
     }
 }

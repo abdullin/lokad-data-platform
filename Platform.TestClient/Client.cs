@@ -22,7 +22,7 @@ namespace Platform.TestClient
         private void RegisterCommand()
         {
             _commands.Register(new ExitProcessor());
-            _commands.Register(new WriteEventsProcessor());
+            _commands.Register(new WriteEventsFloodProcessor());
         }
 
         public void Run()
