@@ -9,6 +9,11 @@ namespace Platform.TestClient
     {
         private readonly IDictionary<string, ICommandProcessor> _processors = new Dictionary<string, ICommandProcessor>();
 
+        public IEnumerable<ICommandProcessor> RegisteredProcessors
+        {
+            get { return _processors.Values; }
+        }
+
         public void Register(ICommandProcessor commandProcessor)
         {
             var cmd = commandProcessor.Key.ToUpper();

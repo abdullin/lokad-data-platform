@@ -10,6 +10,8 @@ namespace Platform.TestClient.Commands
     public class WriteEventsFloodProcessor : ICommandProcessor
     {
         public string Key { get { return "WEFL"; } }
+        public string Usage { get { return "WEFL [<Thread Count> [<Size>]]"; } }
+
         public bool Execute(CommandProcessorContext context, string[] args)
         {
             context.IsAsync();
