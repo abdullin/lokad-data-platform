@@ -49,10 +49,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
+    <Compile Include="ClientOptions.cs" />
+    <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CommandProcessorContext.cs" />
+    <Compile Include="Commands\ExitProcessor.cs" />
+    <Compile Include="Commands\WriteEventsProcessor.cs" />
+    <Compile Include="ICommandProcessor.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">

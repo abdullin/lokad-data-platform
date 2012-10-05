@@ -15,7 +15,7 @@ namespace Platform.Node
             Application.Start(Environment.Exit);
 
 
-            var http = new PlatformServerApiService(mainQueue, "http://*:81/");
+            var http = new PlatformServerApiService(mainQueue, "http://*:8080/");
             bus.AddHandler<SystemMessage.Init>(http);
             bus.AddHandler<SystemMessage.Shutdown>(http);
 
