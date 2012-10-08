@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Platform.TestClient</RootNamespace>
     <AssemblyName>Platform.TestClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,7 +73,7 @@
       <Name>Platform.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
-      <Project>{9B95971F-9DC9-4981-A7CB-8F6576EA39BB}</Project>
+      <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
       <Name>Platform.Node</Name>
     </ProjectReference>
   </ItemGroup>
