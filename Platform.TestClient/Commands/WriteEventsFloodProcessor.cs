@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform.Node;
+using ServiceStack.Common.Utils;
 
 namespace Platform.TestClient.Commands
 {
@@ -44,8 +45,11 @@ namespace Platform.TestClient.Commands
                                     Stream = "name",
                                     ExpectedVersion = -1
                                 });
+
                             //client.Get<ClientDto.WriteEvent>("/stream/name");
                         }
+                        
+                        PerfUtils.LogTeamCityGraphData(string.Format("{0}-latency-ms", Key), (int)watch.ElapsedMilliseconds);
                         Interlocked.Add(ref total, watch.Elapsed.Ticks);
                         Interlocked.Add(ref count, size);
 

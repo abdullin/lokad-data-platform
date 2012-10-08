@@ -59,6 +59,7 @@
     <Compile Include="Commands\WriteEventsFloodProcessor.cs" />
     <Compile Include="Commands\WriteProccessor.cs" />
     <Compile Include="ICommandProcessor.cs" />
+    <Compile Include="PerfUtils.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
