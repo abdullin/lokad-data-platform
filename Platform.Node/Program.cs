@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Lokad.Cqrs.TapeStorage;
 
 namespace Platform.Node
 {
     class Program
     {
+        private static readonly ManualResetEventSlim _exitEvent = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
             var bus = new InMemoryBus("OutputBus");
@@ -31,9 +34,23 @@ namespace Platform.Node
             mainQueue.Start();
 
             mainQueue.Enqueue(new SystemMessage.Init());
-            Console.ReadLine();
-            mainQueue.Enqueue(new SystemMessage.Shutdown());
-            Console.ReadLine();
+
+            if (args.Length==0)
+            {
+                Console.ReadLine();
+                mainQueue.Enqueue(new SystemMessage.Shutdown());
+                Console.ReadLine();
+            }
+            else
+            {
+                Task.Factory.StartNew(() =>
+                                          {
+                                              Thread.Sleep(int.Parse(args[0])*1000);
+                                              Application.Exit(ExitCode.Success,"");
+                                          });
+                _exitEvent.Wait();
+            }
+            
         }
 
         static IAppendOnlyStore CreateFileStore()
