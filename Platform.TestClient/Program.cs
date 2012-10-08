@@ -20,7 +20,7 @@ namespace Platform.TestClient
             var clientOptions = new ClientOptions
                                     {
                                         Ip = args.Length > 0 ? args[0] : "127.0.0.1",
-                                        HttpPort = args.Length > 1 ? args[1] : "8080",
+                                        HttpPort = args.Length > 1 ? args[1] : "81",
                                     };
 
 

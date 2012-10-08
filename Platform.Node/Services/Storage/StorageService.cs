@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using Lokad.Cqrs.TapeStorage;
 
 namespace Platform.Node
 {
@@ -15,6 +13,7 @@ namespace Platform.Node
         readonly Func<IAppendOnlyStore> _func;
 
         IAppendOnlyStore _store;
+        
 
         
         public StorageService(Func<IAppendOnlyStore> func, IPublisher publisher)
@@ -26,6 +25,8 @@ namespace Platform.Node
         public void Handle(ClientMessage.AppendEvents message)
         {
             _store.Append(message.EventStream, message.Data, message.ExpectedVersion);
+            
+
             Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
         }

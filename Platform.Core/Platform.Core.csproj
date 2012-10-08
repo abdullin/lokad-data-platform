@@ -46,6 +46,7 @@
     <Compile Include="Application.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="Fsm.cs" />
+    <Compile Include="ICheckpoint.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
