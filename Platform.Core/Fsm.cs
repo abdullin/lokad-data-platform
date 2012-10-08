@@ -12,13 +12,13 @@ namespace Platform
         readonly Func<int> _getState;
         readonly TEnum[] _states;
 
-        readonly IReadOnlyDictionary<Type, Action<TEnum, Message>>[] _handlersByState;
+        readonly IDictionary<Type, Action<TEnum, Message>>[] _handlersByState;
         readonly Action<TEnum, Message>[] _defaultHandlersByState;
 
         public FiniteStateMachine(
             TEnum[] states,
             Func<int> getState,
-            IReadOnlyDictionary<Type, Action<TEnum, Message>>[] handlersByState,
+            IDictionary<Type, Action<TEnum, Message>>[] handlersByState,
             Action<TEnum, Message>[] defaultHandlersByState)
         {
             _getState = getState;
@@ -56,7 +56,7 @@ namespace Platform
 
         static bool TryHandle(
             TEnum state,
-            IReadOnlyDictionary<Type, Action<TEnum, Message>> dictionary,
+            IDictionary<Type, Action<TEnum, Message>> dictionary,
             Message msg,
             Type usedType)
         {
