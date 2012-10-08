@@ -41,7 +41,7 @@ namespace Platform.TestClient
                 Execute(Options.Command.ToArray());
                 return;
             }
-
+            
             Console.Write(">>> ");
             string line;
             while ((line = Console.ReadLine()) != null)
