@@ -1,0 +1,1 @@
+start "" Platform.Node/bin/Debug/Platform.Node.exe 3
