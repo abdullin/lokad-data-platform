@@ -1,1 +1,1 @@
-start /b "" Platform.Node/bin/Debug/Platform.Node.exe 10
+start /b "" Platform.Node/bin/Release/Platform.Node.exe 10
