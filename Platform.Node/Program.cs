@@ -11,6 +11,7 @@ namespace Platform.Node
         private static readonly ManualResetEventSlim _exitEvent = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
+            return;
             var bus = new InMemoryBus("OutputBus");
             var controller = new NodeController(bus);
             var mainQueue = new QueuedHandler(controller, "Main Queue");
