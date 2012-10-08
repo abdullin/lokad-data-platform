@@ -10,6 +10,8 @@ namespace Platform.TestClient.Commands
     public class WriteEventsFloodProcessor : ICommandProcessor
     {
         public string Key { get { return "WEFL"; } }
+        public string Usage { get { return "WEFL [<Thread Count> [<Size>]]"; } }
+
         public bool Execute(CommandProcessorContext context, string[] args)
         {
             context.IsAsync();
@@ -27,11 +29,13 @@ namespace Platform.TestClient.Commands
             if (args.Length > 1)
                 int.TryParse(args[1], out size);
 
+            var global = Stopwatch.StartNew();
             for (int t = 0; t < threadCount; t++)
             {
 
                 var task = Task.Factory.StartNew(() =>
                     {
+                        var watch = Stopwatch.StartNew();
                         for (int i = 0; i < size; i++)
                         {
                             context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
@@ -42,13 +46,15 @@ namespace Platform.TestClient.Commands
                                 });
                             //client.Get<ClientDto.WriteEvent>("/stream/name");
                         }
-                  
+                        Interlocked.Add(ref total, watch.Elapsed.Ticks);
+                        Interlocked.Add(ref count, size);
 
                     }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
             }
             Task.WaitAll(threads.ToArray());
             context.Completed();
+            context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
             return true;
         }
     }

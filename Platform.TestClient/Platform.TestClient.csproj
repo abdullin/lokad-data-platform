@@ -54,7 +54,9 @@
     <Compile Include="CommandProcessor.cs" />
     <Compile Include="CommandProcessorContext.cs" />
     <Compile Include="Commands\ExitProcessor.cs" />
+    <Compile Include="Commands\UsageProcessor.cs" />
     <Compile Include="Commands\WriteEventsFloodProcessor.cs" />
+    <Compile Include="Commands\WriteProccessor.cs" />
     <Compile Include="ICommandProcessor.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

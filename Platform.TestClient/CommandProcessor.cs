@@ -8,6 +8,17 @@ namespace Platform.TestClient
     public class CommandProcessor
     {
         private readonly IDictionary<string, ICommandProcessor> _processors = new Dictionary<string, ICommandProcessor>();
+        private readonly ILogger _log;
+
+        public CommandProcessor(ILogger log)
+        {
+            _log = log;
+        }
+
+        public IEnumerable<ICommandProcessor> RegisteredProcessors
+        {
+            get { return _processors.Values; }
+        }
 
         public void Register(ICommandProcessor commandProcessor)
         {
@@ -22,14 +33,20 @@ namespace Platform.TestClient
         public bool TryProcess(CommandProcessorContext context, string[] args)
         {
             if (args == null || args.Length == 0)
+            {
+                _log.Error("Empty command");
                 throw new Exception("Empty command");
+            }
 
             var commandName = args[0].ToUpper();
             var commandArgs = args.Skip(1).ToArray();
 
             ICommandProcessor commandProcessor;
             if (!_processors.TryGetValue(commandName, out commandProcessor))
+            {
+                _log.Info("Unknown command: '{0}'", commandName);
                 return false;
+            }
 
             bool result = false;
             var executedEvent = new AutoResetEvent(false);

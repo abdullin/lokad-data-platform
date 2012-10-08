@@ -1,20 +1,27 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Platform.TestClient.Commands;
+using ServiceStack.Common;
 using ServiceStack.ServiceClient.Web;
 
 namespace Platform.TestClient
 {
     public class Client
     {
+        private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
         public ClientOptions Options;
-        private readonly CommandProcessor _commands = new CommandProcessor();
         public readonly JsonServiceClient JsonClient = new JsonServiceClient();
+
+        private readonly CommandProcessor _commands = new CommandProcessor(Log);
+        private readonly bool _interactiveMode;
 
         public Client(ClientOptions clientOptions)
         {
             Options = clientOptions;
             JsonClient = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
+
+            _interactiveMode = clientOptions.Command.IsEmpty();
 
             RegisterCommand();
         }
@@ -23,10 +30,18 @@ namespace Platform.TestClient
         {
             _commands.Register(new ExitProcessor());
             _commands.Register(new WriteEventsFloodProcessor());
+            _commands.Register(new UsageProcessor(_commands));
+            _commands.Register(new WriteProccessor());
         }
 
         public void Run()
         {
+            if(!_interactiveMode)
+            {
+                Execute(Options.Command.ToArray());
+                return;
+            }
+
             Console.Write(">>> ");
             string line;
             while ((line = Console.ReadLine()) != null)
@@ -42,8 +57,7 @@ namespace Platform.TestClient
                 {
                     var args = ParseCommandLine(line);
 
-                    if(!Execute(args))
-                        Console.WriteLine("Fail");
+                    Execute(args);
                 }
                 catch (Exception exception)
                 {
@@ -51,7 +65,7 @@ namespace Platform.TestClient
                     Console.Write(exception.Message);
                     Console.WriteLine();
                 }
-                Console.Write(">>> ");
+                //Console.Write(">>> ");
             }
         }
 
@@ -62,9 +76,10 @@ namespace Platform.TestClient
 
         private bool Execute(string[] args)
         {
-            var context = new CommandProcessorContext(this,new ManualResetEvent(true));
+            Log.Info("Processing command: {0}.", string.Join(" ", args));
+            var context = new CommandProcessorContext(this, Log, new ManualResetEvent(true));
 
-            return  _commands.TryProcess(context, args);
+            return _commands.TryProcess(context, args);
         }
     }
 }
