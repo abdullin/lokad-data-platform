@@ -5,3 +5,4 @@ _Resharper*
 *.build.csdef
 *.suo
 csx
+store

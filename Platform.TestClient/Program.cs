@@ -15,7 +15,6 @@ namespace Platform.TestClient
         static void Main(string[] args)
         {
             //Debugger.Launch();
-            return;
             Application.Start(Environment.Exit);
 
             var clientOptions = new ClientOptions
