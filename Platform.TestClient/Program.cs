@@ -14,6 +14,10 @@ namespace Platform.TestClient
     {
         static void Main(string[] args)
         {
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine("##teamcity[buildStatisticValue key='ak' value='{0}']", i + 1);
+            }
             //Debugger.Launch();
             Application.Start(Environment.Exit);
 

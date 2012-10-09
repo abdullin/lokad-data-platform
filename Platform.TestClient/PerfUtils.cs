@@ -19,8 +19,8 @@ namespace Platform.TestClient
 
             // ##teamcity[buildStatisticValue key='<valueTypeKey>' value='<value>']
             const string teamCityFormat = "##teamcity[buildStatisticValue key='{0}' value='{1}']";
-            Console.WriteLine(teamCityFormat, key, value);
-            //Log.Debug(teamCityFormat, key, value);
+            //Console.WriteLine(teamCityFormat, key, value);
+            Log.Debug(teamCityFormat, key, value);
         }
     }
 }
