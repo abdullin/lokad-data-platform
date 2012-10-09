@@ -31,6 +31,7 @@ namespace Platform.Node
 
             Console.WriteLine("Starting everything. Press enter to initiate shutdown");
 
+
             mainQueue.Start();
 
             mainQueue.Enqueue(new SystemMessage.Init());
