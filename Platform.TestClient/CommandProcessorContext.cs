@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Platform.TestClient
 {
@@ -28,7 +29,13 @@ namespace Platform.TestClient
 
         public void WaitForCompletion()
         {
-            _resetEvent.WaitOne();
+            if (Client.Options.Timeout <= 0)
+                _resetEvent.WaitOne();
+            else
+            {
+                if (!_resetEvent.WaitOne(Client.Options.Timeout * 1000))
+                    throw new TimeoutException("Command didn't finished within timeout.");
+            }
         }
     }
 }
