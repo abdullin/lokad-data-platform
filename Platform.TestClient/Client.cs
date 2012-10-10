@@ -36,7 +36,6 @@ namespace Platform.TestClient
 
         public void Run()
         {
-            Log.Debug("##teamcity[message text='test' errorDetails='Test details' status='ERROR']");
             if(!_interactiveMode)
             {
                 Execute(Options.Command.ToArray());
@@ -66,7 +65,6 @@ namespace Platform.TestClient
                     Console.Write(exception.Message);
                     Console.WriteLine();
                 }
-                //Console.Write(">>> ");
             }
         }
 
