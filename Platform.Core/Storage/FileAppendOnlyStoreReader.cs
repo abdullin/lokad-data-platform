@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Platform.Storage
 {
-    public class FileAppendOnlyStoreReader : IAppendOnlyStreamReader, IDisposable
+    public class FileAppendOnlyStoreReader : IAppendOnlyStreamReader
     {
         readonly string _path;
 
@@ -17,100 +17,57 @@ namespace Platform.Storage
         public FileAppendOnlyStoreReader(string name)
         {
             _path = Path.GetFullPath(name ?? "");
-
-            TryOpen();
         }
 
-        public ReadResult ReadAll(long startOffset)
+        public IEnumerable<DataRecord> ReadAll(long startOffset, int maxRecordCount)
         {
             if (startOffset < 0)
                 throw new ArgumentOutOfRangeException("startOffset");
 
-            if (_disposed)
-                throw new ObjectDisposedException("FileAppendOnlyStoreReader");
+            if (maxRecordCount < 0)
+                throw new ArgumentOutOfRangeException("maxRecordCount");
 
-            if (!TryOpen())
-                return new ReadResult(startOffset, DataRecord.EmptyList);
-
-            // calculate start and end offset
-            _checkStream.Seek(0, SeekOrigin.Begin);
-            var endOffset = _checkBits.ReadInt64();
-
-            if (startOffset >= endOffset)
-                return new ReadResult(endOffset, DataRecord.EmptyList);
-
-            //read data
-            var records = new List<DataRecord>();
-            _dataStream.Seek(startOffset, SeekOrigin.Begin);
-            while (_dataStream.Position < endOffset)
+            using (_checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var key = _dataBits.ReadString();
-                var length = _dataBits.Reader7BitInt();
-
-                if (_dataStream.Position + length > _dataStream.Length)
-                    throw new InvalidOperationException("Data length is out of range.");
-
-                var data = _dataBits.ReadBytes(length);
-                records.Add(new DataRecord(key, data));
-            }
-
-            return new ReadResult(endOffset, records);
-        }
-
-        bool TryOpen()
-        {
-            if (!File.Exists(Path.Combine(_path, "stream.chk")))
-                return false;
-
-            _checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            if (_checkStream.Length != 8)
-                _checkStream.SetLength(8);
-            _checkBits = new BitReader(_checkStream);
-
-            if (!File.Exists(Path.Combine(_path, "stream.dat")))
-                throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
-
-            _dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            _dataBits = new BitReader(_dataStream);
-
-            return true;
-        }
-
-        public void Dispose()
-        {
-            if (_disposed)
-                return;
-
-            var disposables = new IDisposable[]
+                if (_checkStream.Length != 8)
+                    _checkStream.SetLength(8);
+                using (_checkBits = new BitReader(_checkStream))
                 {
-                    _checkStream,
-                    _checkBits,
-                    _dataStream,
-                    _dataBits
-                };
+                    if (!File.Exists(Path.Combine(_path, "stream.dat")))
+                        throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
-            _checkStream = null;
-            _checkBits = null;
-            _dataStream = null;
-            _dataBits = null;
+                    using (_dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        using (_dataBits = new BitReader(_dataStream))
+                        {
+                            // calculate start and end offset
+                            _checkStream.Seek(0, SeekOrigin.Begin);
+                            var endOffset = _checkBits.ReadInt64();
 
-            var list = new List<Exception>();
-            foreach (var disposable in disposables)
-            {
-                try
-                {
-                    disposable.Dispose();
-                }
-                catch (Exception e)
-                {
-                    list.Add(e);
+                            if (startOffset >= endOffset)
+                                return DataRecord.EmptyList;// new ReadResult(endOffset, DataRecord.EmptyList);
+
+                            //read data
+                            var records = new List<DataRecord>();
+                            _dataStream.Seek(startOffset, SeekOrigin.Begin);
+                            long nextPosition = startOffset + 1;
+                            while (_dataStream.Position < endOffset && _dataStream.Position < startOffset + maxRecordCount)
+                            {
+                                var key = _dataBits.ReadString();
+                                var length = _dataBits.Reader7BitInt();
+
+                                if (_dataStream.Position + length > _dataStream.Length)
+                                    throw new InvalidOperationException("Data length is out of range.");
+
+                                var data = _dataBits.ReadBytes(length);
+                                records.Add(new DataRecord(key, data, nextPosition++));
+                            }
+
+                            return records;
+                        }
+                    }
                 }
             }
-
-            _disposed = true;
-
-            if (list.Count > 0)
-                throw new AggregateException(list);
         }
 
         sealed class BitReader : BinaryReader

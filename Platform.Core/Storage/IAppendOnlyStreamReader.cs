@@ -1,7 +1,9 @@
-﻿namespace Platform.Storage
+﻿using System.Collections.Generic;
+
+namespace Platform.Storage
 {
     public interface IAppendOnlyStreamReader
     {
-        ReadResult ReadAll(long startOffset);
+        IEnumerable<DataRecord> ReadAll(long startOffset, int maxRecordCount = int.MaxValue);
     }
 }

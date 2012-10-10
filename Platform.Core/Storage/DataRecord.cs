@@ -8,11 +8,13 @@ namespace Platform.Storage
 
         public readonly string Key;
         public readonly byte[] Data;
+        public readonly long NextOffset;
 
-        public DataRecord(string key, byte[] data) : this()
+        public DataRecord(string key, byte[] data,long nextOffcet) : this()
         {
             Key = key;
             Data = data;
+            NextOffset = nextOffcet;
         }
     }
 }
