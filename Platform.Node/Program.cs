@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Lokad.Cqrs.TapeStorage;
 
 namespace Platform.Node
 {
@@ -18,7 +17,7 @@ namespace Platform.Node
             Application.Start(Environment.Exit);
 
 
-            var http = new PlatformServerApiService(mainQueue, "http://*:8080/");
+            var http = new PlatformServerApiService(mainQueue, "http://*:81/");
             bus.AddHandler<SystemMessage.Init>(http);
             bus.AddHandler<SystemMessage.Shutdown>(http);
 
@@ -57,8 +56,8 @@ namespace Platform.Node
         static IAppendOnlyStore CreateFileStore()
         {
             var store =
-                new FileAppendOnlyStore(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "store")));
-            store.Initialize();
+                new FileAppendOnlyStore(Path.Combine(Directory.GetCurrentDirectory(), "store"));
+            
             return store;
         }
     }

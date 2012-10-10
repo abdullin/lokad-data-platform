@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lokad.Cqrs.Portable">
-      <HintPath>..\Library\cqrs\Lokad.Cqrs.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack">
       <HintPath>..\Library\ServiceStack\ServiceStack.dll</HintPath>
     </Reference>
