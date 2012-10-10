@@ -39,12 +39,19 @@ namespace Platform
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            _checkStream = new FileStream(Path.Combine(path, "stream.chk"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+            _checkStream = new FileStream(Path.Combine(path, "stream.chk"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
             if (_checkStream.Length != 8)
                 _checkStream.SetLength(8);
             _checkBits = new BitWriter(_checkStream);
 
+
+            var b = new byte[8];
+            _checkStream.Read(b, 0, 8);
+
+            var offset = BitConverter.ToInt64(b, 0);
+
             _dataStream = new FileStream(Path.Combine(path, "stream.dat"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+            _dataStream.Seek(offset, SeekOrigin.Begin);
             _dataBits = new BitWriter(_dataStream);
         }
 
