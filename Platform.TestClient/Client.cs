@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using Platform.Storage;
 using Platform.TestClient.Commands;
 using ServiceStack.Common;
 using ServiceStack.ServiceClient.Web;
@@ -32,6 +34,9 @@ namespace Platform.TestClient
             _commands.Register(new WriteEventsFloodProcessor());
             _commands.Register(new UsageProcessor(_commands));
             _commands.Register(new WriteProccessor());
+
+            var reader = new FileAppendOnlyStoreReader(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
+            _commands.Register(new ReadProcessor(reader));
         }
 
         public void Run()

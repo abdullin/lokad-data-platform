@@ -35,20 +35,17 @@ namespace Platform
 
         public FileAppendOnlyStore(string name)
         {
-            var path = Path.GetDirectoryName(name) ?? "";
+            var path = name ?? "";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            _checkStream = new FileStream(Path.Combine(path, "stream.chk"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            _checkStream = new FileStream(Path.Combine(path, "stream.chk"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
             if (_checkStream.Length != 8)
                 _checkStream.SetLength(8);
             _checkBits = new BitWriter(_checkStream);
 
-            _dataStream = new FileStream(Path.Combine(path, "stream.dat"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            _dataStream = new FileStream(Path.Combine(path, "stream.dat"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
             _dataBits = new BitWriter(_dataStream);
-            
-            
-
         }
 
         public void Dispose()
