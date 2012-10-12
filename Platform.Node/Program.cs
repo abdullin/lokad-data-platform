@@ -16,8 +16,10 @@ namespace Platform.Node
             controller.SetMainQueue(mainQueue);
             Application.Start(Environment.Exit);
 
+            int? timeOut = args.Length > 0 ? int.Parse(args[0]) : (int?)null;
+            int port = args.Length > 1 ? int.Parse(args[1]) : 8080;
 
-            var http = new PlatformServerApiService(mainQueue, "http://*:8080/");
+            var http = new PlatformServerApiService(mainQueue, string.Format("http://*:{0}/", port));
             bus.AddHandler<SystemMessage.Init>(http);
             bus.AddHandler<SystemMessage.Shutdown>(http);
 
@@ -35,7 +37,7 @@ namespace Platform.Node
 
             mainQueue.Enqueue(new SystemMessage.Init());
 
-            if (args.Length==0)
+            if (timeOut == null)
             {
                 Console.ReadLine();
                 mainQueue.Enqueue(new SystemMessage.Shutdown());
@@ -45,19 +47,19 @@ namespace Platform.Node
             {
                 Task.Factory.StartNew(() =>
                                           {
-                                              Thread.Sleep(int.Parse(args[0])*1000);
-                                              Application.Exit(ExitCode.Success,"");
+                                              Thread.Sleep(timeOut.Value * 1000);
+                                              Application.Exit(ExitCode.Success, "");
                                           });
                 _exitEvent.Wait();
             }
-            
+
         }
 
         static IAppendOnlyStore CreateFileStore()
         {
             var store =
                 new FileAppendOnlyStore(Path.Combine(Directory.GetCurrentDirectory(), "store"));
-            
+
             return store;
         }
     }
@@ -101,14 +103,14 @@ namespace Platform.Node
                     .When<SystemMessage.Start>().Do(Handle)
                     .When<SystemMessage.StorageWriterInitializationDone>().Do(Handle)
                     .When<SystemMessage.BecameWorking>().Do(Handle)
-                    
+
                 //    .When<SystemMessage.BecomeWorking>().Do(Handle)
                 //    .When<SystemMessage.BecomeShutdown>().Do(Handle)
                 .InState(NodeState.Master)
                     .When<ClientMessage.WriteMessage>().Do(m => _outputBus.Publish(m))
                 .InState(NodeState.Initializing)
                     .When<ClientMessage.WriteMessage>().Ignore()
-                    
+
                 //    .When<ClientMessage.ReadMessage>().Ignore()
                 //.InState(NodeState.ShuttingDown)
                 //    .When<SystemMessage.ShutdownTimeout>().Do(Handle)
@@ -132,7 +134,7 @@ namespace Platform.Node
         {
             Log.Info("Initializing");
             _outputBus.Publish(e);
-            
+
         }
 
         bool _writerStarted;
