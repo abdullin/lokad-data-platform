@@ -35,7 +35,7 @@ namespace Platform.Storage
             if (!File.Exists(Path.Combine(_path, "stream.dat")))
                 throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
-            
+
             using (_dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (_dataBits = new BitReader(_dataStream))
@@ -44,7 +44,7 @@ namespace Platform.Storage
 
 
                     int count = 0;
-                    while (_dataStream.Position < endOffset &&  count <= maxRecordCount)
+                    while (_dataStream.Position < endOffset && count <= maxRecordCount)
                     {
                         var key = _dataBits.ReadString();
                         var length = _dataBits.Reader7BitInt();
@@ -66,17 +66,11 @@ namespace Platform.Storage
 
         private long GetEndOffset()
         {
-            long endOffset = 0;
-
             if (!File.Exists(Path.Combine(_path, "stream.chk")))
                 return 0;
-            
-            using (
-                _checkStream =
-                new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+
+            using (_checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                if (_checkStream.Length != 8)
-                    _checkStream.SetLength(8);
                 using (_checkBits = new BitReader(_checkStream))
                 {
                     // calculate start and end offset

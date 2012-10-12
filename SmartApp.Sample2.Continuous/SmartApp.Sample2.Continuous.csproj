@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>ec947d19-502b-4a02-85f8-6e3e4cf2418b</ProjectGuid>
+    <ProjectGuid>{F2159E41-F9B6-4EC8-8748-413CDC1DA1A9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartApp.Sample2.Continuous</RootNamespace>
@@ -32,6 +32,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\Library\ServiceStack\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\Library\ServiceStack\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=3.6.9.2502, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Library\ServiceStack\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
+      <Project>{39f04669-caa7-4f30-8be2-6cf79f49f2e6}</Project>
+      <Name>Platform.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
+      <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
+      <Name>Platform.Node</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
