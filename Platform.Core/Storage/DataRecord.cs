@@ -4,6 +4,8 @@ namespace Platform.Storage
 {
     public struct DataRecord
     {
+        public bool IsEmpty { get { return Data == null; } }
+
         public static readonly ICollection<DataRecord> EmptyList = new DataRecord[0];
 
         public readonly string Key;

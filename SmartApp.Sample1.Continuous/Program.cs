@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Platform.Storage;
 
 namespace SmartApp.Sample1.Continuous
@@ -14,20 +11,21 @@ namespace SmartApp.Sample1.Continuous
         static void Main(string[] args)
         {
             const int seconds = 1;
-            long nextOffcet = LoadData();
-            ShowData(nextOffcet, true);
+            var nextOffset = LoadData();
+            ShowData(nextOffset, true);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
+            IAppendOnlyStreamReader reader = new FileAppendOnlyStoreReader(path);
             while (true)
             {
-                Thread.Sleep(seconds * 1000);
-                IAppendOnlyStreamReader reader = new FileAppendOnlyStoreReader(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
+                var last = reader.ReadAll(nextOffset).LastOrDefault();
 
-                var records = reader.ReadAll(nextOffcet);
-                if (records.Any())
+                if (!last.IsEmpty)
                 {
-                    nextOffcet = records.Last().NextOffset;
-                    ShowData(nextOffcet, false);
-                    SaveData(nextOffcet);
+                    nextOffset = last.NextOffset;
+                    ShowData(nextOffset, false);
+                    SaveData(nextOffset);
                 }
+                Thread.Sleep(seconds * 1000);
             }
         }
 

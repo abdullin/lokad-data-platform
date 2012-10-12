@@ -19,7 +19,7 @@ namespace SmartApp.Sample2.Continuous
             ShowData(data, true);
             while (true)
             {
-                long nextOffcet = data.NextOffset;
+                var nextOffcet = data.NextOffset;
                 Thread.Sleep(seconds * 1000);
                 IAppendOnlyStreamReader reader = new FileAppendOnlyStoreReader(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
 
