@@ -8,10 +8,14 @@ namespace Platform.Storage
     {
         readonly string _path;
 
-        
+        readonly string _checkStreamName;
+        readonly string _fileStreamName;
         public FileAppendOnlyStoreReader(string name)
         {
             _path = Path.GetFullPath(name ?? "");
+
+            _checkStreamName = Path.Combine(_path, "stream.chk");
+            _fileStreamName =Path.Combine(_path, "stream.dat");
         }
 
         public bool IsAzure { get { return false; } }
@@ -29,10 +33,11 @@ namespace Platform.Storage
             if (startOffset >= endOffset)
                 yield break;
 
-            if (!File.Exists(Path.Combine(_path, "stream.dat")))
+            
+            if (!File.Exists(_fileStreamName))
                 throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
-            using (var dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var dataStream = new FileStream(_fileStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (var dataBits = new BitReader(dataStream))
                 {
@@ -62,15 +67,14 @@ namespace Platform.Storage
 
         private long GetEndOffset()
         {
-            if (!File.Exists(Path.Combine(_path, "stream.chk")))
+            
+            if (!File.Exists(_checkStreamName))
                 return 0;
         
-            using (var checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var checkStream = new FileStream(_checkStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (var checkBits = new BitReader(checkStream))
                 {
-                    // calculate start and end offset
-                    //_checkStream.Seek(0, SeekOrigin.Begin);
                     return checkBits.ReadInt64();
                 }
             }
