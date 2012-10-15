@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Platform
 {
@@ -40,6 +38,8 @@ namespace Platform
                 return;
             do
             {
+                if (null == type)
+                    return;
                 type = type.BaseType;
                 if (TryHandle(state, handlers, message, type))
                     return;
@@ -88,8 +88,6 @@ namespace Platform
             _handlersByState = new Dictionary<Type, Action<T, Message>>[count];
             _defaultHandlersByState = new Action<T, Message>[count];
         }
-
-
 
         internal void AddDefaultHandler(T state, Action<T, Message> handler)
         {
@@ -230,6 +228,5 @@ namespace Platform
             }
             return _definition;
         }
-
     }
 }

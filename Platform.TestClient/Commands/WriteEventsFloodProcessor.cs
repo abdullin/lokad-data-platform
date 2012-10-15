@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform.Node;
+using Platform.Node.Services.ServerApi;
 using ServiceStack.Common.Utils;
 
 namespace Platform.TestClient.Commands

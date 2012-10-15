@@ -4,16 +4,6 @@ using System.IO;
 
 namespace Platform
 {
-    public interface ICheckpoint : IDisposable
-    {
-        string Name { get; }
-        void Write(long point);
-        //void Flush();
-        void Close();
-
-        long Read();
-        //long ReadNonFlushed();
-    }
 
     public interface IAppendOnlyStore : IDisposable
     {
@@ -22,16 +12,13 @@ namespace Platform
 
     public sealed class FileAppendOnlyStore : IAppendOnlyStore
     {
-
-        ICheckpoint _checkpoint;
-
         ILogger _logger = LogManager.GetLoggerFor<FileAppendOnlyStore>();
 
-        BitWriter _dataBits;
-        FileStream _dataStream;
+        readonly BitWriter _dataBits;
+        readonly FileStream _dataStream;
 
-        BitWriter _checkBits;
-        FileStream _checkStream;
+        readonly BitWriter _checkBits;
+        readonly FileStream _checkStream;
 
 
         public FileAppendOnlyStore(string name)
@@ -85,7 +72,7 @@ namespace Platform
 
             public void Write7BitInt(int value)
             {
-                base.Write7BitEncodedInt(value);
+                Write7BitEncodedInt(value);
             }
         }
     }

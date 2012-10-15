@@ -1,8 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Platform.Messages;
 using ServiceStack.ServiceInterface;
 
-namespace Platform.Node
+namespace Platform.Node.Services.ServerApi
 {
     public class StreamService : ServiceBase<ClientDto.WriteEvent>
     {

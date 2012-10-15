@@ -1,6 +1,6 @@
 using System;
 
-namespace Platform
+namespace Platform.Messages
 {
     public static class ClientMessage
     {

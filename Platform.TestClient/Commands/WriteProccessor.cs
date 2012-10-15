@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Platform.Node;
+using Platform.Node.Services.ServerApi;
 
 namespace Platform.TestClient.Commands
 {

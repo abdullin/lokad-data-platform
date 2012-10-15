@@ -1,6 +1,4 @@
-using System.Net;
-
-namespace Platform
+namespace Platform.Messages
 {
     public static class SystemMessage
     {

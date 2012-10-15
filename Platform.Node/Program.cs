@@ -3,6 +3,9 @@ using System.IO;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Platform.Messages;
+using Platform.Node.Services.ServerApi;
+using Platform.Node.Services.Storage;
 
 namespace Platform.Node
 {

@@ -54,7 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\ServerApi\ClientDto.cs" />
     <Compile Include="Services\ServerApi\ImportService.cs" />
+    <Compile Include="Services\ServerApi\PlatformServerApiService.cs" />
     <Compile Include="Services\ServerApi\ServerApiService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Services\ServerApi\StreamService.cs" />

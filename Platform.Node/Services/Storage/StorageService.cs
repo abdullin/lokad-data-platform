@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Platform.Messages;
 
-namespace Platform.Node
+namespace Platform.Node.Services.Storage
 {
     public sealed class StorageService : 
         
@@ -12,7 +13,7 @@ namespace Platform.Node
         IHandle<SystemMessage.Init>,
         IHandle<ClientMessage.ImportEvents>
     {
-        ILogger Log = LogManager.GetLoggerFor<StorageService>();
+        readonly static ILogger Log = LogManager.GetLoggerFor<StorageService>();
         readonly IPublisher _publisher;
 
         readonly Func<IAppendOnlyStore> _func;
