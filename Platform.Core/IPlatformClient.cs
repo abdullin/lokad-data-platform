@@ -32,6 +32,18 @@ namespace Platform
         }
 
         readonly JsonServiceClient _client;
+
+        public void WriteEvent(string streamName, byte[] data)
+        {
+            var response = _client.Post<ClientDto.WriteEventResponse>("/stream", new ClientDto.WriteEvent()
+            {
+                Data = data,
+                Stream = streamName
+            });
+            if (!response.Success)
+                throw new InvalidOperationException(response.Result ?? "Client error");
+        }
+
         public void ImportBatch(string streamName, IEnumerable<RecordForStaging> records)
         {
             if (!Directory.Exists(_serverFolder))
@@ -55,6 +67,9 @@ namespace Platform
                     Location = name,
                     Stream = streamName,
                 });
+
+                if (!response.Success)
+                    throw new InvalidOperationException(response.Result ?? "Client error");
 
             }
             finally

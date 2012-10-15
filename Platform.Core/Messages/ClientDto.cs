@@ -12,6 +12,7 @@ namespace Platform.Messages
         public class WriteEventResponse
         {
             public string Result { get; set; }
+            public bool Success { get; set; }
         }
 
         public class ImportEvents
