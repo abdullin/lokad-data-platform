@@ -1,4 +1,10 @@
-﻿@model Dictionary<string, long>
+﻿@model SmartApp.Sample3.Contracts.Sample3Data
+<div>
+    Events proccessed: @(Model != null ? Model.EventsProcessed : 0)
+</div>
+<div>
+    Bytes proccessed: @(Model != null ? Model.NextOffset : 0)
+</div>
 <table cellpadding="0" cellspacing="0" border="1" class="post">
     <tr>
         <th>Tags</th>
@@ -6,12 +12,12 @@
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.OrderBy(x => x.Key))
+        foreach (var pair in Model.Distribution.OrderBy(x => x.Key))
         {
-            <tr>
-                <td>@pair.Key</td>
-                <td>@pair.Value</td>
-            </tr>
+        <tr>
+            <td>@pair.Key</td>
+            <td>@pair.Value</td>
+        </tr>
         }
     }
 </table>
@@ -23,14 +29,14 @@
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.OrderByDescending(x => x.Value))
+        foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value))
         {
-            <tr>
-                <td>@pair.Key</td>
-                <td>@pair.Value</td>
-            </tr>
+        <tr>
+            <td>@pair.Key</td>
+            <td>@pair.Value</td>
+        </tr>
         }
     }
 </table>
-<br style="clear:both"/>
+<br style="clear: both" />
 @DateTime.Now

@@ -21,7 +21,7 @@ namespace Platform.Messages
             }
         }
 
-        public class ImportEvents : Message
+        public class ImportEvents : WriteMessage
         {
             public readonly string EventStream;
             

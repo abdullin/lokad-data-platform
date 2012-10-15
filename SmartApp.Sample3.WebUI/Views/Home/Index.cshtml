@@ -1,4 +1,5 @@
-﻿@model Dictionary<string, long>
+﻿@model SmartApp.Sample3.Contracts.Sample3Data
+
 @{
     ViewBag.Title = "Home Page";
 }
@@ -6,7 +7,7 @@
 <script src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
 <style>
     td {
-        font-size:12px
+        font-size: 12px;
     }
 
     .post {
@@ -15,14 +16,14 @@
     }
 </style>
 <div id="result">
-    @Html.Partial("ProjectionView",Model)
+    @Html.Partial("ProjectionView", Model)
 </div>
-@Ajax.ActionLink("Refresh","Index","Home",null, new AjaxOptions{UpdateTargetId="result"},new{style="display:none;",id="refreshLink"})
+@Ajax.ActionLink("Refresh", "Index", "Home", null, new AjaxOptions { UpdateTargetId = "result" }, new { style = "display:none;", id = "refreshLink" })
 <script>
     $(document).ready(function () {
         setInterval(refresh, 5000);
     });
-    
+
     function refresh() {
         $("#refreshLink").click();
     }

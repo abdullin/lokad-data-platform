@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Mvc;
 using ServiceStack.Text;
-using SmartApp.Sample3.Continuous;
+using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.WebUI.Controllers
 {
@@ -20,14 +20,14 @@ namespace SmartApp.Sample3.WebUI.Controllers
             return View(model);
         }
 
-        Dictionary<string, long> GetProjectionViewData()
+        Sample3Data GetProjectionViewData()
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3-tag-count.dat");
 
             if (!System.IO.File.Exists(path))
                 return null;
 
-            return System.IO.File.ReadAllText(path).FromJson<Sample3Data>().Distribution;
+            return System.IO.File.ReadAllText(path).FromJson<Sample3Data>();
         }
 
     }

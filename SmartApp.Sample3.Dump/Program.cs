@@ -51,6 +51,8 @@ namespace SmartApp.Sample3.Dump
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
+
+            var locationBytes = new List<byte[]>();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
@@ -59,22 +61,36 @@ namespace SmartApp.Sample3.Dump
                 var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
                 bytes.Insert(0, 43); //flag for our example
 
-                try
+                locationBytes.Add(bytes.ToArray());
+                
+                if (rowIndex % 10000 == 0)
                 {
-                    JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
-                    {
-                        Data = bytes.ToArray(),
-                        Stream = "name"
-                    });
-                       
-                }
-                catch (Exception exception)
-                {
-                    Thread.Sleep(1000);
-                }
+                    var tmpPath = GetTmpFilePath();
 
-                if (rowIndex % 1000 == 0)
-                {
+                    using (var fs = new FileStream(tmpPath, FileMode.Append))
+                    {
+                        foreach (var locationByte in locationBytes)
+                        {
+                            var eventLength = Encoding.UTF8.GetBytes(locationByte.Length.ToString());
+                            fs.Write(eventLength, 0, eventLength.Length);
+                            fs.Write(locationByte, 0, locationByte.Length);
+                        }
+                    }
+
+                    locationBytes=new List<byte[]>();
+
+                    try
+                    {
+                        JsonClient.Post<ClientDto.ImportEvents>("/import", new ClientDto.ImportEvents()
+                        {
+                            Location = tmpPath,
+                            Stream = "name"
+                        });
+                    }
+                    catch (Exception exception)
+                    {
+                        Thread.Sleep(1000);
+                    }
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
@@ -112,6 +128,15 @@ namespace SmartApp.Sample3.Dump
                 return "";
 
             return line.Substring(start + attributeName.Length + 2, end);
+        }
+
+        private static string GetTmpFilePath()
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "tmp-files");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            return Path.Combine(path, Guid.NewGuid() + ".tmp");
         }
     }
 

@@ -53,10 +53,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\System.Web.Providers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -115,16 +111,16 @@
     <Folder Include="Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartApp.Sample3.Continuous\SmartApp.Sample3.Continuous.csproj">
-      <Project>{34c1b019-e269-4f03-9e57-43515da122d5}</Project>
-      <Name>SmartApp.Sample3.Continuous</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\ProjectionView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartApp.Sample3.Contracts\SmartApp.Sample3.Contracts.csproj">
+      <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
+      <Name>SmartApp.Sample3.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

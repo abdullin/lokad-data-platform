@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Platform;
 using Platform.Storage;
 using ServiceStack.Text;
+using SmartApp.Sample3.Contracts;
 using SmartApp.Sample3.Dump;
 
 namespace SmartApp.Sample3.Continuous
@@ -51,7 +52,7 @@ namespace SmartApp.Sample3.Continuous
                         else
                             data.Distribution[tag] = 1;
                     }
-
+                    data.EventsProcessed += 1;
 
                     emptyData = false;
                 }
@@ -97,10 +98,4 @@ namespace SmartApp.Sample3.Continuous
         }
     }
 
-    public class Sample3Data
-    {
-        public long NextOffset { get; set; }
-
-        public Dictionary<string, long> Distribution { get; set; }
-    }
 }
