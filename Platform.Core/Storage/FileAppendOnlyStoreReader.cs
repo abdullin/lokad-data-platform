@@ -8,12 +8,7 @@ namespace Platform.Storage
     {
         readonly string _path;
 
-        FileStream _checkStream;
-        BitReader _checkBits;
-        FileStream _dataStream;
-        BitReader _dataBits;
-        bool _disposed;
-
+        
         public FileAppendOnlyStoreReader(string name)
         {
             _path = Path.GetFullPath(name ?? "");
@@ -37,25 +32,24 @@ namespace Platform.Storage
             if (!File.Exists(Path.Combine(_path, "stream.dat")))
                 throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
-
-            using (_dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (_dataBits = new BitReader(_dataStream))
+                using (var dataBits = new BitReader(dataStream))
                 {
-                    _dataStream.Seek(startOffset, SeekOrigin.Begin);
+                    dataStream.Seek(startOffset, SeekOrigin.Begin);
 
 
                     int count = 0;
-                    while (_dataStream.Position < endOffset && count <= maxRecordCount)
+                    while (dataStream.Position < endOffset && count <= maxRecordCount)
                     {
-                        var key = _dataBits.ReadString();
-                        var length = _dataBits.Reader7BitInt();
+                        var key = dataBits.ReadString();
+                        var length = dataBits.Reader7BitInt();
 
-                        if (_dataStream.Position + length > _dataStream.Length)
+                        if (dataStream.Position + length > dataStream.Length)
                             throw new InvalidOperationException("Data length is out of range.");
 
-                        var data = _dataBits.ReadBytes(length);
-                        yield return new RetrievedDataRecord(key, data, _dataStream.Position);
+                        var data = dataBits.ReadBytes(length);
+                        yield return new RetrievedDataRecord(key, data, dataStream.Position);
 
                         if (count == maxRecordCount)
                             break;
@@ -70,14 +64,14 @@ namespace Platform.Storage
         {
             if (!File.Exists(Path.Combine(_path, "stream.chk")))
                 return 0;
-
-            using (_checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        
+            using (var checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (_checkBits = new BitReader(_checkStream))
+                using (var checkBits = new BitReader(checkStream))
                 {
                     // calculate start and end offset
                     //_checkStream.Seek(0, SeekOrigin.Begin);
-                    return _checkBits.ReadInt64();
+                    return checkBits.ReadInt64();
                 }
             }
 
