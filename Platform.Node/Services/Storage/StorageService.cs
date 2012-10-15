@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Platform.Node
 {
@@ -54,8 +55,14 @@ namespace Platform.Node
         {
             Log.Info("Got import request");
             var watch = Stopwatch.StartNew();
-            _store.Append(msg.EventStream, EnumerateStaging(msg.StagingLocation), msg.ExpectedVersion);
-            Log.Info("Import completed in {0}sec", watch.Elapsed.TotalSeconds );
+            var count = 0;
+            _store.Append(msg.EventStream, EnumerateStaging(msg.StagingLocation).Select(bytes =>
+                {
+                    count += 1;
+                    return bytes;
+                }), msg.ExpectedVersion);
+            var totalSeconds = watch.Elapsed.TotalSeconds;
+            Log.Info("Import completed in {0}sec. That's {1} m/s", totalSeconds, Math.Round(count / totalSeconds));
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
         }
 
