@@ -30,24 +30,29 @@ namespace SmartApp.Sample3.Continuous
                 foreach (var dataRecord in records)
                 {
                     data.NextOffset = dataRecord.NextOffset;
-                 
-                    if(dataRecord.Data.Length==0 || dataRecord.Data[0]!=42)
+
+                    if (dataRecord.Data.Length == 0 || dataRecord.Data[0] != 43)
                         continue;
 
                     var bytes = dataRecord.Data.Skip(1).ToArray();
 
                     var json = Encoding.UTF8.GetString(bytes);
-                    if(!json.StartsWith("{"))
+                    if (!json.StartsWith("{"))
                         continue;
 
                     var post = json.FromJson<Post>();
-                    if(post==null)
+                    if (post == null)
                         continue;
-                    
-                    if (data.Distribution.ContainsKey(post.AnswerCount))
-                        data.Distribution[post.AnswerCount]++;
-                    else
-                        data.Distribution[post.AnswerCount] = 1;
+
+                    foreach (var tag in post.Tags)
+                    {
+                        if (data.Distribution.ContainsKey(tag))
+                            data.Distribution[tag]++;
+                        else
+                            data.Distribution[tag] = 1;
+                    }
+
+
                     emptyData = false;
                 }
 
@@ -74,17 +79,17 @@ namespace SmartApp.Sample3.Continuous
 
         static Sample3Data LoadData()
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3.dat");
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
 
             if (!File.Exists(path))
-                return new Sample3Data { NextOffset = 0, Distribution = new Dictionary<long, long>() };
+                return new Sample3Data { NextOffset = 0, Distribution = new Dictionary<string, long>() };
 
             return File.ReadAllText(path).FromJson<Sample3Data>();
         }
 
         static void SaveData(string jsonData)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3.dat");
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
             using (var sw = new StreamWriter(path, false))
             {
                 sw.Write(jsonData);
@@ -96,6 +101,6 @@ namespace SmartApp.Sample3.Continuous
     {
         public long NextOffset { get; set; }
 
-        public Dictionary<long, long> Distribution { get; set; }
+        public Dictionary<string, long> Distribution { get; set; }
     }
 }

@@ -20,9 +20,9 @@ namespace SmartApp.Sample3.WebUI.Controllers
             return View(model);
         }
 
-        Dictionary<long, long> GetProjectionViewData()
+        Dictionary<string, long> GetProjectionViewData()
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3.dat");
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3-tag-count.dat");
 
             if (!System.IO.File.Exists(path))
                 return null;

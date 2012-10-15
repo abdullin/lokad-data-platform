@@ -15,6 +15,7 @@ namespace SmartApp.Sample3.Dump
 {
     class Program
     {
+        private static JsonServiceClient JsonClient;
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
             using (var rows = File.OpenText(path))
@@ -36,10 +37,16 @@ namespace SmartApp.Sample3.Dump
 
         static void Main(string[] args)
         {
-            var path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+            JsonClient = new JsonServiceClient(string.Format("http://127.0.0.1:8080"));
             Thread.Sleep(2000); //waiting for server initialization
 
-            var JsonClient = new JsonServiceClient(string.Format("http://127.0.0.1:8080"));
+            DumpPosts();
+        }
+
+        private static void DumpPosts()
+        {
+            var path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+
             long rowIndex = 0;
 
             Stopwatch sw = new Stopwatch();
@@ -50,7 +57,7 @@ namespace SmartApp.Sample3.Dump
                 var json = ConvertToJson(line);
 
                 var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
-                bytes.Insert(0, 42); //flag for our example
+                bytes.Insert(0, 43); //flag for our example
 
                 try
                 {
@@ -59,6 +66,7 @@ namespace SmartApp.Sample3.Dump
                         Data = bytes.ToArray(),
                         Stream = "name"
                     });
+                       
                 }
                 catch (Exception exception)
                 {
@@ -67,13 +75,9 @@ namespace SmartApp.Sample3.Dump
 
                 if (rowIndex % 1000 == 0)
                 {
-                    Console.Clear();
-                    Console.WriteLine("{0} per second", rowIndex / sw.Elapsed.TotalSeconds);
-                    Console.WriteLine("Added {0} rows", rowIndex);
+                    Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
-
-
         }
 
         private static string ConvertToJson(string line)
@@ -93,6 +97,7 @@ namespace SmartApp.Sample3.Dump
                                AnswerCount = long.TryParse(Get(line, "AnswerCount"), out defaultLong) ? defaultLong : -1,
                                CommentCount = long.TryParse(Get(line, "CommentCount"), out defaultLong) ? defaultLong : -1,
                                FavoriteCount = long.TryParse(Get(line, "FavoriteCount"), out defaultLong) ? defaultLong : -1,
+                               Tags = (">" + HttpUtility.HtmlDecode(Get(line, "Tags")) + "<").Split(new[] { "><" }, StringSplitOptions.RemoveEmptyEntries)
                            };
 
             return json.ToJson();
@@ -132,5 +137,6 @@ namespace SmartApp.Sample3.Dump
         public long AnswerCount { get; set; }
         public long CommentCount { get; set; }
         public long FavoriteCount { get; set; }
+        public string[] Tags { get; set; }
     }
 }

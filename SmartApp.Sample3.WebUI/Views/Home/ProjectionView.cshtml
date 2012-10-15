@@ -1,19 +1,36 @@
-﻿@model Dictionary<long, long>
-
-<table cellpadding="0" cellspacing="0" border="1">
+﻿@model Dictionary<string, long>
+<table cellpadding="0" cellspacing="0" border="1" class="post">
     <tr>
-        <th>Number of comments</th>
-        <th>Number of posts</th>
+        <th>Tags</th>
+        <th>Number of tags</th>
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.OrderBy(x=>x.Key))
+        foreach (var pair in Model.OrderBy(x => x.Key))
         {
-        <tr>
-            <td>@pair.Key</td>
-            <td>@pair.Value</td>
-        </tr>
+            <tr>
+                <td>@pair.Key</td>
+                <td>@pair.Value</td>
+            </tr>
         }
     }
 </table>
+
+<table cellpadding="0" cellspacing="0" border="1" class="post">
+    <tr>
+        <th>Tags</th>
+        <th>Number of tags</th>
+    </tr>
+    @if (Model != null)
+    {
+        foreach (var pair in Model.OrderByDescending(x => x.Value))
+        {
+            <tr>
+                <td>@pair.Key</td>
+                <td>@pair.Value</td>
+            </tr>
+        }
+    }
+</table>
+<br style="clear:both"/>
 @DateTime.Now
