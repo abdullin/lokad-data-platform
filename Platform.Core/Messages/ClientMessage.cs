@@ -10,15 +10,13 @@ namespace Platform.Messages
         {
             public readonly string EventStream;
             public readonly byte[] Data;
-            public readonly int ExpectedVersion;
-
+            
             public readonly Action<AppendEventsCompleted> Envelope;
 
-            public AppendEvents(string eventStream, byte[] data, int expectedVersion, Action<AppendEventsCompleted> envelope)
+            public AppendEvents(string eventStream, byte[] data,  Action<AppendEventsCompleted> envelope)
             {
                 EventStream = eventStream;
                 Data = data;
-                ExpectedVersion = expectedVersion;
                 Envelope = envelope;
             }
         }
@@ -26,14 +24,13 @@ namespace Platform.Messages
         public class ImportEvents : Message
         {
             public readonly string EventStream;
-            public readonly int ExpectedVersion;
+            
             public readonly string StagingLocation;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(string eventStream, string stagingLocation, int expectedVersion, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(string eventStream, string stagingLocation, Action<ImportEventsCompleted> envelope)
             {
                 EventStream = eventStream;
-                ExpectedVersion = expectedVersion;
                 StagingLocation = stagingLocation;
                 Envelope = envelope;
             }

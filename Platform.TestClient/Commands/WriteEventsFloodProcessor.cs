@@ -43,8 +43,7 @@ namespace Platform.TestClient.Commands
                             context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
                                 {
                                     Data = Encoding.UTF8.GetBytes("This is some test message to load the server"),
-                                    Stream = "name",
-                                    ExpectedVersion = -1
+                                    Stream = "name"
                                 });
 
                             //client.Get<ClientDto.WriteEvent>("/stream/name");

@@ -20,7 +20,7 @@ namespace Platform.Node.Services.ServerApi
             var token = new ManualResetEventSlim(false);
 
             
-            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data, request.ExpectedVersion,s => token.Set()));
+            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data,s => token.Set()));
 
             return Task.Factory.StartNew(() =>
                 {

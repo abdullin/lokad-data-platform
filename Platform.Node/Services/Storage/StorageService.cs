@@ -30,7 +30,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _store.Append(message.EventStream, new[] { message.Data }, message.ExpectedVersion);
+            _store.Append(message.EventStream, new[] { message.Data });
             
 
             Log.Info("Storage service got request");
@@ -61,7 +61,7 @@ namespace Platform.Node.Services.Storage
                 {
                     count += 1;
                     return bytes;
-                }), msg.ExpectedVersion);
+                }));
             var totalSeconds = watch.Elapsed.TotalSeconds;
             Log.Info("Import completed in {0}sec. That's {1} m/s", totalSeconds, Math.Round(count / totalSeconds));
             msg.Envelope(new ClientMessage.ImportEventsCompleted());

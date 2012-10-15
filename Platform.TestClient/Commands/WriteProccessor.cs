@@ -33,8 +33,7 @@ namespace Platform.TestClient.Commands
             context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
             {
                 Data = Encoding.UTF8.GetBytes(data),
-                Stream = eventStreamId,
-                ExpectedVersion = expectedVersion
+                Stream = eventStreamId
             });
 
             context.Completed();

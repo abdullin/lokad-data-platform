@@ -6,7 +6,6 @@ namespace Platform.Node.Services.ServerApi
         {
             public string Stream { get; set; }
             public byte[] Data { get; set; }
-            public int ExpectedVersion { get; set; }
         }
 
         public class WriteEventResponse
@@ -18,7 +17,6 @@ namespace Platform.Node.Services.ServerApi
         {
             public string Stream { get; set; }
             public string Location { get; set; }
-            public int ExpectedVersion { get; set; }
         }
 
         public class ImportEventsResponse

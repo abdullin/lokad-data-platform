@@ -57,8 +57,7 @@ namespace SmartApp.Sample3.Dump
                     JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
                     {
                         Data = bytes.ToArray(),
-                        Stream = "name",
-                        ExpectedVersion = -1
+                        Stream = "name"
                     });
                 }
                 catch (Exception exception)

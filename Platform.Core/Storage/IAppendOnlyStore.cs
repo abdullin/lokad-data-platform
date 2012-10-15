@@ -7,7 +7,7 @@ namespace Platform
 
     public interface IAppendOnlyStore : IDisposable
     {
-        void Append(string key, IEnumerable<byte[]> data, int expectedStreamVersion);
+        void Append(string key, IEnumerable<byte[]> data);
     }
 
     public sealed class FileAppendOnlyStore : IAppendOnlyStore
@@ -49,7 +49,7 @@ namespace Platform
             _checkStream.Close();
         }
 
-        public void Append(string key, IEnumerable<byte[]> data, int expectedStreamVersion)
+        public void Append(string key, IEnumerable<byte[]> data)
         {
             //_logger.Info("Write to storage");
             // write data

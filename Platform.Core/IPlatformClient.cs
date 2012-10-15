@@ -22,6 +22,8 @@ namespace Platform
         readonly string _serverEndpoint;
         static readonly ILogger Log = LogManager.GetLoggerFor<FilePlatformClient>();
 
+        public bool IsAzure { get { return false; } }
+
         public FilePlatformClient(string serverFolder, string serverEndpoint)
         {
             _serverFolder = serverFolder;
