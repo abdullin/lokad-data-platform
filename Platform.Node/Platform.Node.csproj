@@ -67,13 +67,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
-      <Project>{39F04669-CAA7-4F30-8BE2-6CF79F49F2E6}</Project>
-      <Name>Platform.Core</Name>
-    </ProjectReference>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
+      <Project>{39f04669-caa7-4f30-8be2-6cf79f49f2e6}</Project>
+      <Name>Platform.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

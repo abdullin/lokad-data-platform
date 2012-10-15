@@ -30,6 +30,7 @@ namespace Platform.Node
             var storageService = new StorageService(CreateFileStore, mainQueue);
             bus.AddHandler<ClientMessage.AppendEvents>(storageService);
             bus.AddHandler<SystemMessage.Init>(storageService);
+            bus.AddHandler<ClientMessage.ImportEvents>(storageService);
 
             Console.WriteLine("Starting everything. Press enter to initiate shutdown");
 

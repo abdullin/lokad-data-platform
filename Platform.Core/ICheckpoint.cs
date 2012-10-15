@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Platform
@@ -16,7 +17,7 @@ namespace Platform
 
     public interface IAppendOnlyStore : IDisposable
     {
-        void Append(string key, byte[] data, int expectedStreamVersion);
+        void Append(string key, IEnumerable<byte[]> data, int expectedStreamVersion);
     }
 
     public sealed class FileAppendOnlyStore : IAppendOnlyStore
@@ -61,15 +62,18 @@ namespace Platform
             _checkStream.Close();
         }
 
-        public void Append(string key, byte[] data, int expectedStreamVersion)
+        public void Append(string key, IEnumerable<byte[]> data, int expectedStreamVersion)
         {
             //_logger.Info("Write to storage");
             // write data
-            _dataBits.Write(key);
-            _dataBits.Write7BitInt(data.Length);
-            _dataBits.Write(data);
+            
+            foreach (var buffer in data)
+            {
+                _dataBits.Write(key);
+                _dataBits.Write7BitInt(buffer.Length);
+                _dataBits.Write(buffer);
+            }
             _dataStream.Flush(true);
-
             _checkStream.Seek(0, SeekOrigin.Begin);
             _checkBits.Write(_dataStream.Position);
             _checkStream.Flush(true);

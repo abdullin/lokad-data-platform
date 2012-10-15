@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace Platform.Node
 {
     public sealed class StorageService : 
         
         IHandle<ClientMessage.AppendEvents>,
-        IHandle<SystemMessage.Init>
+        IHandle<SystemMessage.Init>,
+        IHandle<ClientMessage.ImportEvents>
     {
         ILogger Log = LogManager.GetLoggerFor<StorageService>();
         readonly IPublisher _publisher;
@@ -24,11 +28,35 @@ namespace Platform.Node
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _store.Append(message.EventStream, message.Data, message.ExpectedVersion);
+            _store.Append(message.EventStream, new[] { message.Data }, message.ExpectedVersion);
             
 
             Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
+        }
+
+        IEnumerable<byte[]> EnumerateStaging(string location)
+        {
+            using (var import = File.OpenRead(location))
+            using (var bit = new BinaryReader(import))
+            {
+                var length = import.Length;
+                while (import.Position < length)
+                {
+                    var len = bit.ReadInt32();
+                    var data = bit.ReadBytes(len);
+                    yield return data;
+                }
+            }
+        }
+
+        public void Handle(ClientMessage.ImportEvents msg)
+        {
+            Log.Info("Got import request");
+            var watch = Stopwatch.StartNew();
+            _store.Append(msg.EventStream, EnumerateStaging(msg.StagingLocation), msg.ExpectedVersion);
+            Log.Info("Import completed in {0}sec", watch.Elapsed.TotalSeconds );
+            msg.Envelope(new ClientMessage.ImportEventsCompleted());
         }
 
         public void Handle(SystemMessage.Init message)
