@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Web;
 using Platform.Node;
 using ServiceStack.ServiceClient.Web;
@@ -35,6 +36,7 @@ namespace SmartApp.Sample3.Dump
         static void Main(string[] args)
         {
             var path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+            Thread.Sleep(2000); //waiting for server initialization
 
             var JsonClient = new JsonServiceClient(string.Format("http://127.0.0.1:8080"));
             long rowIndex = 0;
@@ -49,12 +51,19 @@ namespace SmartApp.Sample3.Dump
                 var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
                 bytes.Insert(0, 42); //flag for our example
 
-                JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
+                try
                 {
-                    Data = bytes.ToArray(),
-                    Stream = "name",
-                    ExpectedVersion = -1
-                });
+                    JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
+                    {
+                        Data = bytes.ToArray(),
+                        Stream = "name",
+                        ExpectedVersion = -1
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Thread.Sleep(1000);
+                }
 
                 if (rowIndex % 1000 == 0)
                 {
