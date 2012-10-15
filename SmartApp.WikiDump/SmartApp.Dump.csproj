@@ -7,8 +7,8 @@
     <ProjectGuid>{C867A050-FCCD-462C-AF0A-3B4AB53020A5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartApp.WikiDump</RootNamespace>
-    <AssemblyName>SmartApp.WikiDump</AssemblyName>
+    <RootNamespace>SmartApp.Dump</RootNamespace>
+    <AssemblyName>SmartApp.Dump</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

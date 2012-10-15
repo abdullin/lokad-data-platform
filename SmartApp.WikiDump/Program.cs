@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Xml;
 using Platform.Node;
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.Text;
 
-namespace SmartApp.WikiDump
+namespace SmartApp.Dump
 {
     class Program
     {
@@ -39,6 +38,9 @@ namespace SmartApp.WikiDump
 
             var JsonClient = new JsonServiceClient(string.Format("http://127.0.0.1:8080"));
             long rowIndex = 0;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
@@ -55,7 +57,11 @@ namespace SmartApp.WikiDump
                 });
 
                 if (rowIndex % 1000 == 0)
-                    Console.WriteLine(rowIndex);
+                {
+                    Console.Clear();
+                    Console.WriteLine("{0} per second", rowIndex / sw.Elapsed.TotalSeconds);
+                    Console.WriteLine("Added {0} rows", rowIndex);
+                }
             }
 
 

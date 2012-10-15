@@ -1,0 +1,24 @@
+﻿@model Dictionary<long, long>
+@{
+    ViewBag.Title = "Home Page";
+}
+<script src="/Scripts/jquery-1.7.1.min.js"></script>
+<script src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<style>
+    td {
+        font-size:12px
+    }
+</style>
+<div id="result">
+    @Html.Partial("ProjectionView",Model)
+</div>
+@Ajax.ActionLink("Refresh","Index","Home",null, new AjaxOptions{UpdateTargetId="result"},new{style="display:none;",id="refreshLink"})
+<script>
+    $(document).ready(function () {
+        setInterval(refresh, 5000);
+    });
+    
+    function refresh() {
+        $("#refreshLink").click();
+    }
+</script>
