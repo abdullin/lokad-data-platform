@@ -34,6 +34,12 @@
     <Reference Include="NLog">
       <HintPath>..\Library\NLog\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\Platform.TestClient\bin\Debug\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\Platform.TestClient\bin\Debug\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,13 +52,14 @@
     <Compile Include="Application.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="Fsm.cs" />
-    <Compile Include="IAppendOnlyStore.cs" />
+    <Compile Include="Messages\ClientDto.cs" />
+    <Compile Include="Storage\IAppendOnlyStore.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="Storage\RetrievedDataRecord.cs" />
     <Compile Include="Storage\FileAppendOnlyStoreReader.cs" />
-    <Compile Include="Storage\IPlatformClient.cs" />
+    <Compile Include="IPlatformClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
   </ItemGroup>
   <ItemGroup>

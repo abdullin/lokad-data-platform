@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Platform;
 using Platform.Storage;
 
 namespace SmartApp.Sample1.Continuous

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Platform;
 using Platform.Storage;
 using ServiceStack.Text;
 using SmartApp.Sample3.Dump;
