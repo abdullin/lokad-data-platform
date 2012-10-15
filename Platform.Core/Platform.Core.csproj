@@ -50,9 +50,9 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
-    <Compile Include="Storage\DataRecord.cs" />
+    <Compile Include="Storage\RetrievedDataRecord.cs" />
     <Compile Include="Storage\FileAppendOnlyStoreReader.cs" />
-    <Compile Include="Storage\IAppendOnlyStreamReader.cs" />
+    <Compile Include="Storage\IPlatformClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Platform.Storage
 {
-    public class FileAppendOnlyStoreReader : IAppendOnlyStreamReader
+    public class FileAppendOnlyStoreReader : IPlatformClient
     {
         readonly string _path;
 
@@ -19,7 +19,9 @@ namespace Platform.Storage
             _path = Path.GetFullPath(name ?? "");
         }
 
-        public IEnumerable<DataRecord> ReadAll(long startOffset, int maxRecordCount)
+        public bool IsAzure { get { return false; } }
+
+        public IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, int maxRecordCount)
         {
             if (startOffset < 0)
                 throw new ArgumentOutOfRangeException("startOffset");
@@ -53,7 +55,7 @@ namespace Platform.Storage
                             throw new InvalidOperationException("Data length is out of range.");
 
                         var data = _dataBits.ReadBytes(length);
-                        yield return new DataRecord(key, data, _dataStream.Position);
+                        yield return new RetrievedDataRecord(key, data, _dataStream.Position);
 
                         if (count == maxRecordCount)
                             break;

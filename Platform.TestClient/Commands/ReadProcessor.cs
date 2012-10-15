@@ -8,9 +8,9 @@ namespace Platform.TestClient.Commands
 {
     public class ReadProcessor : ICommandProcessor
     {
-        readonly IAppendOnlyStreamReader _reader;
+        readonly IPlatformClient _reader;
 
-        public ReadProcessor(IAppendOnlyStreamReader reader)
+        public ReadProcessor(IPlatformClient reader)
         {
             _reader = reader;
         }
@@ -39,7 +39,7 @@ namespace Platform.TestClient.Commands
             context.IsAsync();
 
             var result = _reader.ReadAll(fromOffset, maxRecordCount);
-            var dataRecords = result as DataRecord[] ?? result.ToArray();
+            var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
             context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
             foreach (var record in dataRecords)
             {
