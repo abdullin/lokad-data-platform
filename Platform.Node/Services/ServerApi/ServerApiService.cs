@@ -1,8 +1,5 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using ServiceStack.Plugins.Tasks;
-using ServiceStack.ServiceInterface;
 using ServiceStack.WebHost.Endpoints;
 
 namespace Platform.Node
@@ -23,7 +20,9 @@ namespace Platform.Node
                 //.Add<ClientDto.CreateStream>("/stream", "PUT")
                 //.Add<ClientDto.CreateStream>("/stream/create/{Name}")
                 .Add<ClientDto.WriteEvent>("/stream/", "POST")
-                .Add<ClientDto.WriteEvent>("/stream/{Stream}", "POST");
+                .Add<ClientDto.WriteEvent>("/stream/{Stream}", "POST")
+                .Add<ClientDto.ImportEvents>("/import/","POST")
+                .Add<ClientDto.ImportEvents>("/import/{Stream}", "POST");
 
             container.Register(_publisher);
         }
@@ -43,6 +42,17 @@ namespace Platform.Node
             public string Result { get; set; }
         }
 
+        public class ImportEvents
+        {
+            public string Stream { get; set; }
+            public string Location { get; set; }
+            public int ExpectedVersion { get; set; }
+        }
+
+        public class ImportEventsResponse
+        {
+            public string Result { get; set; }
+        }
     }
 
 
@@ -76,39 +86,4 @@ namespace Platform.Node
             _host.Stop();
         }
     }
-
-    public class StreamService : ServiceBase<ClientDto.WriteEvent>
-    {
-        readonly IPublisher _publisher;
-        
-        public StreamService(IPublisher publisher)
-        {
-            _publisher = publisher;
-        }
-
-
-        protected override object Run(ClientDto.WriteEvent request)
-        {
-            var token = new ManualResetEventSlim(false);
-
-            ClientMessage.AppendEventsCompleted hack;
-            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data, request.ExpectedVersion,s =>
-            {
-                hack = s;
-                token.Set();
-            }));
-
-
-
-            return Task.Factory.StartNew(() =>
-            {
-                token.Wait();
-                return new ClientDto.WriteEventResponse()
-                {
-                    Result = "Completed"
-                };
-            });
-        }
-    }
-
 }

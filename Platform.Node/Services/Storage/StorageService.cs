@@ -8,7 +8,7 @@ namespace Platform.Node
         IHandle<SystemMessage.Init>
     {
         ILogger Log = LogManager.GetLoggerFor<StorageService>();
-        IPublisher _publisher;
+        readonly IPublisher _publisher;
 
         readonly Func<IAppendOnlyStore> _func;
 

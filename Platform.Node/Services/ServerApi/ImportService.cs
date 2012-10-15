@@ -1,0 +1,42 @@
+using System.Threading;
+using System.Threading.Tasks;
+using ServiceStack.ServiceInterface;
+
+namespace Platform.Node
+{
+    public class ImportService : ServiceBase<ClientDto.ImportEvents>
+    {
+        readonly IPublisher _publisher;
+
+        public ImportService(IPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+
+        protected override object Run(ClientDto.ImportEvents request)
+        {
+            var token = new ManualResetEventSlim(false);
+
+
+            _publisher.Publish(new ClientMessage.ImportEvents(request.Stream, request.Location, request.ExpectedVersion, s => token.Set()));
+
+            return Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        token.Wait();
+                        return new ClientDto.ImportEventsResponse()
+                            {
+                                Result = "Completed"
+                            };
+                    }
+                    finally
+                    {
+                        token.Dispose();
+                    }
+
+                });
+        }
+    }
+}

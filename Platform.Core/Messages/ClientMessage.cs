@@ -23,7 +23,28 @@ namespace Platform
             }
         }
 
+        public class ImportEvents : Message
+        {
+            public readonly string EventStream;
+            public readonly int ExpectedVersion;
+            public readonly string StagingLocation;
+
+            public readonly Action<AppendEventsCompleted> Envelope;
+            public ImportEvents(string eventStream, string stagingLocation, int expectedVersion, Action<AppendEventsCompleted> envelope)
+            {
+                EventStream = eventStream;
+                ExpectedVersion = expectedVersion;
+                StagingLocation = stagingLocation;
+                Envelope = envelope;
+            }
+        }
+
         public class AppendEventsCompleted : Message
+        {
+            
+        }
+
+        public class ImportEventsCompleted : Message
         {
             
         }

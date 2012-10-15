@@ -54,8 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\ServerApi\ImportService.cs" />
     <Compile Include="Services\ServerApi\ServerApiService.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Services\ServerApi\StreamService.cs" />
     <Compile Include="Services\Storage\StorageService.cs" />
   </ItemGroup>
   <ItemGroup>
