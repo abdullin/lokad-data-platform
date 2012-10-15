@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Platform.Storage;
 using ServiceStack.Text;
-using SmartApp.Dump;
+using SmartApp.Sample3.Dump;
 
 namespace SmartApp.Sample3.Continuous
 {

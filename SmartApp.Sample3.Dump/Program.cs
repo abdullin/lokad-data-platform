@@ -9,7 +9,7 @@ using Platform.Node;
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.Text;
 
-namespace SmartApp.Dump
+namespace SmartApp.Sample3.Dump
 {
     class Program
     {

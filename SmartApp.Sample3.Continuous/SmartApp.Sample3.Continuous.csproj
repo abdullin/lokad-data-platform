@@ -65,9 +65,9 @@
       <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
       <Name>Platform.Node</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SmartApp.WikiDump\SmartApp.Dump.csproj">
+    <ProjectReference Include="..\SmartApp.Sample3.Dump\SmartApp.Sample3.Dump.csproj">
       <Project>{c867a050-fccd-462c-af0a-3b4ab53020a5}</Project>
-      <Name>SmartApp.Dump</Name>
+      <Name>SmartApp.Sample3.Dump</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
