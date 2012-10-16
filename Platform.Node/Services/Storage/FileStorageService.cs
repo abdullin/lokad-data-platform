@@ -16,15 +16,15 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        readonly Func<FileAppendOnlyStore> _func;
+        
 
         FileAppendOnlyStore _store;
-        
 
+        readonly string _location;
         
-        public FileStorageService(Func<FileAppendOnlyStore> func, IPublisher publisher)
+        public FileStorageService(string location, IPublisher publisher)
         {
-            _func = func;
+            _location = location;
             _publisher = publisher;
         }
 
@@ -75,7 +75,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _store = _func();
+                _store = new FileAppendOnlyStore(_location);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)

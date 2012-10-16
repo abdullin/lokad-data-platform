@@ -40,7 +40,7 @@ namespace Platform.Node
 
             // switch, based on configuration
 
-            var storageService = new FileStorageService(() => CreateFileStore(options.StoreLocation), mainQueue);
+            var storageService = new FileStorageService(options.StoreLocation, mainQueue);
             bus.AddHandler<ClientMessage.AppendEvents>(storageService);
             bus.AddHandler<SystemMessage.Init>(storageService);
             bus.AddHandler<ClientMessage.ImportEvents>(storageService);
@@ -61,19 +61,13 @@ namespace Platform.Node
             else
             {
                 Task.Factory.StartNew(() =>
-                                          {
-                                              Thread.Sleep(timeOut * 1000);
-                                              Application.Exit(ExitCode.Success, "");
-                                          });
+                    {
+                        Thread.Sleep(timeOut * 1000);
+                        Application.Exit(ExitCode.Success, "");
+                    });
                 _exitEvent.Wait();
             }
 
-        }
-
-        static FileAppendOnlyStore CreateFileStore(string path)
-        {
-            var store = new FileAppendOnlyStore(path);
-            return store;
         }
     }
 

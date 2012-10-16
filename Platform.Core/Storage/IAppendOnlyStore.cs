@@ -15,9 +15,9 @@ namespace Platform
         readonly FileStream _checkStream;
 
 
-        public FileAppendOnlyStore(string name)
+        public FileAppendOnlyStore(string directory)
         {
-            var path = name ?? "";
+            var path = directory ?? "";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
