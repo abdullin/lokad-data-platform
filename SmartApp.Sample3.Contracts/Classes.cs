@@ -12,7 +12,7 @@ namespace SmartApp.Sample3.Contracts
         public Dictionary<string, long> Distribution { get; set; }
     }
 
-    public class CommentsDistributionView
+    public class CommentDistributionView
     {
         public long NextOffset { get; set; }
         public int EventsProcessed { get; set; }

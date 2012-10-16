@@ -69,17 +69,17 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        static Sample3TagData LoadTagData()
+        static TagsDistributionView LoadTagData()
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
 
             if (!File.Exists(path))
-                return new Sample3TagData { NextOffset = 0, Distribution = new Dictionary<string, long>() };
+                return new TagsDistributionView { NextOffset = 0, Distribution = new Dictionary<string, long>() };
 
-            return File.ReadAllText(path).FromJson<Sample3TagData>();
+            return File.ReadAllText(path).FromJson<TagsDistributionView>();
         }
 
-        static void SaveTagData(Sample3TagData data)
+        static void SaveTagData(TagsDistributionView data)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
             using (var sw = new StreamWriter(path, false))
@@ -136,17 +136,17 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        static Sample3CommentData LoadCommentData()
+        static CommentDistributionView LoadCommentData()
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-comment.dat");
 
             if (!File.Exists(path))
-                return new Sample3CommentData { NextOffset = 0, Distribution = new Dictionary<long, int>() };
+                return new CommentDistributionView { NextOffset = 0, Distribution = new Dictionary<long, int>() };
 
-            return File.ReadAllText(path).FromJson<Sample3CommentData>();
+            return File.ReadAllText(path).FromJson<CommentDistributionView>();
         }
 
-        static void SaveCommentData(Sample3CommentData data)
+        static void SaveCommentData(CommentDistributionView data)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-comment.dat");
             using (var sw = new StreamWriter(path, false))

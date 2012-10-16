@@ -36,14 +36,14 @@ namespace SmartApp.Sample3.WebUI.Controllers
             return PartialView(model);
         }
 
-        CommentsDistributionView GetCommentProjectionViewData()
+        CommentDistributionView GetCommentProjectionViewData()
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3-comment.dat");
 
             if (!System.IO.File.Exists(path))
                 return null;
 
-            return System.IO.File.ReadAllText(path).FromJson<CommentsDistributionView>();
+            return System.IO.File.ReadAllText(path).FromJson<CommentDistributionView>();
         }
 
     }
