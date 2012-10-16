@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
+using Platform;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.Text;
@@ -14,7 +15,7 @@ namespace SmartApp.Sample3.Dump
 {
     class Program
     {
-        private static JsonServiceClient JsonClient;
+        private static IPlatformClient _reader;
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
             using (var rows = File.OpenText(path))
@@ -36,7 +37,8 @@ namespace SmartApp.Sample3.Dump
 
         static void Main(string[] args)
         {
-            JsonClient = new JsonServiceClient(string.Format("http://127.0.0.1:8080"));
+           var httpBase = string.Format("http://127.0.0.1:8080");
+            _reader = new FilePlatformClient(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"),httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
             DumpPosts();
@@ -56,46 +58,17 @@ namespace SmartApp.Sample3.Dump
             {
                 rowIndex++;
                 var json = ConvertToJson(line);
-                if(json==null)
+                if (json == null)
                     continue;
 
                 var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
                 bytes.Insert(0, 43); //flag for our example
 
                 jsonBytes.Add(bytes.ToArray());
-                
+
                 if (rowIndex % 20000 == 0)
                 {
-                    var tmpPath = GetTmpFilePath();
-
-                    using (var fs = new FileStream(tmpPath, FileMode.Append))
-                    using (var writer = new BinaryWriter(fs))
-                    {
-                        foreach (var buffer in jsonBytes)
-                        {
-                            writer.Write(buffer.Length);
-                            writer.Write(buffer);
-                        }
-                    }
-
-                    jsonBytes=new List<byte[]>();
-
-                    try
-                    {
-                        JsonClient.Post<ClientDto.ImportEvents>("/import", new ClientDto.ImportEvents()
-                        {
-                            Location = tmpPath,
-                            Stream = "name"
-                        });
-                    }
-                    catch (Exception exception)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    finally
-                    {
-                        File.Delete(tmpPath);
-                    }
+                    _reader.ImportBatch("Post", jsonBytes.Select(x => new RecordForStaging(x)).ToList());
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
@@ -129,7 +102,7 @@ namespace SmartApp.Sample3.Dump
             {
                 return null;
             }
-            
+
         }
 
         private static string Get(string line, string attributeName)
