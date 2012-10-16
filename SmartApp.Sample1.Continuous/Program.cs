@@ -15,7 +15,7 @@ namespace SmartApp.Sample1.Continuous
             var nextOffset = LoadData();
             ShowData(nextOffset, true);
             var path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
-            IPlatformClient reader = new FileAppendOnlyStoreReader(path);
+            IPlatformClient reader = new FilePlatformClient(path);
             while (true)
             {
                 var last = reader.ReadAll(nextOffset).LastOrDefault();

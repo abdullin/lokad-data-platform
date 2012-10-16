@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Platform.Node;
-using Platform.Node.Services.ServerApi;
+﻿using System.Text;
 
 namespace Platform.TestClient.Commands
 {
@@ -12,7 +9,6 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, string[] args)
         {
             var eventStreamId = "default stream";
-            var expectedVersion = -1;
             var data = "default-data";
 
             if (args.Length > 0)
@@ -24,17 +20,14 @@ namespace Platform.TestClient.Commands
                 }
 
                 eventStreamId = args[0];
+                int expectedVersion;
                 int.TryParse(args[1], out expectedVersion);
                 data = args[2];
             }
 
             context.IsAsync();
 
-            context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
-            {
-                Data = Encoding.UTF8.GetBytes(data),
-                Stream = eventStreamId
-            });
+            context.Client.Platform.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
 
             context.Completed();
             return true;

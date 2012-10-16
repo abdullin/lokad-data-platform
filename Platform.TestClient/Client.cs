@@ -13,15 +13,23 @@ namespace Platform.TestClient
     {
         private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
         public ClientOptions Options;
-        public readonly JsonServiceClient JsonClient = new JsonServiceClient();
+        
 
         private readonly CommandProcessor _commands = new CommandProcessor(Log);
         private readonly bool _interactiveMode;
 
+        public IPlatformClient Platform;
+
         public Client(ClientOptions clientOptions)
         {
             Options = clientOptions;
-            JsonClient = new JsonServiceClient(string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort));
+            // TODO : pass server options
+
+            var serverFolder = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
+            var baseUri = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
+            Platform = new FilePlatformClient(serverFolder, baseUri);
+            
+            
 
             _interactiveMode = clientOptions.Command.IsEmpty();
 
@@ -35,8 +43,10 @@ namespace Platform.TestClient
             _commands.Register(new UsageProcessor(_commands));
             _commands.Register(new WriteProccessor());
 
-            var reader = new FileAppendOnlyStoreReader(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
-            _commands.Register(new ReadProcessor(reader));
+            
+
+            
+            _commands.Register(new ReadProcessor());
         }
 
         public void Run()

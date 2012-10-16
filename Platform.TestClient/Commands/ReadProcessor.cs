@@ -1,20 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using Platform.Node;
 using Platform.Storage;
 
 namespace Platform.TestClient.Commands
 {
     public class ReadProcessor : ICommandProcessor
     {
-        readonly IPlatformClient _reader;
-
-        public ReadProcessor(IPlatformClient reader)
-        {
-            _reader = reader;
-        }
-
+     
         public string Key { get { return "RA"; } }
         public string Usage { get { return "RA [<from-offset> <max-record-count>]"; } }
 
@@ -38,7 +30,7 @@ namespace Platform.TestClient.Commands
 
             context.IsAsync();
 
-            var result = _reader.ReadAll(fromOffset, maxRecordCount);
+            var result = context.Client.Platform.ReadAll(fromOffset, maxRecordCount);
             var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
             context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
             foreach (var record in dataRecords)

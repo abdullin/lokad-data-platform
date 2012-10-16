@@ -40,13 +40,7 @@ namespace Platform.TestClient.Commands
                         var watch = Stopwatch.StartNew();
                         for (int i = 0; i < size; i++)
                         {
-                            context.Client.JsonClient.Post<ClientDto.WriteEvent>("/stream", new ClientDto.WriteEvent()
-                                {
-                                    Data = Encoding.UTF8.GetBytes("This is some test message to load the server"),
-                                    Stream = "name"
-                                });
-
-                            //client.Get<ClientDto.WriteEvent>("/stream/name");
+                            context.Client.Platform.WriteEvent("name", Encoding.UTF8.GetBytes("This is some test message to load the server"));
                         }
 
                         Interlocked.Add(ref total, watch.Elapsed.Ticks);

@@ -23,7 +23,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 long nextOffcet = data.NextOffset;
                 Thread.Sleep(seconds * 1000);
-                IPlatformClient reader = new FileAppendOnlyStoreReader(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
+                IPlatformClient reader = new FilePlatformClient(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"));
 
                 var records = reader.ReadAll(nextOffcet);
                 bool emptyData = true;
