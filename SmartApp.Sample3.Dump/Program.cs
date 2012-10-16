@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using Platform;
 using Platform.Messages;
@@ -37,16 +38,20 @@ namespace SmartApp.Sample3.Dump
 
         static void Main(string[] args)
         {
-           var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader = new FilePlatformClient(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"),httpBase);
+            var httpBase = string.Format("http://127.0.0.1:8080");
+            _reader = new FilePlatformClient(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"), httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
-            DumpPosts();
+            var threads = new List<Task>();
+            threads.Add(Task.Factory.StartNew(DumpComments, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+            threads.Add(Task.Factory.StartNew(DumpPosts, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+
+            Task.WaitAll(threads.ToArray());
         }
 
-        private static void DumpPosts()
+        private static void DumpComments()
         {
-            var path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+            const string path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\comments.xml";
 
             long rowIndex = 0;
 
@@ -57,7 +62,63 @@ namespace SmartApp.Sample3.Dump
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
-                var json = ConvertToJson(line);
+                var json = ConvertCommentToJson(line);
+                if (json == null)
+                    continue;
+
+                var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
+                bytes.Insert(0, 44); //flag for our example
+
+                jsonBytes.Add(bytes.ToArray());
+
+                if (rowIndex % 20000 == 0)
+                {
+                    _reader.ImportBatch("comment", jsonBytes.Select(x => new RecordForStaging(x)).ToList());
+                    Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
+                }
+            }
+        }
+
+        private static string ConvertCommentToJson(string line)
+        {
+            try
+            {
+                long defaultLong;
+                int defaultInt;
+                DateTime defaultDate;
+
+                var json = new Comment
+                               {
+                                   Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
+                                   PostId = long.TryParse(Get(line, "PostId"), out defaultLong) ? defaultLong : -1,
+                                   CreationDate = DateTime.TryParse(Get(line, "CreationDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
+                                   Text = HttpUtility.HtmlDecode(Get(line, "Text")),
+                                   UserId = long.TryParse(Get(line, "UserId"), out defaultLong) ? defaultLong : -1,
+                                   Score = int.TryParse(Get(line, "Score"), out defaultInt) ? defaultInt : -1,
+                               };
+
+                return json.ToJson();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static void DumpPosts()
+        {
+            const string path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+
+            long rowIndex = 0;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var jsonBytes = new List<byte[]>();
+            foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
+            {
+                rowIndex++;
+                var json = ConvertPostToJson(line);
                 if (json == null)
                     continue;
 
@@ -74,7 +135,7 @@ namespace SmartApp.Sample3.Dump
             }
         }
 
-        private static string ConvertToJson(string line)
+        private static string ConvertPostToJson(string line)
         {
             try
             {
@@ -115,15 +176,6 @@ namespace SmartApp.Sample3.Dump
 
             return line.Substring(start + attributeName.Length + 2, end);
         }
-
-        private static string GetTmpFilePath()
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "tmp-files");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            return Path.Combine(path, Guid.NewGuid() + ".tmp");
-        }
     }
 
     struct Comment
@@ -131,8 +183,9 @@ namespace SmartApp.Sample3.Dump
         public long Id { get; set; }
         public long PostId { get; set; }
         public long UserId { get; set; }
-        public DateTime CreateDate { get; set; }
+        public DateTime CreationDate { get; set; }
         public string Text { get; set; }
+        public int Score { get; set; }
     }
 
     public class Post
