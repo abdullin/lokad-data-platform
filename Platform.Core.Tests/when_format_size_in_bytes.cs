@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-
+﻿using NUnit.Framework;
+// ReSharper disable InconsistentNaming
 namespace Platform.Core.Tests
 {
-    public class FormatUtilTests
+    public class when_format_size_in_bytes
     {
         [Test]
-        public void given_size_in_bytes()
+        public void given_various_sizes()
         {
             Assert.AreEqual("10 Bytes",FormatEvil.SizeInBytes(10));
             Assert.AreEqual("10 KB", FormatEvil.SizeInBytes(10*1024));
