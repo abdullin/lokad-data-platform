@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Net.Mime;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
+
 
 namespace Platform.Node
 {
@@ -14,14 +16,22 @@ namespace Platform.Node
         private static readonly ManualResetEventSlim _exitEvent = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
+            var options = new NodeOptions();
+            if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
+            {
+                return;
+            }
+
+
+
             var bus = new InMemoryBus("OutputBus");
             var controller = new NodeController(bus);
             var mainQueue = new QueuedHandler(controller, "Main Queue");
             controller.SetMainQueue(mainQueue);
             Application.Start(Environment.Exit);
 
-            int? timeOut = args.Length > 0 ? int.Parse(args[0]) : (int?)null;
-            int port = args.Length > 1 ? int.Parse(args[1]) : 8080;
+            int timeOut = options.KillSwitch;
+            var port = options.HttpPort;
 
             var http = new PlatformServerApiService(mainQueue, string.Format("http://*:{0}/", port));
             bus.AddHandler<SystemMessage.Init>(http);
@@ -42,7 +52,7 @@ namespace Platform.Node
 
             mainQueue.Enqueue(new SystemMessage.Init());
 
-            if (timeOut == null)
+            if (timeOut <= 0)
             {
                 Console.ReadLine();
                 mainQueue.Enqueue(new SystemMessage.Shutdown());
@@ -52,7 +62,7 @@ namespace Platform.Node
             {
                 Task.Factory.StartNew(() =>
                                           {
-                                              Thread.Sleep(timeOut.Value * 1000);
+                                              Thread.Sleep(timeOut * 1000);
                                               Application.Exit(ExitCode.Success, "");
                                           });
                 _exitEvent.Wait();
@@ -171,4 +181,4 @@ namespace Platform.Node
             _outputBus.Publish(e);
         }
     }
-}
+    }
