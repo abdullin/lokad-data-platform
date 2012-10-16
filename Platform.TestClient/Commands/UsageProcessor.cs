@@ -30,7 +30,7 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, string[] args)
         {
             new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientDto.ShutdownServerResponse>(
-                "/system/shutdown");
+                "/system/shutdown/");
             return true;
         }
     }

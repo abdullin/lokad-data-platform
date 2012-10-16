@@ -21,7 +21,7 @@ namespace Platform.Node.Services.ServerApi
                 .Add<ClientDto.WriteEvent>("/stream/{Stream}", "POST")
                 .Add<ClientDto.ImportEvents>("/import/","POST")
                 .Add<ClientDto.ImportEvents>("/import/{Stream}", "POST")
-                .Add<ClientDto.ShutdownServer>("/system/shutdown");
+                .Add<ClientDto.ShutdownServer>("/system/shutdown/", "GET");
 
             container.Register(_publisher);
         }
