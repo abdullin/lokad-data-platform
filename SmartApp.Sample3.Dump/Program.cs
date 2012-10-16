@@ -52,32 +52,34 @@ namespace SmartApp.Sample3.Dump
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var locationBytes = new List<byte[]>();
+            var jsonBytes = new List<byte[]>();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
                 var json = ConvertToJson(line);
+                if(json==null)
+                    continue;
 
                 var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
                 bytes.Insert(0, 43); //flag for our example
 
-                locationBytes.Add(bytes.ToArray());
+                jsonBytes.Add(bytes.ToArray());
                 
-                if (rowIndex % 10000 == 0)
+                if (rowIndex % 20000 == 0)
                 {
                     var tmpPath = GetTmpFilePath();
 
                     using (var fs = new FileStream(tmpPath, FileMode.Append))
+                    using (var writer = new BinaryWriter(fs))
                     {
-                        foreach (var locationByte in locationBytes)
+                        foreach (var buffer in jsonBytes)
                         {
-                            var eventLength = Encoding.UTF8.GetBytes(locationByte.Length.ToString());
-                            fs.Write(eventLength, 0, eventLength.Length);
-                            fs.Write(locationByte, 0, locationByte.Length);
+                            writer.Write(buffer.Length);
+                            writer.Write(buffer);
                         }
                     }
 
-                    locationBytes=new List<byte[]>();
+                    jsonBytes=new List<byte[]>();
 
                     try
                     {
@@ -91,6 +93,10 @@ namespace SmartApp.Sample3.Dump
                     {
                         Thread.Sleep(1000);
                     }
+                    finally
+                    {
+                        File.Delete(tmpPath);
+                    }
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
@@ -98,25 +104,33 @@ namespace SmartApp.Sample3.Dump
 
         private static string ConvertToJson(string line)
         {
-            long defaultLong;
-            DateTime defaultDate;
-            var json = new Post
-                           {
-                               Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
-                               PostTypeId = long.TryParse(Get(line, "PostTypeId"), out defaultLong) ? defaultLong : -1,
-                               CreationDate = DateTime.TryParse(Get(line, "CreationDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
-                               ViewCount = long.TryParse(Get(line, "ViewCount"), out defaultLong) ? defaultLong : -1,
-                               Body = HttpUtility.HtmlDecode(Get(line, "Body")),
-                               OwnerUserId = long.TryParse(Get(line, "OwnerUserId"), out defaultLong) ? defaultLong : -1,
-                               LastEditDate = DateTime.TryParse(Get(line, "LastEditDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
-                               Title = HttpUtility.HtmlDecode(Get(line, "Title")),
-                               AnswerCount = long.TryParse(Get(line, "AnswerCount"), out defaultLong) ? defaultLong : -1,
-                               CommentCount = long.TryParse(Get(line, "CommentCount"), out defaultLong) ? defaultLong : -1,
-                               FavoriteCount = long.TryParse(Get(line, "FavoriteCount"), out defaultLong) ? defaultLong : -1,
-                               Tags = (">" + HttpUtility.HtmlDecode(Get(line, "Tags")) + "<").Split(new[] { "><" }, StringSplitOptions.RemoveEmptyEntries)
-                           };
+            try
+            {
+                long defaultLong;
+                DateTime defaultDate;
+                var json = new Post
+                {
+                    Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
+                    PostTypeId = long.TryParse(Get(line, "PostTypeId"), out defaultLong) ? defaultLong : -1,
+                    CreationDate = DateTime.TryParse(Get(line, "CreationDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
+                    ViewCount = long.TryParse(Get(line, "ViewCount"), out defaultLong) ? defaultLong : -1,
+                    Body = HttpUtility.HtmlDecode(Get(line, "Body")),
+                    OwnerUserId = long.TryParse(Get(line, "OwnerUserId"), out defaultLong) ? defaultLong : -1,
+                    LastEditDate = DateTime.TryParse(Get(line, "LastEditDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
+                    Title = HttpUtility.HtmlDecode(Get(line, "Title")),
+                    AnswerCount = long.TryParse(Get(line, "AnswerCount"), out defaultLong) ? defaultLong : -1,
+                    CommentCount = long.TryParse(Get(line, "CommentCount"), out defaultLong) ? defaultLong : -1,
+                    FavoriteCount = long.TryParse(Get(line, "FavoriteCount"), out defaultLong) ? defaultLong : -1,
+                    Tags = (">" + HttpUtility.HtmlDecode(Get(line, "Tags")) + "<").Split(new[] { "><" }, StringSplitOptions.RemoveEmptyEntries)
+                };
 
-            return json.ToJson();
+                return json.ToJson();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            
         }
 
         private static string Get(string line, string attributeName)
