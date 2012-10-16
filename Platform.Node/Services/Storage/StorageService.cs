@@ -57,13 +57,16 @@ namespace Platform.Node.Services.Storage
             Log.Info("Got import request");
             var watch = Stopwatch.StartNew();
             var count = 0;
+            var size = 0;
             _store.Append(msg.EventStream, EnumerateStaging(msg.StagingLocation).Select(bytes =>
                 {
                     count += 1;
+                    size += bytes.Length;
                     return bytes;
                 }));
             var totalSeconds = watch.Elapsed.TotalSeconds;
-            Log.Info("Import completed in {0}sec. That's {1} m/s", totalSeconds, Math.Round(count / totalSeconds));
+            var speed = size / totalSeconds;
+            Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
         }
 

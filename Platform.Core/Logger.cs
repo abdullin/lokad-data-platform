@@ -85,8 +85,6 @@ namespace Platform
         }
     }
 
-
-
     public interface ILogger
     {
         void Fatal(string text);
