@@ -7,22 +7,22 @@ using Platform.Messages;
 
 namespace Platform.Node.Services.Storage
 {
-    public sealed class StorageService : 
+    public sealed class FileStorageService : 
         
         IHandle<ClientMessage.AppendEvents>,
         IHandle<SystemMessage.Init>,
         IHandle<ClientMessage.ImportEvents>
     {
-        readonly static ILogger Log = LogManager.GetLoggerFor<StorageService>();
+        readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        readonly Func<IAppendOnlyStore> _func;
+        readonly Func<FileAppendOnlyStore> _func;
 
-        IAppendOnlyStore _store;
+        FileAppendOnlyStore _store;
         
 
         
-        public StorageService(Func<IAppendOnlyStore> func, IPublisher publisher)
+        public FileStorageService(Func<FileAppendOnlyStore> func, IPublisher publisher)
         {
             _func = func;
             _publisher = publisher;

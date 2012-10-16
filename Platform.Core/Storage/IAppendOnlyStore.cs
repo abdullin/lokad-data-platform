@@ -4,13 +4,7 @@ using System.IO;
 
 namespace Platform
 {
-
-    public interface IAppendOnlyStore : IDisposable
-    {
-        void Append(string key, IEnumerable<byte[]> data);
-    }
-
-    public sealed class FileAppendOnlyStore : IAppendOnlyStore
+    public sealed class FileAppendOnlyStore : IDisposable
     {
         ILogger _logger = LogManager.GetLoggerFor<FileAppendOnlyStore>();
 

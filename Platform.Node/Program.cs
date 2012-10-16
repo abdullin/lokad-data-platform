@@ -40,7 +40,7 @@ namespace Platform.Node
 
             // switch, based on configuration
 
-            var storageService = new StorageService(() => CreateFileStore(options.StoreLocation), mainQueue);
+            var storageService = new FileStorageService(() => CreateFileStore(options.StoreLocation), mainQueue);
             bus.AddHandler<ClientMessage.AppendEvents>(storageService);
             bus.AddHandler<SystemMessage.Init>(storageService);
             bus.AddHandler<ClientMessage.ImportEvents>(storageService);
@@ -70,7 +70,7 @@ namespace Platform.Node
 
         }
 
-        static IAppendOnlyStore CreateFileStore(string path)
+        static FileAppendOnlyStore CreateFileStore(string path)
         {
             var store = new FileAppendOnlyStore(path);
             return store;

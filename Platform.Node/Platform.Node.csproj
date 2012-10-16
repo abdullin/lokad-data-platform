@@ -60,7 +60,7 @@
     <Compile Include="Services\ServerApi\ServerApiService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Services\ServerApi\StreamService.cs" />
-    <Compile Include="Services\Storage\StorageService.cs" />
+    <Compile Include="Services\Storage\FileStorageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
