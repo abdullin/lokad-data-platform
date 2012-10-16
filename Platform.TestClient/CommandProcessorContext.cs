@@ -34,7 +34,10 @@ namespace Platform.TestClient
             else
             {
                 if (!_resetEvent.WaitOne(Client.Options.Timeout * 1000))
-                    throw new TimeoutException("Command didn't finished within timeout.");
+                {
+                    var s = string.Format("Command didn't finished within timeout of {0} sec.", Client.Options.Timeout);
+                    throw new TimeoutException(s);
+                }
             }
         }
     }
