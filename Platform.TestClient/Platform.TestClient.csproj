@@ -55,6 +55,7 @@
     <Compile Include="CommandProcessor.cs" />
     <Compile Include="CommandProcessorContext.cs" />
     <Compile Include="Commands\ExitProcessor.cs" />
+    <Compile Include="Commands\ImportEventsFloodProcessor.cs" />
     <Compile Include="Commands\ImportEventsProcessor.cs" />
     <Compile Include="Commands\ReadProcessor.cs" />
     <Compile Include="Commands\UsageProcessor.cs" />

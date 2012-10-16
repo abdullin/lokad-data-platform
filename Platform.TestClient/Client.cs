@@ -42,6 +42,7 @@ namespace Platform.TestClient
             _commands.Register(new ExitProcessor());
             _commands.Register(new WriteEventsFloodProcessor());
             _commands.Register(new ImportEventsProcessor());
+            _commands.Register(new ImportEventsFloodProcessor());
             _commands.Register(new UsageProcessor(_commands));
             _commands.Register(new WriteProccessor());
 

@@ -57,9 +57,6 @@ namespace Platform
                         var key = dataBits.ReadString();
                         var length = dataBits.Reader7BitInt();
 
-                        if (dataStream.Position + length > dataStream.Length)
-                            throw new InvalidOperationException("Data length is out of range.");
-
                         var data = dataBits.ReadBytes(length);
                         yield return new RetrievedDataRecord(key, data, dataStream.Position);
 
