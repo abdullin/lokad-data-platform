@@ -19,6 +19,7 @@ namespace Platform.TestClient
         private readonly bool _interactiveMode;
 
         public IPlatformClient Platform;
+        public string ClientHttpBase;
 
         public Client(ClientOptions clientOptions)
         {
@@ -26,8 +27,8 @@ namespace Platform.TestClient
             // TODO : pass server options
 
             var serverFolder = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
-            var baseUri = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
-            Platform = new FilePlatformClient(serverFolder, baseUri);
+            ClientHttpBase = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
+            Platform = new FilePlatformClient(serverFolder, ClientHttpBase);
             
             
 
@@ -45,7 +46,7 @@ namespace Platform.TestClient
             _commands.Register(new WriteProccessor());
 
             
-
+            _commands.Register(new ShutdownProcessor());
             
             _commands.Register(new ReadProcessor());
         }

@@ -5,6 +5,21 @@ using ServiceStack.ServiceInterface;
 
 namespace Platform.Node.Services.ServerApi
 {
+
+    public class SystemService : ServiceBase<ClientDto.ShutdownServer>
+    {
+        readonly IPublisher _publisher;
+        public SystemService(IPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+        protected override object Run(ClientDto.ShutdownServer request)
+        {
+            _publisher.Publish(new SystemMessage.Shutdown());
+            return new ClientDto.ShutdownServerResponse();
+        }
+    }
     public class ImportService : ServiceBase<ClientDto.ImportEvents>
     {
         readonly IPublisher _publisher;
