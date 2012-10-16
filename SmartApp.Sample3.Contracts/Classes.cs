@@ -20,8 +20,6 @@ namespace SmartApp.Sample3.Contracts
         public Dictionary<long, int> Distribution { get; set; }
     }
 
-
-
     public class Comment
     {
         public long Id { get; set; }
@@ -85,6 +83,10 @@ namespace SmartApp.Sample3.Contracts
         public long CommentCount { get; set; }
         public long FavoriteCount { get; set; }
         public string[] Tags { get; set; }
+        public Post()
+        {
+            Tags = new string[0];
+        }
 
         private const int Signature = 4344;
 

@@ -42,14 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="when_roundtrip_comment.cs" />
+    <Compile Include="when_roundrip_post.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartApp.Sample3.Contracts\SmartApp.Sample3.Contracts.csproj">
       <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
       <Name>SmartApp.Sample3.Contracts</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
