@@ -8,8 +8,8 @@ namespace Platform.TestClient.Commands
 {
     public class WriteEventsFloodProcessor : ICommandProcessor
     {
-        public string Key { get { return "WEFL"; } }
-        public string Usage { get { return "WEFL [<Thread Count> [<Size>]]"; } }
+        public string Key { get { return "WRFL"; } }
+        public string Usage { get { return "WRFL [<Thread Count> [<Size>]]"; } }
 
         public bool Execute(CommandProcessorContext context, string[] args)
         {
@@ -49,7 +49,7 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
             context.Completed();
             context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
-            PerfUtils.LogTeamCityGraphData(string.Format("{0}-latency-ms", Key), (int)(count / global.Elapsed.TotalSeconds));
+            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-reqPerSec", Key, threadCount, size), (int)(count / global.Elapsed.TotalSeconds));
             return true;
         }
     }
