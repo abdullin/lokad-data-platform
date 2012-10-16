@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartApp.Sample3.Contracts
 {
-    public class Sample3TagData
+    public class TagsDistributionView
     {
         public long NextOffset { get; set; }
         public int EventsProcessed { get; set; }
@@ -15,7 +12,7 @@ namespace SmartApp.Sample3.Contracts
         public Dictionary<string, long> Distribution { get; set; }
     }
 
-    public class Sample3CommentData
+    public class CommentsDistributionView
     {
         public long NextOffset { get; set; }
         public int EventsProcessed { get; set; }
@@ -110,10 +107,12 @@ namespace SmartApp.Sample3.Contracts
                 bin.Write(FavoriteCount);
                 bin.Write(Tags == null ? 0 : Tags.Length);
                 if (Tags != null)
+                {
                     foreach (var tag in Tags)
                     {
                         bin.Write(tag);
                     }
+                }
 
                 return mem.ToArray();
             }
@@ -143,9 +142,9 @@ namespace SmartApp.Sample3.Contracts
                     FavoriteCount = bin.ReadInt64()
                 };
 
-                List<string> tags = new List<string>();
+                var tags = new List<string>();
                 var tagCount = bin.ReadInt32();
-                for (int i = 0; i < tagCount; i++)
+                for (var i = 0; i < tagCount; i++)
                 {
                     tags.Add(bin.ReadString());
                 }
@@ -156,5 +155,4 @@ namespace SmartApp.Sample3.Contracts
             }
         }
     }
-
 }
