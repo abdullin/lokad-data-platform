@@ -20,7 +20,10 @@ namespace Platform.Node.Services.ServerApi
             var token = new ManualResetEventSlim(false);
 
             
-            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data,s => token.Set()));
+            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data,s =>
+                {
+                    token.Set();
+                }));
 
             return Task.Factory.StartNew(() =>
                 {
@@ -29,7 +32,8 @@ namespace Platform.Node.Services.ServerApi
                         token.Wait();
                         return new ClientDto.WriteEventResponse()
                             {
-                                Result = "Completed"
+                                Result = "Completed",
+                                Success = true
                             };
                     }
                     finally

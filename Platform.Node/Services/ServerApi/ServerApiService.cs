@@ -1,3 +1,4 @@
+using Platform.Messages;
 using ServiceStack.Plugins.Tasks;
 using ServiceStack.WebHost.Endpoints;
 

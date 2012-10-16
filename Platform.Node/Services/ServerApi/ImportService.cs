@@ -25,7 +25,8 @@ namespace Platform.Node.Services.ServerApi
                         token.Wait();
                         return new ClientDto.ImportEventsResponse()
                             {
-                                Result = "Completed"
+                                Result = "Completed",
+                                Success = true
                             };
                     }
                     finally
