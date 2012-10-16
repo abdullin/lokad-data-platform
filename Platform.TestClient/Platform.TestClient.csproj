@@ -58,6 +58,7 @@
     <Compile Include="Commands\ImportEventsFloodProcessor.cs" />
     <Compile Include="Commands\ImportEventsProcessor.cs" />
     <Compile Include="Commands\ReadProcessor.cs" />
+    <Compile Include="Commands\ShutdownProcessor.cs" />
     <Compile Include="Commands\UsageProcessor.cs" />
     <Compile Include="Commands\WriteEventsFloodProcessor.cs" />
     <Compile Include="Commands\WriteProccessor.cs" />
