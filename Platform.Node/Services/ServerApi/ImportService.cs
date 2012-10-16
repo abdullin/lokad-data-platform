@@ -17,7 +17,10 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.ShutdownServer request)
         {
             _publisher.Publish(new SystemMessage.Shutdown());
-            return new ClientDto.ShutdownServerResponse();
+            return new ClientDto.ShutdownServerResponse()
+                {
+                    Success = true
+                };
         }
     }
     public class ImportService : ServiceBase<ClientDto.ImportEvents>

@@ -6,6 +6,8 @@ namespace Platform.Messages
     {
         public abstract class WriteMessage : Message {}
 
+        //public class Shutdown : Message {}
+
         public class AppendEvents : WriteMessage
         {
             public readonly string EventStream;

@@ -105,6 +105,7 @@ namespace Platform
             if (!string.IsNullOrWhiteSpace(_serverEndpoint))
             {
                 _client = new JsonServiceClient(_serverEndpoint);
+                
             }
 
             var path = Path.GetFullPath(serverFolder ?? "");
