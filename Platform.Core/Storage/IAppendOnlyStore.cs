@@ -6,8 +6,7 @@ namespace Platform
 {
     public sealed class FileAppendOnlyStore : IDisposable
     {
-        ILogger _logger = LogManager.GetLoggerFor<FileAppendOnlyStore>();
-
+        
         readonly BitWriter _dataBits;
         readonly FileStream _dataStream;
 
@@ -62,14 +61,15 @@ namespace Platform
 
         sealed class BitWriter : BinaryWriter
         {
-            public BitWriter(Stream output) : base(output) {}
-
-            public void Write7BitInt(int value)
+            public BitWriter(Stream s)  : base(s)
             {
-                Write7BitEncodedInt(value);
+                
+            }
+
+            public void Write7BitInt(int length)
+            {
+                base.Write7BitEncodedInt(length);
             }
         }
     }
-
-    
 }

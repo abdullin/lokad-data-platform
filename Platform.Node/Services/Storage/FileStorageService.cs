@@ -8,7 +8,6 @@ using Platform.Messages;
 namespace Platform.Node.Services.Storage
 {
     public sealed class FileStorageService : 
-        
         IHandle<ClientMessage.AppendEvents>,
         IHandle<SystemMessage.Init>,
         IHandle<ClientMessage.ImportEvents>
@@ -69,6 +68,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
         }
+
 
         public void Handle(SystemMessage.Init message)
         {

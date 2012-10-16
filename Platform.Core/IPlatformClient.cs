@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Platform.Messages;
 using Platform.Storage;
-using ServiceStack.ServiceClient.Web;
 
 namespace Platform
 {
@@ -15,11 +13,10 @@ namespace Platform
         void ImportBatch(string streamName, IEnumerable<RecordForStaging> records);
     }
 
-
-    public class FilePlatformClient : IPlatformClient
+    public class FilePlatformClient : JsonPlatformClientBase, IPlatformClient
     {
         readonly string _serverFolder;
-        readonly string _serverEndpoint;
+        
 
         readonly string _checkStreamName;
         readonly string _fileStreamName;
@@ -79,7 +76,7 @@ namespace Platform
 
             using (var checkStream = new FileStream(_checkStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (var checkBits = new BitReader(checkStream))
+                using (var checkBits = new BinaryReader(checkStream))
                 {
                     return checkBits.ReadInt64();
                 }
@@ -97,34 +94,14 @@ namespace Platform
             }
         }
 
-        public FilePlatformClient(string serverFolder, string serverEndpoint = null)
+        public FilePlatformClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
         {
             _serverFolder = serverFolder;
-            _serverEndpoint = serverEndpoint;
-
-            if (!string.IsNullOrWhiteSpace(_serverEndpoint))
-            {
-                _client = new JsonServiceClient(_serverEndpoint);
-                
-            }
-
+            
             var path = Path.GetFullPath(serverFolder ?? "");
 
             _checkStreamName = Path.Combine(path, "stream.chk");
             _fileStreamName = Path.Combine(path, "stream.dat");
-        }
-
-        readonly JsonServiceClient _client;
-
-        public void WriteEvent(string streamName, byte[] data)
-        {
-            var response = _client.Post<ClientDto.WriteEventResponse>("/stream", new ClientDto.WriteEvent()
-            {
-                Data = data,
-                Stream = streamName
-            });
-            if (!response.Success)
-                throw new InvalidOperationException(response.Result ?? "Client error");
         }
 
         public void ImportBatch(string streamName, IEnumerable<RecordForStaging> records)
@@ -132,32 +109,28 @@ namespace Platform
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);
 
-            var name = Path.Combine(_serverFolder, Guid.NewGuid().ToString());
+            var location = Path.Combine(_serverFolder, Guid.NewGuid().ToString());
             try
             {
-                using (var fs = File.OpenWrite(name))
-                using (var bin = new BinaryWriter(fs))
-                {
-                    foreach (var record in records)
-                    {
-                        bin.Write(record.Data.Length);
-                        bin.Write(record.Data);
-                    }
-                }
-
-                var response = _client.Post<ClientDto.ImportEventsResponse>("/import", new ClientDto.ImportEvents()
-                {
-                    Location = name,
-                    Stream = streamName,
-                });
-
-                if (!response.Success)
-                    throw new InvalidOperationException(response.Result ?? "Client error");
-
+                PrepareStaging(records, location);
+                ImportEventsInternal(streamName, location);
             }
             finally
             {
-                File.Delete(name);
+                File.Delete(location);
+            }
+        }
+
+        static void PrepareStaging(IEnumerable<RecordForStaging> records, string location)
+        {
+            using (var fs = File.OpenWrite(location))
+            using (var bin = new BinaryWriter(fs))
+            {
+                foreach (var record in records)
+                {
+                    bin.Write(record.Data.Length);
+                    bin.Write(record.Data);
+                }
             }
         }
     }
