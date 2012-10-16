@@ -16,8 +16,11 @@ namespace SmartApp.Sample3.Continuous
     {
         static void Main(string[] args)
         {
-            //TagProjection();
-            CommentProjection();
+            var threads = new List<Task>();
+            threads.Add(Task.Factory.StartNew(TagProjection, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+            threads.Add(Task.Factory.StartNew(CommentProjection, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+
+            Task.WaitAll(threads.ToArray());
         }
 
         #region tag projection
