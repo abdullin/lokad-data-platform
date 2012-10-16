@@ -114,13 +114,16 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Home\ProjectionView.cshtml" />
+    <Content Include="Views\Home\Tags.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartApp.Sample3.Contracts\SmartApp.Sample3.Contracts.csproj">
       <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
       <Name>SmartApp.Sample3.Contracts</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Home\Comments.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

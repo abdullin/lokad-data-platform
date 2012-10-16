@@ -26,7 +26,7 @@ namespace Platform.TestClient
             Options = clientOptions;
             // TODO : pass server options
 
-            var serverFolder = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
+            var serverFolder = @"C:\LokadData\dp-store";
             ClientHttpBase = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
             Platform = new FilePlatformClient(serverFolder, ClientHttpBase);
             

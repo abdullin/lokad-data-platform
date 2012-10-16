@@ -72,10 +72,6 @@
       <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
       <Name>SmartApp.Sample3.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SmartApp.Sample3.Dump\SmartApp.Sample3.Dump.csproj">
-      <Project>{c867a050-fccd-462c-af0a-3b4ab53020a5}</Project>
-      <Name>SmartApp.Sample3.Dump</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

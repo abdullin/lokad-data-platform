@@ -62,9 +62,7 @@ namespace Platform.Node
 
         static IAppendOnlyStore CreateFileStore()
         {
-            var store =
-                new FileAppendOnlyStore(Path.Combine(Directory.GetCurrentDirectory(), "store"));
-
+            var store = new FileAppendOnlyStore(@"C:\LokadData\dp-store");
             return store;
         }
     }

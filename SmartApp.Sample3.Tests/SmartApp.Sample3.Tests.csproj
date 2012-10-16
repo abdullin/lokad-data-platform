@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C867A050-FCCD-462C-AF0A-3B4AB53020A5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{0E7E52A9-3E62-4726-BC75-1A22F2C14308}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartApp.Sample3.Dump</RootNamespace>
-    <AssemblyName>SmartApp.Sample3.Dump</AssemblyName>
+    <RootNamespace>SmartApp.Sample3.Tests</RootNamespace>
+    <AssemblyName>SmartApp.Sample3.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,18 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\Library\ServiceStack\ServiceStack.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\Library\ServiceStack\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\Library\ServiceStack\ServiceStack.Text.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\Library\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,21 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
-      <Project>{39f04669-caa7-4f30-8be2-6cf79f49f2e6}</Project>
-      <Name>Platform.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
-      <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
-      <Name>Platform.Node</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SmartApp.Sample3.Contracts\SmartApp.Sample3.Contracts.csproj">
       <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
       <Name>SmartApp.Sample3.Contracts</Name>

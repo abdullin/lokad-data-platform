@@ -14,7 +14,7 @@ namespace SmartApp.Sample1.Continuous
             const int seconds = 1;
             var nextOffset = LoadData();
             ShowData(nextOffset, true);
-            var path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store");
+            var path = @"C:\LokadData\dp-store";
             IPlatformClient reader = new FilePlatformClient(path);
             while (true)
             {

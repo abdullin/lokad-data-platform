@@ -11,6 +11,7 @@ using Platform;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.Text;
+using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Dump
 {
@@ -39,7 +40,7 @@ namespace SmartApp.Sample3.Dump
         static void Main(string[] args)
         {
             var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader = new FilePlatformClient(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Platform.Node\bin\Debug\store"), httpBase);
+            _reader = new FilePlatformClient(@"C:\LokadData\dp-store", httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
             var threads = new List<Task>();
@@ -48,6 +49,8 @@ namespace SmartApp.Sample3.Dump
 
             Task.WaitAll(threads.ToArray());
         }
+
+        #region Comments
 
         private static void DumpComments()
         {
@@ -58,28 +61,26 @@ namespace SmartApp.Sample3.Dump
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var jsonBytes = new List<byte[]>();
+            var commentBytes = new List<byte[]>();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
-                var json = ConvertCommentToJson(line);
-                if (json == null)
+                var comment = CommentParse(line);
+                if (comment == null)
                     continue;
 
-                var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
-                bytes.Insert(0, 44); //flag for our example
 
-                jsonBytes.Add(bytes.ToArray());
+                commentBytes.Add(comment.ToBinary());
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.ImportBatch("comment", jsonBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.ImportBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)).ToList());
                     Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
         }
 
-        private static string ConvertCommentToJson(string line)
+        private static Comment CommentParse(string line)
         {
             try
             {
@@ -87,7 +88,7 @@ namespace SmartApp.Sample3.Dump
                 int defaultInt;
                 DateTime defaultDate;
 
-                var json = new Comment
+                var comment = new Comment
                                {
                                    Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
                                    PostId = long.TryParse(Get(line, "PostId"), out defaultLong) ? defaultLong : -1,
@@ -97,13 +98,15 @@ namespace SmartApp.Sample3.Dump
                                    Score = int.TryParse(Get(line, "Score"), out defaultInt) ? defaultInt : -1,
                                };
 
-                return json.ToJson();
+                return comment;
             }
             catch (Exception)
             {
                 return null;
             }
         }
+
+        #endregion
 
         private static void DumpPosts()
         {
@@ -114,34 +117,31 @@ namespace SmartApp.Sample3.Dump
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var jsonBytes = new List<byte[]>();
+            var postBytes = new List<byte[]>();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
-                var json = ConvertPostToJson(line);
-                if (json == null)
+                var post = PostParse(line);
+                if (post == null)
                     continue;
 
-                var bytes = new List<byte>(Encoding.UTF8.GetBytes(json));
-                bytes.Insert(0, 43); //flag for our example
-
-                jsonBytes.Add(bytes.ToArray());
+                postBytes.Add(post.ToBinary());
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.ImportBatch("Post", jsonBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.ImportBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)).ToList());
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
         }
 
-        private static string ConvertPostToJson(string line)
+        private static Post PostParse(string line)
         {
             try
             {
                 long defaultLong;
                 DateTime defaultDate;
-                var json = new Post
+                var post = new Post
                 {
                     Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
                     PostTypeId = long.TryParse(Get(line, "PostTypeId"), out defaultLong) ? defaultLong : -1,
@@ -157,7 +157,7 @@ namespace SmartApp.Sample3.Dump
                     Tags = (">" + HttpUtility.HtmlDecode(Get(line, "Tags")) + "<").Split(new[] { "><" }, StringSplitOptions.RemoveEmptyEntries)
                 };
 
-                return json.ToJson();
+                return post;
             }
             catch (Exception)
             {
@@ -178,29 +178,5 @@ namespace SmartApp.Sample3.Dump
         }
     }
 
-    struct Comment
-    {
-        public long Id { get; set; }
-        public long PostId { get; set; }
-        public long UserId { get; set; }
-        public DateTime CreationDate { get; set; }
-        public string Text { get; set; }
-        public int Score { get; set; }
-    }
 
-    public class Post
-    {
-        public long Id { get; set; }
-        public long PostTypeId { get; set; }
-        public DateTime CreationDate { get; set; }
-        public long ViewCount { get; set; }
-        public string Body { get; set; }
-        public long OwnerUserId { get; set; }
-        public DateTime LastEditDate { get; set; }
-        public string Title { get; set; }
-        public long AnswerCount { get; set; }
-        public long CommentCount { get; set; }
-        public long FavoriteCount { get; set; }
-        public string[] Tags { get; set; }
-    }
 }

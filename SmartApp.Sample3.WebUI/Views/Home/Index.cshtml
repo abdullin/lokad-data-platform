@@ -1,6 +1,4 @@
-﻿@model SmartApp.Sample3.Contracts.Sample3Data
-
-@{
+﻿@{
     ViewBag.Title = "Home Page";
 }
 <script src="/Scripts/jquery-1.7.1.min.js"></script>
@@ -15,16 +13,30 @@
         padding-left: 20px;
     }
 </style>
-<div id="result">
-    @Html.Partial("ProjectionView", Model)
-</div>
-@Ajax.ActionLink("Refresh", "Index", "Home", null, new AjaxOptions { UpdateTargetId = "result" }, new { style = "display:none;", id = "refreshLink" })
+<table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div id="tag_result">
+            </div>
+        </td>
+        <td valign="top">
+            <div id="comment_result">
+            </div>
+        </td>
+    </tr>
+</table>
+
+@Ajax.ActionLink("Refresh tags", "Tags", "Home", null, new AjaxOptions { UpdateTargetId = "tag_result" }, new { style = "display:none;", id = "refreshTags" })
+@Ajax.ActionLink("Refresh comments", "Comments", "Home", null, new AjaxOptions { UpdateTargetId = "comment_result" }, new { style = "display:none;", id = "refreshComment" })
 <script>
     $(document).ready(function () {
-        setInterval(refresh, 5000);
+        refresh("refreshTags");
+        refresh("refreshComment");
+        setInterval(function () { refresh("refreshTags"); }, 5000);
+        setInterval(function () { refresh("refreshComment"); }, 5000);
     });
 
-    function refresh() {
-        $("#refreshLink").click();
+    function refresh(id) {
+        $("#" + id).click();
     }
 </script>
