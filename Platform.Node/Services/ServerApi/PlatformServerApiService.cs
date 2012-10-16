@@ -30,6 +30,7 @@ namespace Platform.Node.Services.ServerApi
 
         public void Handle(SystemMessage.Shutdown message)
         {
+
             _host.Stop();
         }
     }
