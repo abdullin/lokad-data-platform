@@ -13,5 +13,7 @@ namespace Platform.TestClient
         public IList<string> Command { get; set; }
         [Option("t", "timeout", DefaultValue = -1, HelpText = "Timeout for command execution in seconds, -1 for infinity")]
         public int Timeout { get; set; }
+        [Option("s", "store", DefaultValue = @"C:\LokadData\dp-store", HelpText = "Location of data store to use")]
+        public string StoreLocation { get; set; }
     }
 }
