@@ -18,7 +18,7 @@ namespace Platform.TestClient
 
             var clientOptions = new ClientOptions
                                     {
-                                        Ip = args.Length > 0 ? args[0] : "127.0.0.1",
+                                        Ip = args.Length > 0 ? args[0] : "localhost",
                                         HttpPort = args.Length > 1 ? args[1] : "8080",
                                         Timeout = args.Length > 2 ? int.Parse(args[2]) : -1,
                                         Command = args.Length > 3 ? args.Skip(3).ToList() : new List<string>(),
