@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region (c) 2012 Lokad Data Platform - New BSD License 
+
+// Copyright (c) Lokad 2012, http://www.lokad.com
+// This code is released as Open Source under the terms of the New BSD Licence
+
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Platform.Storage;
 
@@ -12,8 +16,15 @@ namespace Platform.TestClient.Commands
 {
     public struct BasicTestProcessor : ICommandProcessor
     {
-        public string Key { get { return "BasicTest"; } }
-        public string Usage { get { return "BasicTest [brachcount batchsize threadcount floodsize]"; } }
+        public string Key
+        {
+            get { return "BasicTest"; }
+        }
+
+        public string Usage
+        {
+            get { return "BasicTest [brachcount batchsize threadcount floodsize]"; }
+        }
 
         const string singleThreadMessageTemplate = "basic-test-one-thread-message-{0}-{{0}}";
 
@@ -36,31 +47,33 @@ namespace Platform.TestClient.Commands
             string streamId = "BasicTest-" + Guid.NewGuid();
 
 
-            ImportBatch(context,  streamId, batchCount, batchSize);
+            ImportBatch(context, streamId, batchCount, batchSize);
             FloodWrite(context, streamId, threadCount, floodSize);
 
             var records = context.Client.Platform.ReadAll(0).Where(x => x.Key == streamId);
 
-            if (!ValidateRecordsCount(context, records, batchCount, batchSize, threadCount, floodSize)) 
+            if (!ValidateRecordsCount(context, records, batchCount, batchSize, threadCount, floodSize))
                 return false;
 
-            if (!ValidateBatchMessages(context, records, batchCount, batchSize)) 
+            if (!ValidateBatchMessages(context, records, batchCount, batchSize))
                 return false;
 
-            if (!ValidateFloodMessages(context, records, threadCount, floodSize, batchCount, batchSize)) 
+            if (!ValidateFloodMessages(context, records, threadCount, floodSize, batchCount, batchSize))
                 return false;
 
             return true;
         }
 
-        private static bool ValidateFloodMessages(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records, int threadCount, int floodSize,
-                                    int batchCount, int batchSize)
+        static bool ValidateFloodMessages(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records,
+            int threadCount, int floodSize,
+            int batchCount, int batchSize)
         {
-            foreach (var record in records.Take(threadCount*floodSize).Skip(batchCount*batchSize))
+            foreach (var record in records.Take(threadCount * floodSize).Skip(batchCount * batchSize))
             {
                 string receivedMessage = Encoding.UTF8.GetString(record.Data);
                 var recordArguments =
-                    receivedMessage.Replace("basic-test-more-thread-message-", "").Split('-').Select(x => int.Parse(x)).ToArray();
+                    receivedMessage.Replace("basic-test-more-thread-message-", "").Split('-').Select(x => int.Parse(x)).
+                        ToArray();
 
                 if (recordArguments.Length != 2 || recordArguments[0] < 0 || recordArguments[0] >= threadCount ||
                     recordArguments[1] < 0 || recordArguments[1] >= floodSize)
@@ -72,13 +85,14 @@ namespace Platform.TestClient.Commands
             return true;
         }
 
-        private static bool ValidateBatchMessages(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records, int batchCount,
-                                                  int batchSize)
+        static bool ValidateBatchMessages(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records,
+            int batchCount,
+            int batchSize)
         {
             int indexBatchCount = 0;
             int indexBatchSize = 0;
 
-            foreach (var record in records.Take(batchCount*batchSize))
+            foreach (var record in records.Take(batchCount * batchSize))
             {
                 string expectedMessage = string.Format(singleThreadMessageTemplate, indexBatchCount);
                 expectedMessage = string.Format(expectedMessage, indexBatchSize);
@@ -99,20 +113,22 @@ namespace Platform.TestClient.Commands
             return true;
         }
 
-        private static bool ValidateRecordsCount(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records, int batchCount,
-                                                 int batchSize, int threadCount, int floodSize)
+        static bool ValidateRecordsCount(CommandProcessorContext context, IEnumerable<RetrievedDataRecord> records,
+            int batchCount,
+            int batchSize, int threadCount, int floodSize)
         {
             var recordsCount = records.Count();
-            if (recordsCount != batchCount*batchSize + threadCount*floodSize)
+            if (recordsCount != batchCount * batchSize + threadCount * floodSize)
             {
-                context.Log.Error("Expected: {0} messages, Received: {1} messages", batchCount*batchSize + threadCount*floodSize,
-                                  recordsCount);
+                context.Log.Error("Expected: {0} messages, Received: {1} messages",
+                    batchCount * batchSize + threadCount * floodSize,
+                    recordsCount);
                 return false;
             }
             return true;
         }
 
-        private static void FloodWrite(CommandProcessorContext context, string streamId, int threadCount, int floodSize)
+        static void FloodWrite(CommandProcessorContext context, string streamId, int threadCount, int floodSize)
         {
             var threads = new List<Task>();
             for (int t = 0; t < threadCount; t++)
@@ -134,7 +150,7 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
         }
 
-        private static void ImportBatch(CommandProcessorContext context, string streamId, int batchCount, int batchSize)
+        static void ImportBatch(CommandProcessorContext context, string streamId, int batchCount, int batchSize)
         {
             for (int i = 0; i < batchCount; i++)
             {
