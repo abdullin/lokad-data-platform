@@ -119,16 +119,16 @@ namespace Platform.TestClient.Commands
             {
                 int t1 = t;
                 var task = Task.Factory.StartNew(() =>
-                                                     {
-                                                         for (int i = 0; i < floodSize; i++)
-                                                         {
-                                                             context.Client.Platform.WriteEvent(streamId,
-                                                                                                Encoding.UTF8.GetBytes(
-                                                                                                    string.Format(
-                                                                                                        "basic-test-more-thread-message-{0}-{1}",
-                                                                                                        t1, i)));
-                                                         }
-                                                     }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
+                    {
+                        for (int i = 0; i < floodSize; i++)
+                        {
+                            context.Client.Platform.WriteEvent(streamId,
+                                Encoding.UTF8.GetBytes(
+                                    string.Format(
+                                        "basic-test-more-thread-message-{0}-{1}",
+                                        t1, i)));
+                        }
+                    }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
             }
             Task.WaitAll(threads.ToArray());
@@ -140,9 +140,9 @@ namespace Platform.TestClient.Commands
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
                 context.Client.Platform.ImportBatch(streamId,
-                                                    Enumerable.Range(0, batchSize).Select(
-                                                        x =>
-                                                        new RecordForStaging(Encoding.UTF8.GetBytes(string.Format(message, x)))));
+                    Enumerable.Range(0, batchSize).Select(
+                        x =>
+                            new RecordForStaging(Encoding.UTF8.GetBytes(string.Format(message, x)))));
             }
         }
     }

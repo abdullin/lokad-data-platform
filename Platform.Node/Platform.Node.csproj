@@ -63,7 +63,6 @@
     <Compile Include="Services\Storage\FileStorageService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

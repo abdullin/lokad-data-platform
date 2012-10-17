@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using Platform.Storage;
 using Platform.TestClient.Commands;
 using ServiceStack.Common;
-using ServiceStack.ServiceClient.Web;
 
 namespace Platform.TestClient
 {
