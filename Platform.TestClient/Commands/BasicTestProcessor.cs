@@ -6,12 +6,14 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Platform.Storage;
+using ServiceStack.Common.Net30;
 
 namespace Platform.TestClient.Commands
 {
@@ -34,7 +36,7 @@ namespace Platform.TestClient.Commands
             int batchCount = 10;
             int batchSize = 10000;
             int threadCount = 10;
-            int floodSize = 1000;
+            int floodSize = 20;
 
             if (args.Length > 0)
                 int.TryParse(args[0], out batchCount);
@@ -105,7 +107,7 @@ namespace Platform.TestClient.Commands
 
         HashSet<string> FloodWrite(CommandProcessorContext context, string streamId, int threadCount, int floodSize)
         {
-            var result = new HashSet<string>();
+            var result = new ConcurrentBag<string>();
 
             var threads = new List<Task>();
             for (int t = 0; t < threadCount; t++)
@@ -125,7 +127,7 @@ namespace Platform.TestClient.Commands
             }
             Task.WaitAll(threads.ToArray());
 
-            return result;
+            return new HashSet<string>(result);
         }
 
         HashSet<string> ImportBatch(CommandProcessorContext context, string streamId, int batchCount, int batchSize)
