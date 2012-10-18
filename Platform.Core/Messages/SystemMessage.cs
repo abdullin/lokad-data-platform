@@ -8,7 +8,7 @@ namespace Platform.Messages
         }
 
         public sealed class Start : Message {}
-        public sealed class Shutdown : Message
+        public sealed class StartShutdown : Message
         {
             
         }

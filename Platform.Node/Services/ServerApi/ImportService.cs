@@ -16,7 +16,7 @@ namespace Platform.Node.Services.ServerApi
 
         protected override object Run(ClientDto.ShutdownServer request)
         {
-            _publisher.Publish(new SystemMessage.Shutdown());
+            _publisher.Publish(new ClientMessage.RequestShutdown());
             return new ClientDto.ShutdownServerResponse()
                 {
                     Success = true

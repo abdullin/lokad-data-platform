@@ -4,6 +4,8 @@ namespace Platform.Messages
 {
     public static class ClientMessage
     {
+
+        public class RequestShutdown : Message{}
         public abstract class WriteMessage : Message {}
 
         //public class Shutdown : Message {}

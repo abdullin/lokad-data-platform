@@ -13,7 +13,7 @@ namespace Platform.Node
 {
     class Program
     {
-        private static readonly ManualResetEventSlim _exitEvent = new ManualResetEventSlim(false);
+        private static readonly ManualResetEventSlim ExitEvent = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
             var options = new NodeOptions();
@@ -35,7 +35,7 @@ namespace Platform.Node
 
             var http = new PlatformServerApiService(mainQueue, string.Format("http://*:{0}/", port));
             bus.AddHandler<SystemMessage.Init>(http);
-            bus.AddHandler<SystemMessage.Shutdown>(http);
+            bus.AddHandler<SystemMessage.StartShutdown>(http);
 
 
             // switch, based on configuration
@@ -55,7 +55,7 @@ namespace Platform.Node
             if (timeOut <= 0)
             {
                 Console.ReadLine();
-                mainQueue.Enqueue(new SystemMessage.Shutdown());
+                mainQueue.Enqueue(new ClientMessage.RequestShutdown());
                 Console.ReadLine();
             }
             else
@@ -65,7 +65,7 @@ namespace Platform.Node
                         Thread.Sleep(timeOut * 1000);
                         Application.Exit(ExitCode.Success, "");
                     });
-                _exitEvent.Wait();
+                ExitEvent.Wait();
             }
 
         }
@@ -114,8 +114,9 @@ namespace Platform.Node
                 //    .When<SystemMessage.BecomeWorking>().Do(Handle)
                 //    .When<SystemMessage.BecomeShutdown>().Do(Handle)
                 .InState(NodeState.Master)
-                    .When<SystemMessage.Shutdown>().Do(m => Application.Exit(ExitCode.Success, "Shutdown"))
                     .When<ClientMessage.WriteMessage>().Do(m => _outputBus.Publish(m))
+                    .When<ClientMessage.RequestShutdown>().Do(Handle)
+                    .When<SystemMessage.StartShutdown>().Do(m => Application.Exit(ExitCode.Success, "Shutdown"))
                 .InState(NodeState.Initializing)
                     .When<ClientMessage.WriteMessage>().Ignore()
 
@@ -131,6 +132,11 @@ namespace Platform.Node
         public void SetMainQueue(QueuedHandler mainQueue)
         {
             _mainQueue = mainQueue;
+        }
+
+        void Handle(ClientMessage.RequestShutdown m)
+        {
+            _mainQueue.Enqueue(new SystemMessage.StartShutdown());
         }
 
         void IHandle<Message>.Handle(Message message)

@@ -3,7 +3,7 @@ using Platform.Messages;
 
 namespace Platform.Node.Services.ServerApi
 {
-    public class PlatformServerApiService : IHandle<SystemMessage.Init>, IHandle<SystemMessage.Shutdown>
+    public class PlatformServerApiService : IHandle<SystemMessage.Init>, IHandle<SystemMessage.StartShutdown>
     {
         readonly IPublisher _publisher;
         readonly string _url;
@@ -28,7 +28,7 @@ namespace Platform.Node.Services.ServerApi
             }
         }
 
-        public void Handle(SystemMessage.Shutdown message)
+        public void Handle(SystemMessage.StartShutdown message)
         {
 
             _host.Stop();
