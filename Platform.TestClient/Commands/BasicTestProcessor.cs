@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Platform.TestClient.Commands
             int batchCount = 10;
             int batchSize = 10000;
             int threadCount = 10;
-            int floodSize = 1000;
+            int floodSize = 100;
 
             if (args.Length > 0)
                 int.TryParse(args[0], out batchCount);
@@ -46,10 +47,18 @@ namespace Platform.TestClient.Commands
 
             string streamId = "BasicTest-" + Guid.NewGuid();
 
-
+            var watch = Stopwatch.StartNew();
             ImportBatch(context, streamId, batchCount, batchSize);
+            var elapsedSeconds = Math.Round(watch.Elapsed.TotalSeconds, 2);
+            context.Log.Debug("Imported {0}x{1} in {2}s", batchCount, batchSize, elapsedSeconds);
+            
+            
+            
+            watch.Restart();
             FloodWrite(context, streamId, threadCount, floodSize);
 
+            var round = Math.Round(watch.Elapsed.TotalSeconds, 2);
+            context.Log.Debug("Flooded {0}x{1} in {2}s", threadCount, floodSize, round);
             var records = context.Client.Platform.ReadAll(0).Where(x => x.Key == streamId);
 
             if (!ValidateRecordsCount(context, records, batchCount, batchSize, threadCount, floodSize))
@@ -68,6 +77,7 @@ namespace Platform.TestClient.Commands
             int threadCount, int floodSize,
             int batchCount, int batchSize)
         {
+
             foreach (var record in records.Take(threadCount * floodSize).Skip(batchCount * batchSize))
             {
                 string receivedMessage = Encoding.UTF8.GetString(record.Data);

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 
 namespace Platform.TestClient.Commands
 {
@@ -12,15 +13,8 @@ namespace Platform.TestClient.Commands
 
             if (args.Length > 0)
                 int.TryParse(args[0], out maxCount);
-
-            var result = context.Client.Platform.ReadAll(0, maxCount);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            int msgCount = 0;
-            foreach (var retrievedDataRecord in result)
-            {
-                msgCount++;
-            }
+            var sw = Stopwatch.StartNew();
+            var msgCount = context.Client.Platform.ReadAll(0, maxCount).Count();
             sw.Stop();
             context.Log.Info("{0} messages per second", (int)(msgCount / sw.Elapsed.TotalSeconds));
             PerfUtils.LogTeamCityGraphData(string.Format("EN_{0}_msgPerSeq", maxCount), (int)(msgCount / sw.Elapsed.TotalSeconds));
