@@ -45,7 +45,7 @@ namespace Platform.Node
 
 
             var timer = new TimerService(new ThreadBasedScheduler(new RealTimeProvider()));
-            bus.AddHandler<TimerMessage.Schedule>(timer);
+            bus.Subscribe<TimerMessage.Schedule>(timer);
 
             // switch, based on configuration
 
