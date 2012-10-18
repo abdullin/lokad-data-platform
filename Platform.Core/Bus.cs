@@ -105,8 +105,7 @@ namespace Platform
 
         public void AddHandler<T>(IHandle<T> handler) where T : Message
         {
-            Contract.Requires(handler != null);
-
+            Ensure.NotNull(handler, "handler");
             List<IMessageHandler> handlers;
             var type = typeof(T);
             if (!_typeLookup.TryGetValue(type, out handlers))
@@ -121,7 +120,7 @@ namespace Platform
 
         public void Unsubscribe<T>(IHandle<T> handler) where T : Message
         {
-            Contract.Requires(handler != null);
+            Ensure.NotNull(handler, "handler");
             List<IMessageHandler> list;
             if (_typeLookup.TryGetValue(typeof(T), out list))
             {
@@ -138,13 +137,13 @@ namespace Platform
 
         public void Publish(Message message)
         {
-            Contract.Requires(message != null);
+            Ensure.NotNull(message, "message");
             DispatchByType(message);
         }
 
         public void Handle(Message message)
         {
-            Contract.Requires(message != null);
+            Ensure.NotNull(message, "message");
             DispatchByType(message);
         }
 
@@ -243,7 +242,7 @@ namespace Platform
 
         void IHandle<Message>.Handle(Message message)
         {
-            Contract.Requires(message != null);
+            Ensure.NotNull(message, "message");
             _queue.Enqueue(message);
         }
 
@@ -275,14 +274,14 @@ namespace Platform
 
         void IPublisher.Publish(Message message)
         {
-            Contract.Requires(message != null);
+            Ensure.NotNull(message, "message");
             _queue.Enqueue(message);
         }
 
         public void Enqueue(Message message)
         {
+            Ensure.NotNull(message, "message");
             _queue.Enqueue(message);
         }
     }
-
 }
