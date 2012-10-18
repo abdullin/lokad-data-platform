@@ -1,90 +1,102 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Platform.Core.Tests
 {
-    public class when_subscribing
+    public abstract class tests_with_bus
     {
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        protected InMemoryBus Bus;
+
+        [SetUp]
+        public virtual void Setup()
+        {
+            Bus = new InMemoryBus("tests");
+        }
+        [TearDown]
+        public virtual void Teardown()
+        {
+            Bus = null;
+        }
+
+    }
+
+    public class when_subscribing : tests_with_bus
+    {
+        [Test]
         public void null_handler_throws_exception()
         {
-            var bus = new InMemoryBus("Test");
-            FakeHandleService fake = null;
-            bus.Subscribe<FakeBeginMessage>(fake);
+            Assert.Throws<ArgumentNullException>(() => Bus.Subscribe<TestMessage1>(null));
         }
     }
 
-    public class when_publishing
+    public class when_publishing : tests_with_bus
     {
         [Test, ExpectedException(typeof(ArgumentNullException))]
         public void null_message_throws_exception()
         {
-            var bus = new InMemoryBus("Test");
-            bus.Publish(null);
+            Bus.Publish(null);
         }
 
         [Test]
         public void subscribed_and_then_unsubscribed_handler_does_not_handle_message()
         {
             // GIVEN
-            var bus = new InMemoryBus("Test");
-            var handler = new SingleHandler();
+            var handler = new TestHandler1();
 
-            bus.Subscribe(handler);
-            bus.Unsubscribe(handler);
+            Bus.Subscribe(handler);
+            Bus.Unsubscribe(handler);
 
             // WHEN
-            bus.Publish(new FakeBeginMessage());
+            Bus.Publish(new TestMessage1());
             // EXPECT
-            Assert.IsFalse(handler.HandledMessage);
+            Assert.IsTrue(handler.DidntHaveAnyMessages);
         }
 
         [Test]
         public void subscribed_handler_handles_message()
         {
             // GIVEN
-            var bus = new InMemoryBus("Test");
-            var handler = new SingleHandler();
-
-            bus.Subscribe(handler);
+            var handler = new TestHandler1();
+            Bus.Subscribe(handler);
 
             // WHEN
-            bus.Publish(new FakeBeginMessage());
+            var message = new TestMessage1();
+            Bus.Publish(message);
             // EXPECT
-            Assert.IsTrue(handler.HandledMessage);
+            CollectionAssert.AreEqual(new[]{message}, handler.HandledMessages);
         }
 
         [Test]
-        public void subscribed_handler_not_handles_message()
+        public void subscribed_handler_handles_multiple_messages()
         {
             // GIVEN
-            var bus = new InMemoryBus("Test");
-            var handler = new SingleHandler();
-            bus.Subscribe(handler);
+         
+            
+            var handler = new TestHandler1();
+            Bus.Subscribe(handler);
 
+            var messages = Enumerable.Repeat(new TestMessage1(), 5).ToArray();
             //WHEN
-
-            //EXPECT
-            Assert.IsFalse(handler.HandledMessage);
-        }
-
-        [Test]
-        public void subscribed_handler_more_handles_message()
-        {
-            // GIVEN
-            var bus = new InMemoryBus("Test");
-            var handler = new SingleHandler();
-            bus.Subscribe(handler);
-
-            //WHEN
-            const int publichCount = 5;
-            for (int i = 0; i < publichCount; i++)
+            foreach (var m in messages)
             {
-                bus.Publish(new FakeBeginMessage());
+                Bus.Publish(m);
             }
 
-            //EXPECT
-            Assert.AreEqual(publichCount, handler.HandledCountMessage);
+            CollectionAssert.AreEqual(messages, handler.HandledMessages);
+            
+        }
+        [Test]
+        public void subscribed_handler_does_not_handle_other_messages()
+        {
+            // GIVEN
+            var handler = new TestHandler1();
+            Bus.Subscribe(handler);
+            // WHEN
+            Bus.Publish(new TestMessage2());
+            // EXPECT
+            Assert.IsTrue(handler.DidntHaveAnyMessages);
         }
     }
 
@@ -94,40 +106,63 @@ namespace Platform.Core.Tests
         public void null_handler_throws_exception()
         {
             var bus = new InMemoryBus("Test");
-            bus.Unsubscribe((SingleHandler)null);
+            bus.Unsubscribe((TestHandler1)null);
         }
     }
 
-    public class FakeBeginMessage : Message { }
-    public class FakeEndMessage : Message { }
-
-    public class SingleHandler : IHandle<FakeBeginMessage>
+    public abstract class TestHandlerBase
     {
-        public void Handle(FakeBeginMessage message)
-        {
-            HandledMessage = true;
-            HandledCountMessage++;
-        }
+        public IList<Message> HandledMessages = new List<Message>();
 
-        public bool HandledMessage { get; private set; }
-        public int HandledCountMessage { get; private set; }
+        public void Handled(Message message)
+        {
+            HandledMessages.Add(message);
+        }
+        public bool DidntHaveAnyMessages { get { return !HandledMessages.Any(); }}
     }
 
-    public class FakeHandleService : IHandle<FakeBeginMessage>, IHandle<FakeEndMessage>
+
+    public class TestMessage1 : Message { }
+
+    public class TestHandler1 : TestHandlerBase, IHandle<TestMessage1>
     {
-        public bool? State = null;
-        public void Handle(FakeBeginMessage message)
+        public void Handle(TestMessage1 message)
         {
-            HandledMessage = true;
-            State = true;
+            Handled(message);
         }
-
-        public void Handle(FakeEndMessage message)
-        {
-            HandledMessage = true;
-            State = false;
-        }
-
-        public bool HandledMessage { get; private set; }
     }
+
+    public class TestMessage2 : Message { }
+
+    public class TestHandler2 : TestHandlerBase, IHandle<TestMessage2>
+    {
+        public void Handle(TestMessage2 message)
+        {
+            Handled(message);
+        }
+    }
+
+    //public class ParentMessage : Message{}
+    //public class ChildMessage : ParentMessage{}
+
+    //public class ParentHandler : TestHandlerBase, IHandle<ParentMessage>
+    //{
+    //    public void Handle(TestMessage2 message)
+    //    {
+    //        Handled(message);
+    //    }
+    //}
+
+    //public class TestHandler2 : TestHandlerBase, IHandle<TestMessage2>
+    //{
+    //    public void Handle(TestMessage2 message)
+    //    {
+    //        Handled(message);
+    //    }
+    //}
+
+
+   
+
+  
 }
