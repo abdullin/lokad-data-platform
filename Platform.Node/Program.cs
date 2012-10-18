@@ -66,6 +66,7 @@ namespace Platform.Node
 
             if (interactiveMode)
             {
+                Console.Title = string.Format("Test server : {0} : {1}", options.HttpPort, options.StoreLocation);
                 Console.WriteLine("Starting everything. Press enter to initiate shutdown");
                 Console.ReadLine();
                 mainQueue.Enqueue(new ClientMessage.RequestShutdown());
