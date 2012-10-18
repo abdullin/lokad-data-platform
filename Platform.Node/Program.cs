@@ -33,8 +33,9 @@ namespace Platform.Node
             var port = options.HttpPort;
 
             var http = new PlatformServerApiService(mainQueue, string.Format("http://*:{0}/", port));
-            bus.AddHandler<SystemMessage.Init>(http);
-            bus.AddHandler<SystemMessage.StartShutdown>(http);
+
+            bus.Subscribe<SystemMessage.Init>(http);
+            bus.Subscribe<SystemMessage.StartShutdown>(http);
 
 
             var timer = new TimerService(new ThreadBasedScheduler(new RealTimeProvider()));
@@ -43,9 +44,9 @@ namespace Platform.Node
             // switch, based on configuration
 
             var storageService = new FileStorageService(options.StoreLocation, mainQueue);
-            bus.AddHandler<ClientMessage.AppendEvents>(storageService);
-            bus.AddHandler<SystemMessage.Init>(storageService);
-            bus.AddHandler<ClientMessage.ImportEvents>(storageService);
+            bus.Subscribe<ClientMessage.AppendEvents>(storageService);
+            bus.Subscribe<SystemMessage.Init>(storageService);
+            bus.Subscribe<ClientMessage.ImportEvents>(storageService);
 
             
 

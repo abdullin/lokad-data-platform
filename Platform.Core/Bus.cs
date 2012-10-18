@@ -26,7 +26,7 @@ namespace Platform
 
     public interface ISubscriber
     {
-        void AddHandler<T>(IHandle<T> handler) where T : Message;
+        void Subscribe<T>(IHandle<T> handler) where T : Message;
         void Unsubscribe<T>(IHandle<T> handler) where T : Message;
     }
     public interface IPublisher
@@ -103,7 +103,7 @@ namespace Platform
 
         private readonly Dictionary<Type, List<IMessageHandler>> _typeLookup = new Dictionary<Type, List<IMessageHandler>>();
 
-        public void AddHandler<T>(IHandle<T> handler) where T : Message
+        public void Subscribe<T>(IHandle<T> handler) where T : Message
         {
             Ensure.NotNull(handler, "handler");
             List<IMessageHandler> handlers;

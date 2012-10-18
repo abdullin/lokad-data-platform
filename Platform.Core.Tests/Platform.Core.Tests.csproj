@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="in_memory_bus.cs" />
     <Compile Include="when_format_size_in_bytes.cs" />
   </ItemGroup>
   <ItemGroup>
