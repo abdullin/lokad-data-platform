@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample1.Continuous
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample2.Continuous", "SmartApp.Sample2.Continuous\SmartApp.Sample2.Continuous.csproj", "{F2159E41-F9B6-4EC8-8748-413CDC1DA1A9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8846155F-5016-478B-A62B-3864DA98B899}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples (DEBUG only)", "Samples (DEBUG only)", "{8846155F-5016-478B-A62B-3864DA98B899}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample3.Continuous", "SmartApp.Sample3.Continuous\SmartApp.Sample3.Continuous.csproj", "{34C1B019-E269-4F03-9E57-43515DA122D5}"
 EndProject
