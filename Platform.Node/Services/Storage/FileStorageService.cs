@@ -15,8 +15,6 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        
-
         FileAppendOnlyStore _store;
 
         readonly string _location;
@@ -30,13 +28,12 @@ namespace Platform.Node.Services.Storage
         public void Handle(ClientMessage.AppendEvents message)
         {
             _store.Append(message.EventStream, new[] { message.Data });
-            
 
-            Log.Info("Storage service got request");
+            //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
         }
 
-        IEnumerable<byte[]> EnumerateStaging(string location)
+        static IEnumerable<byte[]> EnumerateStaging(string location)
         {
             using (var import = File.OpenRead(location))
             using (var bit = new BinaryReader(import))
