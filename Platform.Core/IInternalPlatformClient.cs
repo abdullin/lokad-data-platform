@@ -39,19 +39,19 @@ namespace Platform
 
         public static   bool operator >(StorageOffset x , StorageOffset y)
         {
-            return x > y;
+            return x.OffsetInBytes > y.OffsetInBytes;
         }
         public static bool operator <(StorageOffset x , StorageOffset y)
         {
-            return x < y;
+            return x.OffsetInBytes < y.OffsetInBytes;
         }
         public static bool operator >= (StorageOffset left, StorageOffset right)
         {
-            return left >= right;
+            return left.OffsetInBytes >= right.OffsetInBytes;
         }
         public static bool operator <=(StorageOffset left, StorageOffset right)
         {
-            return left <= right;
+            return left.OffsetInBytes <= right.OffsetInBytes;
         }
 
 
