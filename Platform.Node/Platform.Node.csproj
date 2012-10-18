@@ -61,6 +61,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Services\ServerApi\StreamService.cs" />
     <Compile Include="Services\Storage\FileStorageService.cs" />
+    <Compile Include="Services\Timer\TimerService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config">

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
+using Platform.Node.Services.Timer;
 
 
 namespace Platform.Node
@@ -37,6 +38,9 @@ namespace Platform.Node
             bus.AddHandler<SystemMessage.Init>(http);
             bus.AddHandler<SystemMessage.StartShutdown>(http);
 
+
+            var timer = new TimerService(new ThreadBasedScheduler(new RealTimeProvider()));
+            bus.AddHandler<TimerMessage.Schedule>(timer);
 
             // switch, based on configuration
 
