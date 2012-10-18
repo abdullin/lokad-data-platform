@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using Platform.Storage;
 using Platform.TestClient.Commands;
 using ServiceStack.Common;
 
@@ -25,9 +26,15 @@ namespace Platform.TestClient
 
             
             ClientHttpBase = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
-            Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
-            
-            
+
+            if (clientOptions.StoreLocation.StartsWith("DefaultEndpointsProtocol=", StringComparison.InvariantCultureIgnoreCase)
+                || clientOptions.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var parts = clientOptions.StoreLocation.Split('|');
+                Platform = new AzurePlatformClient(connectionString: parts[0], container: parts[1], serverEndpoint: ClientHttpBase);
+            }
+            else
+                Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
 
             _interactiveMode = clientOptions.Command.IsEmpty();
 

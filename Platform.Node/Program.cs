@@ -10,7 +10,6 @@ using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
 using Platform.Node.Services.Timer;
 
-
 namespace Platform.Node
 {
     class Program
@@ -49,13 +48,19 @@ namespace Platform.Node
 
             // switch, based on configuration
 
-            var storageService = new FileStorageService(options.StoreLocation, mainQueue);
+            IStorageService storageService;
+            if (options.StoreLocation.StartsWith("DefaultEndpointsProtocol=", StringComparison.InvariantCultureIgnoreCase)
+                || options.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var parts = options.StoreLocation.Split('|');
+                storageService = new AzureStorageService(connectionString: parts[0], container: parts[1], publisher: mainQueue);
+            }
+            else
+                storageService = new FileStorageService(options.StoreLocation, mainQueue);
+
             bus.Subscribe<ClientMessage.AppendEvents>(storageService);
             bus.Subscribe<SystemMessage.Init>(storageService);
             bus.Subscribe<ClientMessage.ImportEvents>(storageService);
-
-            
-
 
             mainQueue.Start();
 
@@ -92,7 +97,6 @@ namespace Platform.Node
         }
     }
 
-
     public enum NodeState
     {
         Initializing,
@@ -100,7 +104,6 @@ namespace Platform.Node
         ShuttingDown,
         ShutDown
     }
-
 
     public sealed class NodeController : IHandle<Message>
     {
@@ -202,4 +205,4 @@ namespace Platform.Node
             _outputBus.Publish(e);
         }
     }
-    }
+}
