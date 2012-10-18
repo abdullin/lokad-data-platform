@@ -29,18 +29,18 @@ namespace SmartApp.Sample3.Continuous
         {
             const int seconds = 1;
             var data = LoadTagData();
-            Console.WriteLine("Next post offset: {0}", data.NextOffset);
+            Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                long nextOffcet = data.NextOffset;
+                long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
                 IInternalPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
 
-                var records = reader.ReadAll(nextOffcet);
+                var records = reader.ReadAll(new StorageOffset(nextOffcet));
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffset = dataRecord.NextOffset;
+                    data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                     if (dataRecord.Key != "s3:post")
                         continue;
@@ -63,7 +63,7 @@ namespace SmartApp.Sample3.Continuous
 
                 if (!emptyData)
                 {
-                    Console.WriteLine("Next post offset: {0}", data.NextOffset);
+                    Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
                     SaveTagData(data);
                 }
             }
@@ -74,7 +74,7 @@ namespace SmartApp.Sample3.Continuous
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
 
             if (!File.Exists(path))
-                return new TagsDistributionView { NextOffset = 0, Distribution = new Dictionary<string, long>() };
+                return new TagsDistributionView { NextOffsetInBytes = 0, Distribution = new Dictionary<string, long>() };
 
             return File.ReadAllText(path).FromJson<TagsDistributionView>();
         }
@@ -96,19 +96,19 @@ namespace SmartApp.Sample3.Continuous
         {
             const int seconds = 1;
             var data = LoadCommentData();
-            Console.WriteLine("Next comment offset: {0}", data.NextOffset);
+            Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                long nextOffcet = data.NextOffset;
+                long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
                 IInternalPlatformClient reader =
                     new FilePlatformClient(@"C:\LokadData\dp-store");
 
-                var records = reader.ReadAll(nextOffcet);
+                var records = reader.ReadAll(new StorageOffset(nextOffcet));
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffset = dataRecord.NextOffset;
+                    data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                     if (dataRecord.Key != "s3:comment")
                         continue;
@@ -130,7 +130,7 @@ namespace SmartApp.Sample3.Continuous
 
                 if (!emptyData)
                 {
-                    Console.WriteLine("Next comment offset: {0}", data.NextOffset);
+                    Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
                     SaveCommentData(data);
                 }
             }
@@ -141,7 +141,7 @@ namespace SmartApp.Sample3.Continuous
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-comment.dat");
 
             if (!File.Exists(path))
-                return new CommentDistributionView { NextOffset = 0, Distribution = new Dictionary<long, int>() };
+                return new CommentDistributionView { NextOffsetInBytes = 0, Distribution = new Dictionary<long, int>() };
 
             return File.ReadAllText(path).FromJson<CommentDistributionView>();
         }

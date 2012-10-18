@@ -22,7 +22,7 @@ namespace SmartApp.Sample1.Continuous
 
                 if (!last.IsEmpty)
                 {
-                    nextOffset = last.NextOffset;
+                    nextOffset = last.Next;
                     ShowData(nextOffset, false);
                     SaveData(nextOffset);
                 }
@@ -30,29 +30,29 @@ namespace SmartApp.Sample1.Continuous
             }
         }
 
-        private static void ShowData(long data, bool dumpData)
+        private static void ShowData(StorageOffset data, bool dumpData)
         {
             Console.WriteLine("[{2}] Next offset({1}): {0}", data, dumpData ? "from storage" : "real data", DateTime.Now);
         }
 
-        static long LoadData()
+        static StorageOffset LoadData()
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample1.dat");
 
             if (!File.Exists(path))
-                return 0;
+                return StorageOffset.Zero;
 
             long nextOffset = 0;
             long.TryParse(File.ReadAllText(path), out nextOffset);
-            return nextOffset;
+            return new StorageOffset(nextOffset);
         }
 
-        static void SaveData(long nextOffcet)
+        static void SaveData(StorageOffset nextOffcet)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample1.dat");
             using (var sw = new StreamWriter(path, false))
             {
-                sw.Write(nextOffcet);
+                sw.Write(nextOffcet.OffsetInBytes);
             }
         }
     }

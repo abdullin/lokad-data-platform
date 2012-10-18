@@ -24,11 +24,11 @@ namespace SmartApp.Sample2.Continuous
                 Thread.Sleep(seconds * 1000);
                 IInternalPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
 
-                var records = reader.ReadAll(nextOffcet);
+                var records = reader.ReadAll(new StorageOffset(nextOffcet));
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffset = dataRecord.NextOffset;
+                    data.NextOffset = dataRecord.Next.OffsetInBytes;
                     if (data.Distribution.ContainsKey(dataRecord.Data.Length))
                         data.Distribution[dataRecord.Data.Length]++;
                     else

@@ -26,6 +26,11 @@ namespace Platform
 
         public static readonly StorageOffset Zero = new StorageOffset(0);
 
+        public override string ToString()
+        {
+            return string.Format("Offset {0}b", OffsetInBytes);
+        }
+
         public StorageOffset(long offsetInBytes)
         {
             Ensure.Nonnegative(offsetInBytes, "offsetInBytes");

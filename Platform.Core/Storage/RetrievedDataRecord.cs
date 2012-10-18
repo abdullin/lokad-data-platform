@@ -10,13 +10,13 @@ namespace Platform.Storage
 
         public readonly string Key;
         public readonly byte[] Data;
-        public readonly StorageOffset NextOffset;
+        public readonly StorageOffset Next;
 
-        public RetrievedDataRecord(string key, byte[] data,StorageOffset nextOffset) 
+        public RetrievedDataRecord(string key, byte[] data,StorageOffset next) 
         {
             Key = key;
             Data = data;
-            NextOffset = nextOffset;
+            Next = next;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace SmartApp.Sample3.Contracts
 {
     public class TagsDistributionView
     {
-        public long NextOffset { get; set; }
+        public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
 
         public Dictionary<string, long> Distribution { get; set; }
@@ -14,7 +14,7 @@ namespace SmartApp.Sample3.Contracts
 
     public class CommentDistributionView
     {
-        public long NextOffset { get; set; }
+        public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
 
         public Dictionary<long, int> Distribution { get; set; }

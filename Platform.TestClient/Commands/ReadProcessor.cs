@@ -38,7 +38,7 @@ namespace Platform.TestClient.Commands
                 context.Log.Info("  stream-id: {0}, data: {0}", record.Key, Encoding.UTF8.GetString(record.Data));
             }
 
-            var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().NextOffset : StorageOffset.Zero;
+            var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().Next : StorageOffset.Zero;
             context.Log.Info("Next stream offset: {0}", nextOffset);
 
             context.Completed();
