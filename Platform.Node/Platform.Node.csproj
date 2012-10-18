@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ServiceStack">
       <HintPath>..\Library\ServiceStack\ServiceStack.dll</HintPath>
     </Reference>
@@ -60,6 +61,7 @@
     <Compile Include="Services\ServerApi\ServerApiService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Services\ServerApi\StreamService.cs" />
+    <Compile Include="Services\Storage\AzureStorageService.cs" />
     <Compile Include="Services\Storage\FileStorageService.cs" />
     <Compile Include="Services\Timer\TimerService.cs" />
     <Compile Include="Services\Storage\IStorageService.cs" />
