@@ -26,7 +26,7 @@ namespace Platform.TestClient.Commands
 
         public string Usage
         {
-            get { return "BasicTest [brachcount batchsize threadcount floodsize]"; }
+            get { return "BasicTest [batchcount batchsize threadcount floodsize]"; }
         }
 
         const string singleThreadMessageTemplate = "basic-test-one-thread-message-{0}-{{0}}";
