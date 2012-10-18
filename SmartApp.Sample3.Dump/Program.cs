@@ -17,7 +17,7 @@ namespace SmartApp.Sample3.Dump
 {
     class Program
     {
-        private static IPlatformClient _reader;
+        private static IInternalPlatformClient _reader;
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
             using (var rows = File.OpenText(path))
@@ -74,7 +74,7 @@ namespace SmartApp.Sample3.Dump
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.ImportBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)).ToList());
                     Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
@@ -129,7 +129,7 @@ namespace SmartApp.Sample3.Dump
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.ImportBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)).ToList());
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }

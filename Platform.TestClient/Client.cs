@@ -15,7 +15,7 @@ namespace Platform.TestClient
         private readonly CommandProcessor _commands = new CommandProcessor(Log);
         private readonly bool _interactiveMode;
 
-        public IPlatformClient Platform;
+        public IInternalPlatformClient Platform;
         public string ClientHttpBase;
 
         public Client(ClientOptions clientOptions)

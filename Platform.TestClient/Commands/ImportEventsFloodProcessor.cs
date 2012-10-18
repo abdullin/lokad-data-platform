@@ -41,7 +41,7 @@ namespace Platform.TestClient.Commands
                     var watch = Stopwatch.StartNew();
                     for (int i = 0; i < repeatForEachThread; i++)
                     {
-                        context.Client.Platform.ImportBatch(streamId, Enumerable.Repeat(new RecordForStaging(Encoding.UTF8.GetBytes(streamData)), batchSize));
+                        context.Client.Platform.WriteEventsInLargeBatch(streamId, Enumerable.Repeat(new RecordForStaging(Encoding.UTF8.GetBytes(streamData)), batchSize));
                     }
 
                     Interlocked.Add(ref total, watch.Elapsed.Ticks);

@@ -22,7 +22,7 @@ namespace SmartApp.Sample2.Continuous
             {
                 var nextOffcet = data.NextOffset;
                 Thread.Sleep(seconds * 1000);
-                IPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
+                IInternalPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
 
                 var records = reader.ReadAll(nextOffcet);
                 bool emptyData = true;

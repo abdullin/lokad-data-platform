@@ -5,15 +5,14 @@ using Platform.Storage;
 
 namespace Platform
 {
-    public interface IPlatformClient
+    public interface IInternalPlatformClient
     {
-        bool IsAzure { get; }
         IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, int maxRecordCount = int.MaxValue);
         void WriteEvent(string streamName, byte[] data);
-        void ImportBatch(string streamName, IEnumerable<RecordForStaging> records);
+        void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
     }
 
-    public class FilePlatformClient : JsonPlatformClientBase, IPlatformClient
+    public class FilePlatformClient : JsonPlatformClientBase, IInternalPlatformClient
     {
         readonly string _serverFolder;
         
@@ -65,8 +64,6 @@ namespace Platform
                 }
             }
         }
-        public bool IsAzure { get { return false; } }
-
 
         private long GetEndOffset()
         {
@@ -104,7 +101,7 @@ namespace Platform
             _fileStreamName = Path.Combine(path, "stream.dat");
         }
 
-        public void ImportBatch(string streamName, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
         {
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);

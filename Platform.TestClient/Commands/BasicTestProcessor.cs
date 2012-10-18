@@ -135,7 +135,7 @@ namespace Platform.TestClient.Commands
             for (int i = 0; i < batchCount; i++)
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
-                context.Client.Platform.ImportBatch(streamId,
+                context.Client.Platform.WriteEventsInLargeBatch(streamId,
                     Enumerable.Range(0, batchSize).Select(
                         x =>
                             new RecordForStaging(Encoding.UTF8.GetBytes(string.Format(message, x)))));

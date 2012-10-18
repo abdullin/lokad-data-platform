@@ -23,7 +23,7 @@ namespace Platform.TestClient.Commands
                 streamData = args.Skip(2).Aggregate("", (x, y) => x + " " + y);
 
             var global = Stopwatch.StartNew();
-            context.Client.Platform.ImportBatch(streamId, Enumerable.Repeat(new RecordForStaging(Encoding.UTF8.GetBytes(streamData)), batchSize));
+            context.Client.Platform.WriteEventsInLargeBatch(streamId, Enumerable.Repeat(new RecordForStaging(Encoding.UTF8.GetBytes(streamData)), batchSize));
             context.Log.Info("{0} per second", batchSize / global.Elapsed.TotalSeconds);
             PerfUtils.LogTeamCityGraphData(string.Format("{0}-latency-ms", Key), (int)(batchSize / global.Elapsed.TotalSeconds));
 
