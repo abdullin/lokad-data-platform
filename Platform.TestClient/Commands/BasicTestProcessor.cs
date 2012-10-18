@@ -33,6 +33,7 @@ namespace Platform.TestClient.Commands
 
         public bool Execute(CommandProcessorContext context, string[] args)
         {
+            
             int batchCount = 10;
             int batchSize = 10000;
             int threadCount = 10;
@@ -46,6 +47,10 @@ namespace Platform.TestClient.Commands
                 int.TryParse(args[2], out threadCount);
             if (args.Length > 3)
                 int.TryParse(args[3], out floodSize);
+
+
+            var total = Stopwatch.StartNew();
+
 
             string streamId = "BasicTest-" + Guid.NewGuid();
 
@@ -101,6 +106,9 @@ namespace Platform.TestClient.Commands
                 context.Log.Error("not match the number of messages. Expected: {0}, Received: {1}", batchMessageCount + floodMessagesCount, index);
                 return false;
             }
+
+            var key = string.Format("BT_{0}_{1}_{2}_{3}_totalMs", batchCount, batchSize, threadCount, floodSize);
+            PerfUtils.LogTeamCityGraphData(key, total.ElapsedMilliseconds);
 
             return true;
         }
