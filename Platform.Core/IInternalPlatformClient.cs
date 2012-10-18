@@ -5,8 +5,15 @@ using Platform.Storage;
 
 namespace Platform
 {
+    /// <summary>
+    /// Provides raw byte-level access to the storage and messaging of
+    /// Data platform
+    /// </summary>
     public interface IInternalPlatformClient
     {
+        /// <summary>
+        /// Returns lazy enumeration over all events in a given record range. 
+        /// </summary>
         IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, int maxRecordCount = int.MaxValue);
         void WriteEvent(string streamName, byte[] data);
         void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
