@@ -60,7 +60,7 @@ namespace Platform.TestClient
                 catch (Exception exc)
                 {
                     result = false;
-                    //todo add log
+                    _log.ErrorException(exc, "Failure while processing {0}", commandName);
                     executedEvent.Set();
                 }
             });
