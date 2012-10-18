@@ -65,15 +65,15 @@ namespace Platform.Core.Tests
             var message = new TestMessage1();
             Bus.Publish(message);
             // EXPECT
-            CollectionAssert.AreEqual(new[]{message}, handler.HandledMessages);
+            CollectionAssert.AreEqual(new[] { message }, handler.HandledMessages);
         }
 
         [Test]
         public void subscribed_handler_handles_multiple_messages()
         {
             // GIVEN
-         
-            
+
+
             var handler = new TestHandler1();
             Bus.Subscribe(handler);
 
@@ -85,7 +85,7 @@ namespace Platform.Core.Tests
             }
 
             CollectionAssert.AreEqual(messages, handler.HandledMessages);
-            
+
         }
         [Test]
         public void subscribed_handler_does_not_handle_other_messages()
@@ -97,6 +97,78 @@ namespace Platform.Core.Tests
             Bus.Publish(new TestMessage2());
             // EXPECT
             Assert.IsTrue(handler.DidntHaveAnyMessages);
+        }
+
+        [Test]
+        public void subscribed_handler_handle_child_messages()
+        {
+            // GIVEN
+            var handler = new ParentHandler();
+            Bus.Subscribe(handler);
+            // WHEN
+            var child = new ChildMessage();
+            Bus.Publish(child);
+            // EXPECT
+            CollectionAssert.AreEqual(new[] { child }, handler.HandledMessages);
+        }
+
+        [Test]
+        public void subscribed_handler_parent_handle_does_not_messages()
+        {
+            // GIVEN
+            var handler = new ChildHandler();
+            Bus.Subscribe(handler);
+            // WHEN
+            Bus.Publish(new ParentMessage());
+            // EXPECT
+            CollectionAssert.IsEmpty(handler.HandledMessages);
+        }
+
+        [Test]
+        public void if_subscribed_handler_repeatedly_get_one_message()
+        {
+            // GIVEN
+            var handler = new TestHandler1();
+            Bus.Subscribe(handler);
+            Bus.Subscribe(handler);
+            // WHEN
+            var m = new TestMessage1();
+            Bus.Publish(m);
+            // EXPECT
+            CollectionAssert.AreEqual(new[] { m }, handler.HandledMessages);
+        }
+
+
+        [Test]
+        public void subscribed_parent_and_child_handler_handle_parent_messages()
+        {
+            // GIVEN
+            var parentHandler = new ParentHandler();
+            var childHandler = new ChildHandler();
+            Bus.Subscribe(parentHandler);
+            Bus.Subscribe(childHandler);
+            // WHEN
+            var parentMessage = new ParentMessage();
+            Bus.Publish(parentMessage);
+            // EXPECT
+            CollectionAssert.IsEmpty(childHandler.HandledMessages);
+            CollectionAssert.AreEqual(new[]{parentMessage},parentHandler.HandledMessages);
+        }
+
+        [Test]
+        public void subscribed_parent_and_child_handler_handle_child_messages()
+        {
+            // GIVEN
+            var parentHandler = new ParentHandler();
+            var childHandler = new ChildHandler();
+            Bus.Subscribe(parentHandler);
+            Bus.Subscribe(childHandler);
+            // WHEN
+            var childMessage = new ChildMessage();
+            Bus.Publish(childMessage);
+            // EXPECT
+            CollectionAssert.AreEqual(new[] { childMessage }, parentHandler.HandledMessages);
+            CollectionAssert.AreEqual(childHandler.HandledMessages, parentHandler.HandledMessages);
         }
     }
 
@@ -118,7 +190,7 @@ namespace Platform.Core.Tests
         {
             HandledMessages.Add(message);
         }
-        public bool DidntHaveAnyMessages { get { return !HandledMessages.Any(); }}
+        public bool DidntHaveAnyMessages { get { return !HandledMessages.Any(); } }
     }
 
 
@@ -142,27 +214,28 @@ namespace Platform.Core.Tests
         }
     }
 
-    //public class ParentMessage : Message{}
-    //public class ChildMessage : ParentMessage{}
+    public class ParentMessage : Message { }
 
-    //public class ParentHandler : TestHandlerBase, IHandle<ParentMessage>
-    //{
-    //    public void Handle(TestMessage2 message)
-    //    {
-    //        Handled(message);
-    //    }
-    //}
+    public class ParentHandler : TestHandlerBase, IHandle<ParentMessage>
+    {
+        public void Handle(ParentMessage message)
+        {
+            Handled(message);
+        }
+    }
 
-    //public class TestHandler2 : TestHandlerBase, IHandle<TestMessage2>
-    //{
-    //    public void Handle(TestMessage2 message)
-    //    {
-    //        Handled(message);
-    //    }
-    //}
+    public class ChildMessage : ParentMessage { }
+
+    public class ChildHandler : TestHandlerBase, IHandle<ChildMessage>
+    {
+        public void Handle(ChildMessage message)
+        {
+            Handled(message);
+        }
+    }
 
 
-   
 
-  
+
+
 }
