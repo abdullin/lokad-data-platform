@@ -12,5 +12,12 @@ namespace Platform
                 throw new ArgumentNullException(argumentName);
         }
 
+        public static void Nonnegative(long number, string argumentName)
+        {
+            Contract.Requires(number >= 0);
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be non negative.");
+        }
+
     }
 }

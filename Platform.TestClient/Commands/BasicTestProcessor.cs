@@ -57,7 +57,7 @@ namespace Platform.TestClient.Commands
             var round = Math.Round(watch.Elapsed.TotalSeconds, 2);
             context.Log.Debug("Flooded {0}x{1} in {2}s", threadCount, floodSize, round);
 
-            var records = context.Client.Platform.ReadAll(0).Where(x => x.Key == streamId);
+            var records = context.Client.Platform.ReadAll().Where(x => x.Key == streamId);
 
             int index = 0;
             int batchMessageCount = batchCount * batchSize;

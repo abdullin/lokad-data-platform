@@ -30,7 +30,7 @@ namespace Platform.TestClient.Commands
 
             context.IsAsync();
 
-            var result = context.Client.Platform.ReadAll(fromOffset, maxRecordCount);
+            var result = context.Client.Platform.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
             var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
             context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
             foreach (var record in dataRecords)
@@ -38,7 +38,7 @@ namespace Platform.TestClient.Commands
                 context.Log.Info("  stream-id: {0}, data: {0}", record.Key, Encoding.UTF8.GetString(record.Data));
             }
 
-            var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().NextOffset : 0;
+            var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().NextOffset : StorageOffset.Zero;
             context.Log.Info("Next stream offset: {0}", nextOffset);
 
             context.Completed();

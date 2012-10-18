@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Platform.Storage;
 
 namespace Platform
@@ -14,9 +15,41 @@ namespace Platform
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 
         /// </summary>
-        IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, int maxRecordCount = int.MaxValue);
+        IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset = default (StorageOffset), int maxRecordCount = int.MaxValue);
         void WriteEvent(string streamName, byte[] data);
         void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct StorageOffset
+    {
+        public readonly long OffsetInBytes;
+
+        public static readonly StorageOffset Zero = new StorageOffset(0);
+
+        public StorageOffset(long offsetInBytes)
+        {
+            Ensure.Nonnegative(offsetInBytes, "offsetInBytes");
+            OffsetInBytes = offsetInBytes;
+        }
+
+        public static   bool operator >(StorageOffset x , StorageOffset y)
+        {
+            return x > y;
+        }
+        public static bool operator <(StorageOffset x , StorageOffset y)
+        {
+            return x < y;
+        }
+        public static bool operator >= (StorageOffset left, StorageOffset right)
+        {
+            return left >= right;
+        }
+        public static bool operator <=(StorageOffset left, StorageOffset right)
+        {
+            return left <= right;
+        }
+
+
     }
 
     public class FilePlatformClient : JsonPlatformClientBase, IInternalPlatformClient
@@ -30,17 +63,15 @@ namespace Platform
         static readonly ILogger Log = LogManager.GetLoggerFor<FilePlatformClient>();
 
         
-        public IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
         {
-            if (startOffset < 0)
-                throw new ArgumentOutOfRangeException("startOffset");
-
             if (maxRecordCount < 0)
                 throw new ArgumentOutOfRangeException("maxRecordCount");
 
-            var endOffset = GetEndOffset();
+            var maxOffset = GetMaxOffset();
 
-            if (startOffset >= endOffset)
+            // nothing to read from here
+            if (startOffset >= maxOffset)
                 yield break;
 
 
@@ -48,41 +79,45 @@ namespace Platform
                 throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
             using (var dataStream = new FileStream(_fileStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var dataBits = new BitReader(dataStream))
             {
-                using (var dataBits = new BitReader(dataStream))
+                var seekResult = dataStream.Seek(startOffset.OffsetInBytes, SeekOrigin.Begin);
+
+                if (startOffset.OffsetInBytes != seekResult)
+                    throw new InvalidOperationException("Failed to reach position we seeked for");
+
+                int recordCount = 0;
+                while (true)
                 {
-                    dataStream.Seek(startOffset, SeekOrigin.Begin);
+                    var key = dataBits.ReadString();
+                    var length = dataBits.Reader7BitInt();
+                    var data = dataBits.ReadBytes(length);
 
+                    var currentOffset = new StorageOffset(dataStream.Position);
+                    yield return new RetrievedDataRecord(key, data, currentOffset);
 
-                    int count = 0;
-                    while (dataStream.Position < endOffset && count <= maxRecordCount)
-                    {
-                        var key = dataBits.ReadString();
-                        var length = dataBits.Reader7BitInt();
+                    recordCount += 1;
+                    if (recordCount >= maxRecordCount)
+                        yield break;
 
-                        var data = dataBits.ReadBytes(length);
-                        yield return new RetrievedDataRecord(key, data, dataStream.Position);
-
-                        if (count == maxRecordCount)
-                            break;
-
-                        count++;
-                    }
+                    if (currentOffset >= maxOffset)
+                        yield break;
                 }
+
             }
         }
 
-        private long GetEndOffset()
+        private StorageOffset GetMaxOffset()
         {
 
             if (!File.Exists(_checkStreamName))
-                return 0;
+                return StorageOffset.Zero;
 
             using (var checkStream = new FileStream(_checkStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (var checkBits = new BinaryReader(checkStream))
                 {
-                    return checkBits.ReadInt64();
+                    return new StorageOffset(checkBits.ReadInt64());
                 }
             }
 
