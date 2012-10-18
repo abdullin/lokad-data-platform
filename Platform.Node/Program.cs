@@ -14,7 +14,8 @@ namespace Platform.Node
 {
     class Program
     {
-        private static readonly ManualResetEventSlim ExitEvent = new ManualResetEventSlim(false);
+        public static readonly ILogger Log = LogManager.GetLoggerFor<Program>();
+        static ManualResetEventSlim _exitWait = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
             var options = new NodeOptions();
@@ -23,15 +24,12 @@ namespace Platform.Node
                 return;
             }
 
-
-
             var bus = new InMemoryBus("OutputBus");
             var controller = new NodeController(bus);
             var mainQueue = new QueuedHandler(controller, "Main Queue");
             controller.SetMainQueue(mainQueue);
-            Application.Start(Environment.Exit);
-
-            int timeOut = options.KillSwitch;
+            Application.Start(ExitAction);
+            
             var port = options.HttpPort;
 
             var http = new PlatformServerApiService(mainQueue, string.Format("http://*:{0}/", port));
@@ -49,29 +47,40 @@ namespace Platform.Node
             bus.AddHandler<SystemMessage.Init>(storageService);
             bus.AddHandler<ClientMessage.ImportEvents>(storageService);
 
-            Console.WriteLine("Starting everything. Press enter to initiate shutdown");
+            
 
 
             mainQueue.Start();
 
             mainQueue.Enqueue(new SystemMessage.Init());
-
-            if (timeOut <= 0)
+            
+            if (options.KillSwitch > 0)
             {
+                var seconds = TimeSpan.FromSeconds(options.KillSwitch);
+                mainQueue.Enqueue(
+                    TimerMessage.Schedule.Create(seconds, 
+                    new PublishEnvelope(mainQueue), 
+                    new ClientMessage.RequestShutdown()));
+            }
+            var interactiveMode = options.KillSwitch <= 0;
+
+            if (interactiveMode)
+            {
+                Console.WriteLine("Starting everything. Press enter to initiate shutdown");
                 Console.ReadLine();
                 mainQueue.Enqueue(new ClientMessage.RequestShutdown());
                 Console.ReadLine();
             }
             else
             {
-                Task.Factory.StartNew(() =>
-                    {
-                        Thread.Sleep(timeOut * 1000);
-                        Application.Exit(ExitCode.Success, "");
-                    });
-                ExitEvent.Wait();
+                _exitWait.Wait();
             }
+        }
 
+        static void ExitAction(int i)
+        {
+            _exitWait.Set();
+            Environment.Exit(i);
         }
     }
 
