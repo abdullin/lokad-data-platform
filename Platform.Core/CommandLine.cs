@@ -1522,8 +1522,10 @@ namespace Platform
             [HelpOption]
             public string GetUsage()
             {
-                var attribs =
-                    GetType().GetProperties().SelectMany(p => p.GetCustomAttributes(true).OfType<OptionAttribute>());
+                var attribs = GetType()
+                    .GetProperties()
+                    .SelectMany(p => p.GetCustomAttributes(true).OfType<OptionAttribute>());
+
                 var sb = new StringBuilder();
 
                 foreach (var attrib in attribs)
@@ -1537,6 +1539,18 @@ namespace Platform
                     sb.AppendLine();
                 }
                 return sb.ToString();
+            }
+
+            public IEnumerable<KeyValuePair<string,object>> GetPairs()
+            {
+                var attribs = GetType()
+                    .GetProperties()
+                    .SelectMany(p => p.GetCustomAttributes(true).OfType<OptionAttribute>().Select(o => new
+                        {
+                            p,o
+                        }));
+
+                return attribs.Select(x => new KeyValuePair<string, object>(x.p.Name,x.p.GetValue(this,null)));
             }
         }
 

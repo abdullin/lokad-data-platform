@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Mime;
 using System.Reflection;
 using System.Threading;
@@ -23,6 +24,11 @@ namespace Platform.Node
             {
                 return;
             }
+
+            var list = string.Join(Environment.NewLine,
+                options.GetPairs().Select(p => string.Format("{0} : {1}", p.Key, p.Value)));
+
+            Log.Info(list);
 
             var bus = new InMemoryBus("OutputBus");
             var controller = new NodeController(bus);
