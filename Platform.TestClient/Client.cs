@@ -16,8 +16,7 @@ namespace Platform.TestClient
         
 
         private readonly CommandProcessor _commands = new CommandProcessor(Log);
-        private readonly bool _interactiveMode;
-
+        
         public IInternalPlatformClient Platform;
         public string ClientHttpBase;
 
@@ -79,11 +78,12 @@ namespace Platform.TestClient
             }
 
 
-            if(!_interactiveMode)
+            if (Options.Command.Any())
             {
-                ExecuteLine(string.Join(" ",Options.Command));
+                ExecuteLine(string.Join(" ", Options.Command));
                 return;
             }
+            
             
             Console.Write(">>> ");
             string line;
