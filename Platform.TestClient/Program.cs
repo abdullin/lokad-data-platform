@@ -17,12 +17,12 @@ namespace Platform.TestClient
                 return;
             }
 
-            if (clientOptions.StoreLocation == "test")
+            if (clientOptions.StoreLocation == "env")
             {
-                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_TESTDIR");
+                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_STOREDIR");
                 if (string.IsNullOrWhiteSpace(over))
                 {
-                    over = @"C:\LokadData\dp-test";
+                    over = @"C:\LokadData\dp-store";
                 }
                 clientOptions.StoreLocation = over;
             }

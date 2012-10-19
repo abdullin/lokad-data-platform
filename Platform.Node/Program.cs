@@ -26,10 +26,10 @@ namespace Platform.Node
 
             if (options.StoreLocation == "test")
             {
-                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_TESTDIR");
+                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_STOREDIR");
                 if (string.IsNullOrWhiteSpace(over))
                 {
-                    over = @"C:\LokadData\dp-test";
+                    over = @"C:\LokadData\dp-store";
                 }
                 options.StoreLocation = over;
             }
