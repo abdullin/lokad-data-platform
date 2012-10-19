@@ -1,38 +1,26 @@
-﻿@model SmartApp.Sample3.Contracts.TagsDistributionView
-<div>
-    Events proccessed: @(Model != null ? Model.EventsProcessed : 0)
-</div>
-<div>
-    Bytes proccessed: @(Model != null ? Model.NextOffsetInBytes : 0)
-</div>
-<div>
-@DateTime.Now
-</div>
-<table cellpadding="0" cellspacing="0" border="1" class="post">
-    <tr>
-        <th>Tags</th>
-        <th>Number of tags</th>
-    </tr>
-    @if (Model != null)
-    {
-        foreach (var pair in Model.Distribution.OrderBy(x => x.Key))
-        {
-        <tr>
-            <td>@pair.Key</td>
-            <td>@pair.Value</td>
-        </tr>
-        }
-    }
-</table>
+﻿@using SmartApp.Sample3.WebUI
+@model SmartApp.Sample3.Contracts.TagsDistributionView
 
-<table cellpadding="0" cellspacing="0" border="1" class="post">
+<h2 class="page-header">Tags projection</h2>
+<dl class="dl-horizontal">
+    <dt>Events proccessed:</dt>
+    <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
+
+    <dt>Bytes proccessed:</dt>
+    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0)</dd>
+
+    <dt>Date</dt>
+    <dd>@DateTime.Now</dd>
+</dl>
+
+<table class="table table-striped table-condensed">
     <tr>
         <th>Tags</th>
         <th>Number of tags</th>
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value))
+        foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value).Take(15))
         {
         <tr>
             <td>@pair.Key</td>

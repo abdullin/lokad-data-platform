@@ -1,30 +1,20 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-<script src="/Scripts/jquery-1.7.1.min.js"></script>
-<script src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
-<style>
-    td {
-        font-size: 12px;
-    }
+<script src="/Content/js/jquery-1.8.2.min.js"></script>
+<script src="/Content/js/jquery.unobtrusive-ajax.min.js"></script>
 
-    .post {
-        float: left;
-        padding-left: 20px;
-    }
-</style>
-<table cellpadding="0" cellspacing="0" width="100%">
-    <tr>
-        <td valign="top">
-            <div id="tag_result">
-            </div>
-        </td>
-        <td valign="top">
-            <div id="comment_result">
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="container">
+    <div class="row-fluid">
+        <div class="span6">
+            <div id="tag_result" ></div>
+        </div>
+
+        <div class="span6">
+            <div id="comment_result" ></div>
+        </div>
+    </div>
+</div>
 
 @Ajax.ActionLink("Refresh tags", "Tags", "Home", null, new AjaxOptions { UpdateTargetId = "tag_result" }, new { style = "display:none;", id = "refreshTags" })
 @Ajax.ActionLink("Refresh comments", "Comments", "Home", null, new AjaxOptions { UpdateTargetId = "comment_result" }, new { style = "display:none;", id = "refreshComment" })
