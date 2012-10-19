@@ -26,6 +26,7 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             string dir = context.Client.Options.StoreLocation;
+
             if (args.Any())
             {
                 dir = string.Join(" ", args);

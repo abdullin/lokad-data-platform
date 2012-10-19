@@ -13,16 +13,14 @@ namespace Platform.Node.Services.Storage
     {
         readonly static ILogger Log = LogManager.GetLoggerFor<AzureStorageService>();
         readonly IPublisher _publisher;
-        readonly string _connectionString;
-        readonly string _container;
-
+        
+        AzureStoreConfiguration _config;
         AzureAppendOnlyStore _store;
 
-        public AzureStorageService(string connectionString, string container, IPublisher publisher)
+        public AzureStorageService(AzureStoreConfiguration config, IPublisher publisher)
         {
-            _connectionString = connectionString;
             _publisher = publisher;
-            _container = container;
+            _config = config;
         }
 
         public void Handle(SystemMessage.Init message)
@@ -30,7 +28,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _store = new AzureAppendOnlyStore(_connectionString, _container);
+                _store = new AzureAppendOnlyStore(_config);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)
@@ -53,7 +51,7 @@ namespace Platform.Node.Services.Storage
             var watch = Stopwatch.StartNew();
             var count = 0;
             var size = 0;
-            var client = StorageExtensions.GetCloudBlobClient(_connectionString);
+            var client = StorageExtensions.GetCloudBlobClient(_config.ConnectionString);
             var blob = client.GetBlockBlobReference(msg.StagingLocation);
             _store.Append(msg.EventStream, EnumerateStaging(blob).Select(bytes =>
                 {

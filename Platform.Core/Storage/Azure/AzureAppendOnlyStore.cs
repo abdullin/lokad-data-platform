@@ -13,9 +13,9 @@ namespace Platform.Storage.Azure
         long _blobContentSize;
         long _blobSpaceSize;
 
-        public AzureAppendOnlyStore(string connectionString, string container)
+        public AzureAppendOnlyStore(AzureStoreConfiguration configuration)
         {
-            _blob = StorageExtensions.GetPageBlobReference(connectionString, container + "/" + "stream.dat");
+            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
             _pageWriter = new PageWriter(512, WriteProc);
 
             _blob.Container.CreateIfNotExist();

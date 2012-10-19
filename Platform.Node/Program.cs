@@ -5,6 +5,7 @@ using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
 using Platform.Node.Services.Timer;
+using Platform.Storage.Azure;
 
 namespace Platform.Node
 {
@@ -45,14 +46,15 @@ namespace Platform.Node
             // switch, based on configuration
 
             IStorageService storageService;
-            if (options.StoreLocation.StartsWith("DefaultEndpointsProtocol=", StringComparison.InvariantCultureIgnoreCase)
-                || options.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
+            AzureStoreConfiguration azureConfig;
+            if (AzureStoreConfiguration.TryParse(options.StoreLocation, out azureConfig))
             {
-                var parts = options.StoreLocation.Split('|');
-                storageService = new AzureStorageService(connectionString: parts[0].Trim('"'), container: parts[1], publisher: mainQueue);
+                storageService = new AzureStorageService(azureConfig, mainQueue);
             }
             else
+            {
                 storageService = new FileStorageService(options.StoreLocation, mainQueue);
+            }
 
             bus.Subscribe<ClientMessage.AppendEvents>(storageService);
             bus.Subscribe<SystemMessage.Init>(storageService);
