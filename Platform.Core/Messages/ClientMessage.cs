@@ -8,6 +8,11 @@ namespace Platform.Messages
         public class RequestShutdown : Message{}
         public abstract class WriteMessage : Message {}
 
+        public class RequestStoreWipe : WriteMessage
+        {
+            
+        }
+
         //public class Shutdown : Message {}
 
         public class AppendEvents : WriteMessage
