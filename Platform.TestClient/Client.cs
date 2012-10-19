@@ -54,6 +54,8 @@ namespace Platform.TestClient
 
             
             _commands.Register(new ShutdownProcessor());
+            _commands.Register(new StartLocalServerProcessor());
+
             _commands.Register(new ResetStoreProcessor());
             
             _commands.Register(new ReadProcessor());

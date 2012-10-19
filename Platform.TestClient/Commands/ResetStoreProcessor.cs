@@ -7,7 +7,9 @@
 
 using System;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Threading;
+using System.Linq;
 
 namespace Platform.TestClient.Commands
 {
@@ -25,6 +27,8 @@ namespace Platform.TestClient.Commands
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
+            const string variable = "DATAPLATFORM_STOREDIR";
+            context.Log.Debug("Current variable is: {0}", Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.User));
             if (args.Length == 0)
             {
                 context.Log.Error("Expected folder for test store");
@@ -39,10 +43,11 @@ namespace Platform.TestClient.Commands
                 Directory.Delete(dir, true);
             }
             Directory.CreateDirectory(dir);
-            const string variable = "DATAPLATFORM_STOREDIR";
+            
             context.Log.Info("Setting environment variable: {0}", variable);
             
-            Environment.SetEnvironmentVariable(variable, dir,EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable(variable, dir,EnvironmentVariableTarget.User);
+            Environment.SetEnvironmentVariable(variable, dir, EnvironmentVariableTarget.Process);
             return true;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
@@ -10,10 +11,20 @@ namespace Platform.TestClient.Commands
         public string Usage { get { return Key; } }
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            var result = new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientDto.ShutdownServerResponse>("/system/shutdown/");
+            try
+            {
+                var result =
+                    new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientDto.ShutdownServerResponse>(
+                        "/system/shutdown/");
 
 
-            return result.Success;
+                return result.Success;
+            }
+            catch(Exception ex)
+            {
+                context.Log.Info("Failed to get response. Server might be already down.");
+            }
+            return true;
         }
     }
 }

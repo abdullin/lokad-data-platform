@@ -62,6 +62,7 @@
     <Compile Include="Commands\ReadProcessor.cs" />
     <Compile Include="Commands\ResetStoreProcessor.cs" />
     <Compile Include="Commands\ShutdownProcessor.cs" />
+    <Compile Include="Commands\StartLocalServerProcessor.cs" />
     <Compile Include="Commands\UsageProcessor.cs" />
     <Compile Include="Commands\WriteEventsFloodProcessor.cs" />
     <Compile Include="Commands\WriteProccessor.cs" />
