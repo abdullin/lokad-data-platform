@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Platform;
-using Platform.Messages;
-using ServiceStack.ServiceClient.Web;
-using ServiceStack.Text;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Dump
 {
     class Program
     {
+        public static string RawDataPath;
+        public static string StorePath;
+
         private static IInternalPlatformClient _reader;
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
@@ -39,8 +39,11 @@ namespace SmartApp.Sample3.Dump
 
         static void Main(string[] args)
         {
+            RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
+            StorePath = ConfigurationManager.AppSettings["StorePath"];
+
             var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader = new FilePlatformClient(@"C:\LokadData\dp-store", httpBase);
+            _reader = new FilePlatformClient(StorePath, httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
             var threads = new List<Task>();
@@ -54,7 +57,7 @@ namespace SmartApp.Sample3.Dump
 
         private static void DumpComments()
         {
-            const string path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\comments.xml";
+            string path = Path.Combine(RawDataPath, "comments.xml");
 
             long rowIndex = 0;
 
@@ -110,7 +113,7 @@ namespace SmartApp.Sample3.Dump
 
         private static void DumpPosts()
         {
-            const string path = @"D:\Temp\Stack Overflow Data Dump - Aug 09\Content\posts.xml";
+            var path = Path.Combine(RawDataPath, "posts.xml");
 
             long rowIndex = 0;
 
