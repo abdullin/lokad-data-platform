@@ -24,7 +24,7 @@ namespace Platform.Node
                 return;
             }
 
-            if (options.StoreLocation == "test")
+            if (options.StoreLocation == "env")
             {
                 var over = Environment.GetEnvironmentVariable("DATAPLATFORM_STOREDIR");
                 if (string.IsNullOrWhiteSpace(over))

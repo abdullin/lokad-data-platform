@@ -42,7 +42,7 @@ namespace Platform.TestClient.Commands
             const string variable = "DATAPLATFORM_STOREDIR";
             context.Log.Info("Setting environment variable: {0}", variable);
             
-            Environment.SetEnvironmentVariable(variable, dir, EnvironmentVariableTarget.User);
+            Environment.SetEnvironmentVariable(variable, dir,EnvironmentVariableTarget.Machine);
             return true;
         }
     }
