@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,17 +11,16 @@ namespace Platform.TestClient.Commands
     public class WriteBatchFloodProcessor : ICommandProcessor
     {
         public string Key { get { return "WBFL"; } }
-        public string Usage { get { return "WBFL [<threadCount> [<batchSize> [<repeatForEachThread>]]]"; } }
+        public string Usage { get { return "WBFL [<threadCount> [<batchSize> [<repeatForEachThread> [<msgSize>]]]]"; } }
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             int threadCount = 5;
             int batchSize = 10000;
             int repeatForEachThread = 1;
-
+            int msgSize = 10;
 
             string streamId = "batch";
-            string streamData = "Batch test";
 
             if (args.Length > 0)
                 int.TryParse(args[0], out threadCount);
@@ -30,9 +29,14 @@ namespace Platform.TestClient.Commands
             if (args.Length > 2)
                 int.TryParse(args[2], out repeatForEachThread);
 
-            var global = Stopwatch.StartNew();
+            if (args.Length > 3)
+                int.TryParse(args[3], out msgSize);
+
+
+            
             long totalMs = 0;
-            var bytes = Encoding.UTF8.GetBytes(streamData);
+            var bytes = new byte[msgSize];
+            new RNGCryptoServiceProvider().GetBytes(bytes);
 
             var threads = new List<Task>();
             for (int t = 0; t < threadCount; t++)
