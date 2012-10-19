@@ -3,6 +3,7 @@ using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
 using Platform.Node.Services.Timer;
+using Platform.Storage.Azure;
 
 namespace Platform.Node.Worker
 {
@@ -24,7 +25,8 @@ namespace Platform.Node.Worker
             _mainQueue = new QueuedHandler(controller, "Main Queue");
             controller.SetMainQueue(_mainQueue);
 
-            _storageService = new AzureStorageService(storageConnection, container, _mainQueue);
+            var config = new AzureStoreConfiguration(storageConnection, container);
+            _storageService = new AzureStorageService(config, _mainQueue);
             _timer = new TimerService(new ThreadBasedScheduler(new RealTimeProvider()));
         }
 

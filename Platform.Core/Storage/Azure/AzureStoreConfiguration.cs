@@ -7,7 +7,8 @@ namespace Platform.Storage.Azure
 
         public readonly string ConnectionString;
         public readonly string Container;
-        AzureStoreConfiguration(string connectionString, string container)
+
+        public AzureStoreConfiguration(string connectionString, string container)
         {
             Container = container;
             ConnectionString = connectionString;
