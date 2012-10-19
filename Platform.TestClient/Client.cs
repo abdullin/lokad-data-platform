@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Platform.Storage;
@@ -36,7 +38,7 @@ namespace Platform.TestClient
             else
                 Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
 
-            _interactiveMode = clientOptions.Command.IsEmpty();
+            
 
             RegisterCommand();
         }
@@ -61,11 +63,25 @@ namespace Platform.TestClient
             _commands.Register(new ReadProcessor());
         }
 
+         
+
         public void Run()
         {
+            if (!string.IsNullOrWhiteSpace(Options.RunFile))
+            {
+                foreach (var ln in 
+                    File.ReadAllLines(Options.RunFile)
+                    .Where(l => !string.IsNullOrWhiteSpace(l))
+                    .Where(l => !l.StartsWith("//")))
+                {
+                    ExecuteLine(ln);
+                }
+            }
+
+
             if(!_interactiveMode)
             {
-                Execute(Options.Command.ToArray());
+                ExecuteLine(string.Join(" ",Options.Command));
                 return;
             }
             
@@ -76,36 +92,30 @@ namespace Platform.TestClient
                 if (string.IsNullOrWhiteSpace(line))
                 {
                     Console.WriteLine("Empty command");
-                    Console.Write(">>> ");
-                    continue;
                 }
-
-                try
+                else
                 {
-                    var args = ParseCommandLine(line);
-
-                    Execute(args);
+                    ExecuteLine(line);
                 }
-                catch (Exception exception)
-                {
-                    Console.WriteLine("ERROR:");
-                    Console.Write(exception.Message);
-                    Console.WriteLine();
-                }
+                Console.Write(">>> ");
             }
         }
 
-        private static string[] ParseCommandLine(string line)
+        void ExecuteLine(string line)
         {
-            return line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-        }
+            try
+            {
+                var args = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
-        private bool Execute(string[] args)
-        {
-            Log.Info("Processing command: {0}.", string.Join(" ", args));
+                Log.Info("Processing command: {0}.", string.Join(" ", args));
 
-            var context = new CommandProcessorContext(this, Log);
-            return _commands.TryProcess(context, args);
+                var context = new CommandProcessorContext(this, Log);
+                _commands.TryProcess(context, args);
+            }
+            catch (Exception exception)
+            {
+                Log.ErrorException(exception, "Error while executing command");
+            }
         }
     }
 }

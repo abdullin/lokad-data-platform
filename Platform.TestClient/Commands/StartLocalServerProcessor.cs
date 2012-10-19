@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 
 namespace Platform.TestClient.Commands
@@ -11,6 +13,12 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var file = @"..\server\Platform.Node.exe";
+            if (!File.Exists(file))
+            {
+                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
+                
+                file = Path.Combine(dir, file);
+            }
             if (!File.Exists(file))
             {
                 context.Log.Error("Not found {0}. Did you compile?", file);

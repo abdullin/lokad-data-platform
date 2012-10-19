@@ -1,1 +1,0 @@
-start /b "" bin/server/Platform.Node.exe -k 300 -h 8085 -s env

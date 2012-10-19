@@ -22,21 +22,19 @@ namespace Platform.TestClient.Commands
 
         public string Usage
         {
-            get { return "RS folder"; }
+            get { return "RS [dir]"; }
         }
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            const string variable = "DATAPLATFORM_STOREDIR";
-            context.Log.Debug("Current variable is: {0}", Environment.GetEnvironmentVariable(variable, EnvironmentVariableTarget.User));
-            if (args.Length == 0)
+
+
+
+            string dir = context.Client.Options.StoreLocation;
+            if (args.Any())
             {
-                context.Log.Error("Expected folder for test store");
-                return false;
+                dir = string.Join(" ", args);
             }
-
-
-            var dir = string.Join(" ", args);
             if (Directory.Exists(dir))
             {
                 context.Log.Info("Cleaning {0}", dir);
@@ -44,10 +42,6 @@ namespace Platform.TestClient.Commands
             }
             Directory.CreateDirectory(dir);
             
-            context.Log.Info("Setting environment variable: {0}", variable);
-            
-            Environment.SetEnvironmentVariable(variable, dir,EnvironmentVariableTarget.User);
-            Environment.SetEnvironmentVariable(variable, dir, EnvironmentVariableTarget.Process);
             return true;
         }
     }
