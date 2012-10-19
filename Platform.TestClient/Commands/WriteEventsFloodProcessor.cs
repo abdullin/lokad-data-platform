@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Platform.TestClient.Commands
     public class WriteEventsFloodProcessor : ICommandProcessor
     {
         public string Key { get { return "WRFL"; } }
-        public string Usage { get { return "WRFL [<Thread Count> [<Size>]]"; } }
+        public string Usage { get { return "WRFL [<Thread Count> [<Count> [<Size>]]]"; } }
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
@@ -21,12 +22,28 @@ namespace Platform.TestClient.Commands
             var threads = new List<Task>();
 
             int threadCount = 5;
-            var size = 1000;
+            var messageCount = 1000;
+            int byteSize = 0;
 
+            
             if (args.Length > 0)
                 int.TryParse(args[0], out threadCount);
             if (args.Length > 1)
-                int.TryParse(args[1], out size);
+                int.TryParse(args[1], out messageCount);
+
+            if (args.Length > 2)
+                int.TryParse(args[2], out byteSize);
+
+            var bytes = Encoding.UTF8.GetBytes("This is some test message to load the server");
+
+            if (byteSize > 0)
+            {
+                bytes = Enumerable
+                    .Range(0, byteSize)
+                    .Select(i => (byte)(i % byte.MaxValue))
+                    .ToArray();
+            }
+
 
             var global = Stopwatch.StartNew();
             for (int t = 0; t < threadCount; t++)
@@ -35,13 +52,14 @@ namespace Platform.TestClient.Commands
                 var task = Task.Factory.StartNew(() =>
                     {
                         var watch = Stopwatch.StartNew();
-                        for (int i = 0; i < size; i++)
+                        for (int i = 0; i < messageCount; i++)
                         {
-                            context.Client.Platform.WriteEvent("name", Encoding.UTF8.GetBytes("This is some test message to load the server"));
+                            
+                            context.Client.Platform.WriteEvent("name", bytes);
                         }
 
                         Interlocked.Add(ref total, watch.Elapsed.Ticks);
-                        Interlocked.Add(ref count, size);
+                        Interlocked.Add(ref count, messageCount);
 
                     }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
@@ -49,7 +67,7 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
             //context.Completed();
             context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
-            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-reqPerSec", Key, threadCount, size), (int)(count / global.Elapsed.TotalSeconds));
+            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-reqPerSec", Key, threadCount, messageCount), (int)(count / global.Elapsed.TotalSeconds));
             return true;
         }
     }

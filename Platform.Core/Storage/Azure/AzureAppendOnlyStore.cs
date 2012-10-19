@@ -81,7 +81,7 @@ namespace Platform.Storage.Azure
 
             public void Write7BitInt(int length)
             {
-                base.Write7BitEncodedInt(length);
+                Write7BitEncodedInt(length);
             }
         }
     }
