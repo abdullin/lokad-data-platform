@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 
 namespace Platform.TestClient
 {
@@ -10,6 +11,8 @@ namespace Platform.TestClient
         static void Main(string[] args)
         {
             Application.Start(Environment.Exit);
+            ServicePointManager.UseNagleAlgorithm = false;
+            ServicePointManager.DefaultConnectionLimit = 48;
 
             var clientOptions = new ClientOptions();
             if (!CommandLine.CommandLineParser.Default.ParseArguments(args, clientOptions))

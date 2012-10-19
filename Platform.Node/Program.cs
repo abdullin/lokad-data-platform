@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using Platform.Messages;
 using Platform.Node.Services.ServerApi;
@@ -15,6 +16,10 @@ namespace Platform.Node
         static readonly ManualResetEventSlim ExitWait = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
+
+            ServicePointManager.UseNagleAlgorithm = false;
+            ServicePointManager.DefaultConnectionLimit = 48;
+
             var options = new NodeOptions();
             if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
             {
