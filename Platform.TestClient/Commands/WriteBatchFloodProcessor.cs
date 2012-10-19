@@ -65,6 +65,7 @@ namespace Platform.TestClient.Commands
             var msgPerSec = (1000D * threadCount * repeatForEachThread * batchSize / totalMs);
 
             context.Log.Debug("Throughput: {0} or {1}", FormatEvil.SpeedInBytes(bytesPerSec), (int)msgPerSec);
+            context.Log.Debug("Average latency {0}ms", (int)totalMs / threadCount);
             PerfUtils.LogTeamCityGraphData(key + "-bytesPerSec", (int)bytesPerSec);
             PerfUtils.LogTeamCityGraphData(key + "-msgPerSec", (int)msgPerSec);
             return true;
