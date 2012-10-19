@@ -11,7 +11,7 @@ namespace Platform.Storage.Azure
         readonly CloudPageBlob _blob;
         readonly PageWriter _pageWriter;
         long _blobContentSize;
-        long _blobLength;
+        long _blobSpaceSize;
 
         public AzureAppendOnlyStore(string connectionString, string container)
         {
@@ -21,12 +21,12 @@ namespace Platform.Storage.Azure
             _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
             {
-                _blob.Create(512);
+                _blob.Create(ChunkSize);
                 _blob.SetCommittedSize(0);
             }
 
             _blobContentSize = _blob.GetCommittedSize();
-            _blobLength = _blob.Properties.Length;
+            _blobSpaceSize = _blob.Properties.Length;
         }
 
         public void Append(string key, IEnumerable<byte[]> data)
@@ -54,16 +54,20 @@ namespace Platform.Storage.Azure
             }
         }
 
+        public const long ChunkSize = 1024 * 1024 * 4;
+
         void WriteProc(int offset, Stream source)
         {
             if (!source.CanSeek)
                 throw new InvalidOperationException("Seek must be supported by a stream.");
 
             var length = source.Length;
-            if (offset + length > _blobLength)
+
+            if (offset + length > _blobSpaceSize)
             {
-                _blob.SetLength(offset + length);
-                _blobLength = offset + length;
+                var newSize = _blobSpaceSize + ChunkSize;
+                _blob.SetLength(newSize);
+                _blobSpaceSize = newSize;
             }
 
             _blob.WritePages(source, offset);
