@@ -34,6 +34,10 @@ namespace Platform.TestClient.Commands.Bench
                 
                 
                 success &= new BasicTestProcessor().Execute(context, token, Args("10 10000 10 20"));
+
+                success &= new WriteBatchFloodProcessor().Execute(context, token, Args("1 500000 5"));
+                success &= new WriteBatchFloodProcessor().Execute(context, token, Args("5 500000 5"));
+                success &= new WriteBatchFloodProcessor().Execute(context, token, Args("10 500000 5"));
                 return success;
             }
             catch (Exception ex)
