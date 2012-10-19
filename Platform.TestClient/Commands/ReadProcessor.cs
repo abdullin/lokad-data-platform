@@ -36,7 +36,7 @@ namespace Platform.TestClient.Commands
             context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
             foreach (var record in dataRecords)
             {
-                context.Log.Info("  stream-id: {0}, data: {0}", record.Key, Encoding.UTF8.GetString(record.Data));
+                context.Log.Info("  stream-id: {0}, data: {1}", record.Key, Encoding.UTF8.GetString(record.Data));
             }
 
             var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().Next : StorageOffset.Zero;
