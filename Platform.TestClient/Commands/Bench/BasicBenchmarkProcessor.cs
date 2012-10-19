@@ -22,6 +22,10 @@ namespace Platform.TestClient.Commands.Bench
                 var success = true;
                 success &= new ResetStoreProcessor().Execute(context, token, Args());
                 success &= new StartLocalServerProcessor().Execute(context, token, Args("-k 300"));
+                // we need to sleep a little bit to let server wire up
+                // TODO: setup proper ping inside server starter
+                token.WaitHandle.WaitOne(10000);
+
                 success &= new WriteEventsFloodProcessor().Execute(context, token, Args("5 20"));
 
                 success &= new WriteEventsFloodProcessor().Execute(context, token, Args("10 10"));
@@ -31,7 +35,8 @@ namespace Platform.TestClient.Commands.Bench
             }
             catch (Exception ex)
             {
-                context.Log.ErrorException(ex, "Unhandled client exception: {0}", ex.Message);
+                context.Log.ErrorException(ex, "Exception in {1}: {0}", ex.Message, Key);
+                context.Log.Debug(ex.ToString());
                 return false;
             }
             finally

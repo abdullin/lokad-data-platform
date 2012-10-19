@@ -5,6 +5,7 @@
 
 #endregion
 
+using System;
 using System.IO;
 using System.Threading;
 using System.Linq;
@@ -35,11 +36,22 @@ namespace Platform.TestClient.Commands
             if (AzureStoreConfiguration.TryParse(location, out configuration))
             {
                 context.Log.Info("Azure store detected");
-                var account = CloudStorageAccount.Parse(configuration.ConnectionString);
-                var client = account.CreateCloudBlobClient();
-                client.GetContainerReference(configuration.Container)
-                    .ListBlobs()
-                    .AsParallel().ForAll(i => client.GetBlobReference(i.Uri.ToString()).DeleteIfExists());
+                try
+                {
+                    var account = CloudStorageAccount.Parse(configuration.ConnectionString);
+                    var client = account.CreateCloudBlobClient();
+                    client.GetContainerReference(configuration.Container)
+                        .ListBlobs()
+                        .AsParallel().ForAll(i => client.GetBlobReference(i.Uri.ToString()).DeleteIfExists());
+                }
+                catch(AggregateException e)
+                {
+                    foreach (var innerException in e.InnerExceptions)
+                    {
+                        context.Log.ErrorException(innerException, "Error while store reset: ", innerException.Message);
+                    }
+                    return false;
+                }
                 return true;
             }
 
