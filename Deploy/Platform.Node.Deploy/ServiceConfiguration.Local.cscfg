@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="Platform.Node.Deploy" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="1" osVersion="*" schemaVersion="2012-05.1.7">
+  <Role name="Platform.Node.Worker">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="StorageConnection" value="UseDevelopmentStorage=true" />
+      <Setting name="StorageContainer" value="dp-store" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

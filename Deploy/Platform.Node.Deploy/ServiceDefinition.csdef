@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="Platform.Node.Deploy" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2012-05.1.7">
+  <WorkerRole name="Platform.Node.Worker" vmsize="Small">
+    <Imports>
+    </Imports>
+    <ConfigurationSettings>
+      <Setting name="StorageConnection" />
+      <Setting name="StorageContainer" />
+    </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="Http" protocol="http" port="8080" />
+    </Endpoints>
+  </WorkerRole>
+</ServiceDefinition>
