@@ -19,6 +19,7 @@ namespace Platform
 
         protected void ImportEventsInternal(string streamName, string location)
         {
+            ThrowIfClientNotInitialized();
             var response = Client.Post<ClientDto.ImportEventsResponse>("/import", new ClientDto.ImportEvents()
                 {
                     Location = location,
@@ -31,6 +32,7 @@ namespace Platform
 
         public void WriteEvent(string streamName, byte[] data)
         {
+            ThrowIfClientNotInitialized();
             var response = Client.Post<ClientDto.WriteEventResponse>("/stream", new ClientDto.WriteEvent()
             {
                 Data = data,
@@ -40,6 +42,12 @@ namespace Platform
                 throw new InvalidOperationException(response.Result ?? "Client error");
         }
 
-
+        void ThrowIfClientNotInitialized()
+        {
+            if (null == Client)
+            {
+                throw new InvalidOperationException("Client was not initialized");
+            }
+        }
     }
 }
