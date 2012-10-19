@@ -46,10 +46,14 @@ namespace Platform.TestClient.Commands.Bench
             var list = new BenchmarkTaskList();
             list.Add(new ResetStoreProcessor(),"");
             list.Add(new StartLocalServerProcessor(), "-k 300");
-            list.Add(new WriteEventsFloodProcessor(), "5 20 44");
-            list.Add(new WriteEventsFloodProcessor(), "10 10 44");
-            list.Add(new WriteEventsFloodProcessor(), "5 20 600");
-            list.Add(new WriteEventsFloodProcessor(), "10 10 600");
+
+
+            list.Add(new WriteEventsFloodProcessor(), "5 20 200"); // x 100 200
+            list.Add(new WriteEventsFloodProcessor(), "1 100 200"); // x100 200
+            list.Add(new WriteEventsFloodProcessor(), "1 20 1000"); //
+            list.Add(new WriteEventsFloodProcessor(), "10 10 200");
+            list.Add(new WriteEventsFloodProcessor(), "5 10 400");
+
             list.Add(new BasicTestProcessor(), "10 10000 10 20");
 
             
