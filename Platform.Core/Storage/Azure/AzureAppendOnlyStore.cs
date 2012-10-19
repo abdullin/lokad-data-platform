@@ -13,6 +13,10 @@ namespace Platform.Storage.Azure
         long _blobContentSize;
         long _blobSpaceSize;
 
+        public const long ChunkSize = 1024 * 1024 * 4;
+
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
+
         public AzureAppendOnlyStore(AzureStoreConfiguration configuration)
         {
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
@@ -21,7 +25,7 @@ namespace Platform.Storage.Azure
             _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
             {
-                _blob.Create(512);
+                _blob.Create(ChunkSize);
                 _blob.SetCommittedSize(0);
             }
 
@@ -54,26 +58,20 @@ namespace Platform.Storage.Azure
             }
         }
 
-        public const long ChunkSize = 1024 * 1024 * 4;
+        
 
         void WriteProc(int offset, Stream source)
         {
             if (!source.CanSeek)
                 throw new InvalidOperationException("Seek must be supported by a stream.");
-
             
-
-            //if (offset + length > _blobSpaceSize)
-            //{
-            //    var newSize = _blobSpaceSize + ChunkSize;
-            //    _blob.SetLength(newSize);
-            //    _blobSpaceSize = newSize;
-            //}
             var length = source.Length;
             if (offset + length > _blobSpaceSize)
             {
-                _blob.SetLength(offset + length);
-                _blobSpaceSize = offset + length;
+                var newSize = _blobSpaceSize + ChunkSize;
+                Log.Debug("Increasing chunk size to {0}", newSize);
+                _blob.SetLength(newSize);
+                _blobSpaceSize = newSize;
             }
 
             _blob.WritePages(source, offset);
