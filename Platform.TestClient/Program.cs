@@ -17,10 +17,20 @@ namespace Platform.TestClient
                 return;
             }
 
+            if (clientOptions.StoreLocation == "test")
+            {
+                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_TESTDIR");
+                if (string.IsNullOrWhiteSpace(over))
+                {
+                    over = @"C:\LokadData\dp-test";
+                }
+                clientOptions.StoreLocation = over;
+            }
 
-            var client = new Client(clientOptions);
+            
             try
             {
+                var client = new Client(clientOptions);
                 client.Run();
             }
             catch (Exception exception)
