@@ -73,7 +73,10 @@ namespace Platform.TestClient
                     .Where(l => !string.IsNullOrWhiteSpace(l))
                     .Where(l => !l.StartsWith("//")))
                 {
-                    ExecuteLine(ln);
+                    if (!ExecuteLine(ln))
+                    {
+                        Application.Exit(ExitCode.Error, "Failure while running " + ln);
+                    }
                 }
             }
 
@@ -101,7 +104,7 @@ namespace Platform.TestClient
             }
         }
 
-        void ExecuteLine(string line)
+        bool ExecuteLine(string line)
         {
             try
             {
@@ -110,11 +113,12 @@ namespace Platform.TestClient
                 Log.Info("Processing command: {0}.", string.Join(" ", args));
 
                 var context = new CommandProcessorContext(this, Log);
-                _commands.TryProcess(context, args);
+                return _commands.TryProcess(context, args);
             }
             catch (Exception exception)
             {
                 Log.ErrorException(exception, "Error while executing command");
+                return false;
             }
         }
     }
