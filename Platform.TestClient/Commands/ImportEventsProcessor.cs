@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Platform.TestClient.Commands
 {
@@ -8,8 +9,8 @@ namespace Platform.TestClient.Commands
     {
         public string Key { get { return "IE"; } }
         public string Usage { get { return "IE [<batchSize> [<streamId> [<streamData>]]]"; } }
-        
-        public bool Execute(CommandProcessorContext context, string[] args)
+
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             int batchSize =  10000;
             string streamId = "batch";

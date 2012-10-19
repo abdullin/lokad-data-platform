@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
+using System.Threading;
 using Platform.Storage;
 
 namespace Platform.TestClient.Commands
@@ -10,7 +11,7 @@ namespace Platform.TestClient.Commands
         public string Key { get { return "RA"; } }
         public string Usage { get { return "RA [<from-offset> <max-record-count>]"; } }
 
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var fromOffset = 0;
             int maxRecordCount = int.MaxValue;

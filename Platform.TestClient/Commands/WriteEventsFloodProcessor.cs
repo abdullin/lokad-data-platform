@@ -11,7 +11,7 @@ namespace Platform.TestClient.Commands
         public string Key { get { return "WRFL"; } }
         public string Usage { get { return "WRFL [<Thread Count> [<Size>]]"; } }
 
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             //context.IsAsync();
 

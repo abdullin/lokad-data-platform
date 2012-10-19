@@ -51,32 +51,34 @@ namespace Platform.TestClient
             var result = false;
 
             var timeout = context.Client.Options.Timeout;
-            
 
-            try
+            using (var source = new CancellationTokenSource())
             {
-                if (timeout > 0)
+                try
                 {
-                    result =
-                        new WaitFor<bool>(TimeSpan.FromSeconds(timeout)).Run(
-                            () => commandProcessor.Execute(context, commandArgs));
+                    var token = source.Token;
+                    if (timeout > 0)
+                    {
+                        result = new WaitFor<bool>(TimeSpan.FromSeconds(timeout)).Run(
+                                () => commandProcessor.Execute(context, token, commandArgs));
+                    }
+                    else
+                    {
+                        result = commandProcessor.Execute(context, token,commandArgs);
+                    }
                 }
-                else
+                catch (TimeoutException ex)
                 {
-                    result = commandProcessor.Execute(context, commandArgs);
+                    _log.Error("Command didn't finish in {0} seconds", timeout);
                 }
-            }
-            catch(TimeoutException ex)
-            {
-                _log.Error("Command didn't finish in {0} seconds", timeout);
-            }
-            catch (Exception exc)
-            {
-                _log.ErrorException(exc, "Failure while processing {0}", commandName);
-            }
-            finally
-            {
-                context.Token.Cancel();
+                catch (Exception exc)
+                {
+                    _log.ErrorException(exc, "Failure while processing {0}", commandName);
+                }
+                finally
+                {
+                    source.Cancel();
+                }
             }
             return result;
         }

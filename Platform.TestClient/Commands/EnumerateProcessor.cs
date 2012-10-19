@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace Platform.TestClient.Commands
 {
@@ -7,7 +8,7 @@ namespace Platform.TestClient.Commands
     {
         public string Key { get { return "EN"; } }
         public string Usage { get { return "EN [maxcount]"; } }
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var maxCount = 10000;
 

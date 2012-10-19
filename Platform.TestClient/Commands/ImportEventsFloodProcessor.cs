@@ -12,7 +12,7 @@ namespace Platform.TestClient.Commands
         public string Key { get { return "IEFL"; } }
         public string Usage { get { return "IEFL [<threadCount> [<batchSize> [<repeatForEachThread>]]]"; } }
 
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             int threadCount = 5;
             int batchSize = 10000;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Platform.Storage;
 using ServiceStack.Common.Net30;
@@ -31,7 +32,7 @@ namespace Platform.TestClient.Commands
 
         const string singleThreadMessageTemplate = "basic-test-one-thread-message-{0}-{{0}}";
 
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             
             int batchCount = 10;

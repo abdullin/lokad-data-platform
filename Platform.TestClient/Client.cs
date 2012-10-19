@@ -101,11 +101,8 @@ namespace Platform.TestClient
         {
             Log.Info("Processing command: {0}.", string.Join(" ", args));
 
-            using (var token = new CancellationTokenSource())
-            {
-                var context = new CommandProcessorContext(this, Log, token);
-                return _commands.TryProcess(context, args);
-            }
+            var context = new CommandProcessorContext(this, Log);
+            return _commands.TryProcess(context, args);
         }
     }
 }

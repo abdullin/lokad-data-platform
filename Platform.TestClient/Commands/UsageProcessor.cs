@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
@@ -15,7 +16,7 @@ namespace Platform.TestClient.Commands
             _commands = commands;
         }
 
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var allCommands = string.Join("\n\n", _commands.RegisteredProcessors.Select(x => x.Usage.ToUpper()));
             context.Log.Info("Available commands:\n{0}", allCommands);

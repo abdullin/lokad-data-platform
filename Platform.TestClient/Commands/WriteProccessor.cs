@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading;
 
 namespace Platform.TestClient.Commands
 {
@@ -6,7 +7,7 @@ namespace Platform.TestClient.Commands
     {
         public string Key { get { return "WR"; } }
         public string Usage { get { return "WR [<stream-id> <expected-version> <data>]"; } }
-        public bool Execute(CommandProcessorContext context, string[] args)
+        public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var eventStreamId = "default stream";
             var data = "default-data";
