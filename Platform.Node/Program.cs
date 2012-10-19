@@ -137,7 +137,7 @@ namespace Platform.Node
                 //    .When<SystemMessage.BecomeShutdown>().Do(Handle)
                 .InState(NodeState.Master)
                     .When<ClientMessage.WriteMessage>().Do(m => _outputBus.Publish(m))
-                    .When<ClientMessage.RequestShutdown>().Do(Handle)
+                    .When<ClientMessage.RequestStoreReset>().Do(m => _outputBus.Publish(m))
                     .When<SystemMessage.StartShutdown>().Do(m => Application.Exit(ExitCode.Success, "Shutdown"))
                 .InState(NodeState.Initializing)
                     .When<ClientMessage.WriteMessage>().Ignore()

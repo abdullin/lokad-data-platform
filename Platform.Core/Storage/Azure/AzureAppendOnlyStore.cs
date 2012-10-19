@@ -23,14 +23,7 @@ namespace Platform.Storage.Azure
             _pageWriter = new PageWriter(512, WriteProc);
 
             _blob.Container.CreateIfNotExist();
-            if (!_blob.Exists())
-            {
-                _blob.Create(ChunkSize);
-                _blob.SetCommittedSize(0);
-            }
-
-            _blobContentSize = _blob.GetCommittedSize();
-            _blobSpaceSize = _blob.Properties.Length;
+            Initialize();
         }
 
         public void Append(string key, IEnumerable<byte[]> data)
@@ -58,7 +51,12 @@ namespace Platform.Storage.Azure
             }
         }
 
-        
+        public void Reset()
+        {
+            _blob.Delete();
+            _pageWriter.Reset();
+            Initialize();
+        }
 
         void WriteProc(int offset, Stream source)
         {
@@ -75,6 +73,18 @@ namespace Platform.Storage.Azure
             }
 
             _blob.WritePages(source, offset);
+        }
+
+        void Initialize()
+        {
+            if (!_blob.Exists())
+            {
+                _blob.Create(ChunkSize);
+                _blob.SetCommittedSize(0);
+            }
+
+            _blobContentSize = _blob.GetCommittedSize();
+            _blobSpaceSize = _blob.Properties.Length;
         }
 
         sealed class BitWriter : BinaryWriter

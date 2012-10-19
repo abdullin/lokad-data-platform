@@ -38,6 +38,7 @@ namespace Platform.Node.Worker
             _bus.Subscribe<SystemMessage.StartShutdown>(_http);
             _bus.Subscribe(_timer);
             _bus.Subscribe<ClientMessage.AppendEvents>(_storageService);
+            _bus.Subscribe<ClientMessage.RequestStoreReset>(_storageService);
             _bus.Subscribe<SystemMessage.Init>(_storageService);
             _bus.Subscribe<ClientMessage.ImportEvents>(_storageService);
 

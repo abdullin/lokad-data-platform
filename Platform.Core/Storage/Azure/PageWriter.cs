@@ -94,5 +94,12 @@ namespace Platform.Storage.Azure
 
             t.Dispose();
         }
+
+        public void Reset()
+        {
+            _pending.SetLength(0);
+            _bytesPending = 0;
+            _fullPagesFlushed = 0;
+        }
     }
 }

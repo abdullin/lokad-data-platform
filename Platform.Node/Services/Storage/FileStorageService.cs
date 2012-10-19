@@ -77,5 +77,11 @@ namespace Platform.Node.Services.Storage
                 Application.Exit(ExitCode.Error, "Failed to initialize store: " + ex.Message);
             }
         }
+
+        public void Handle(ClientMessage.RequestStoreReset message)
+        {
+            _store.Reset();
+            Log.Info("Storage cleared");
+        }
     }
 }

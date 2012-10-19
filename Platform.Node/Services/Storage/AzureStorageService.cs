@@ -13,8 +13,7 @@ namespace Platform.Node.Services.Storage
     {
         readonly static ILogger Log = LogManager.GetLoggerFor<AzureStorageService>();
         readonly IPublisher _publisher;
-        
-        AzureStoreConfiguration _config;
+        readonly AzureStoreConfiguration _config;
         AzureAppendOnlyStore _store;
 
         public AzureStorageService(AzureStoreConfiguration config, IPublisher publisher)
@@ -64,6 +63,12 @@ namespace Platform.Node.Services.Storage
             Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
 
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
+        }
+
+        public void Handle(ClientMessage.RequestStoreReset message)
+        {
+            _store.Reset();
+            Log.Info("Storage cleared");
         }
 
         static IEnumerable<byte[]> EnumerateStaging(CloudBlob blob)
