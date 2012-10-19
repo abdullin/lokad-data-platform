@@ -54,6 +54,12 @@ namespace Platform
             Close();
             File.Delete(Path.Combine(_path, "stream.chk"));
             File.Delete(Path.Combine(_path, "stream.dat"));
+
+            foreach (var name in Directory.GetFiles(_path))
+            {
+                File.Delete(name);
+            }
+
             Open();
         }
 

@@ -54,6 +54,13 @@ namespace Platform.Storage.Azure
         public void Reset()
         {
             _blob.Delete();
+
+            foreach (var name in _blob.Container.ListBlobs())
+            {
+                var blob = name.Container.GetBlobReference(name.Uri.ToString());
+                blob.Delete();
+            }
+
             _pageWriter.Reset();
             Initialize();
         }
