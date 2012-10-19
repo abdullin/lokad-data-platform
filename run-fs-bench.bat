@@ -1,1 +1,1 @@
-bin\client\Platform.TestClient.exe -h 8085 -s C:\LokadData\dp-fs-test -r benchmark.txt EXIT
+bin\client\Platform.TestClient.exe -h 8085 -s C:\LokadData\dp-fs-test Bench1
