@@ -10,10 +10,10 @@ namespace Platform.Storage
     {
         readonly CloudPageBlob _blob;
 
-        public AzurePlatformClient(string connectionString, string container, string serverEndpoint = null)
+        public AzurePlatformClient(AzureStoreConfiguration config, string serverEndpoint = null)
             : base(serverEndpoint)
         {
-            _blob = StorageExtensions.GetPageBlobReference(connectionString, container + "/" + "stream.dat");
+            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, config.Container + "/" + "stream.dat");
         }
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)

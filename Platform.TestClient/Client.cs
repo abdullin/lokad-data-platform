@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Platform.Storage;
+using Platform.Storage.Azure;
 using Platform.TestClient.Commands;
 using ServiceStack.Common;
 
@@ -27,17 +28,17 @@ namespace Platform.TestClient
 
             
             ClientHttpBase = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
-
-            if (clientOptions.StoreLocation.StartsWith("DefaultEndpointsProtocol=", StringComparison.InvariantCultureIgnoreCase)
-                || clientOptions.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
+            AzureStoreConfiguration azureConfig;
+            if (AzureStoreConfiguration.TryParse(clientOptions.StoreLocation, out azureConfig))
             {
-                var parts = clientOptions.StoreLocation.Split('|');
-                Platform = new AzurePlatformClient(connectionString: parts[0].Trim('"'), container: parts[1], serverEndpoint: ClientHttpBase);
+                Platform = new AzurePlatformClient(azureConfig);
             }
             else
+            {
                 Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
+            }
 
-            
+
 
             RegisterCommand();
         }
