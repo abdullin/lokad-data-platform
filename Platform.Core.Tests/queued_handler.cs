@@ -39,77 +39,77 @@ namespace Platform.Core.Tests
         }
     }
 
-    public class when_enqueue
-    {
-        [Test]
-        public void messages_handler()
-        {
-            //GIVEN
-            var message = new QueuedTestMessage1();
-            var controller = new QueuedTestController1();
-            var mainQueue = new QueuedHandler(controller, "Main Queue");
-            mainQueue.Start();
+    //public class when_enqueue
+    //{
+    //    [Test]
+    //    public void messages_handler()
+    //    {
+    //        //GIVEN
+    //        var message = new QueuedTestMessage1();
+    //        var controller = new QueuedTestController1();
+    //        var mainQueue = new QueuedHandler(controller, "Main Queue");
+    //        mainQueue.Start();
 
-            //WHEN
-            mainQueue.Enqueue(message);
+    //        //WHEN
+    //        mainQueue.Enqueue(message);
 
-            //EXPECT
-            Assert.AreEqual(true, controller.MessageHandled(10000));
-            CollectionAssert.AreEqual(new[] { message }, controller.HandledMessages);
-        }
+    //        //EXPECT
+    //        Assert.AreEqual(true, controller.MessageHandled(10000));
+    //        CollectionAssert.AreEqual(new[] { message }, controller.HandledMessages);
+    //    }
 
-        [Test]
-        public void messages_handler_when_not_starting()
-        {
-            //GIVEN
-            var controller = new QueuedTestController1();
-            var mainQueue = new QueuedHandler(controller, "Main Queue");
+    //    [Test]
+    //    public void messages_handler_when_not_starting()
+    //    {
+    //        //GIVEN
+    //        var controller = new QueuedTestController1();
+    //        var mainQueue = new QueuedHandler(controller, "Main Queue");
 
-            //WHEN
-            mainQueue.Enqueue(new QueuedTestMessage1());
+    //        //WHEN
+    //        mainQueue.Enqueue(new QueuedTestMessage1());
 
-            //EXPECT
-            Assert.AreEqual(false, controller.MessageHandled());
-            CollectionAssert.IsEmpty(controller.HandledMessages);
-        }
+    //        //EXPECT
+    //        Assert.AreEqual(false, controller.MessageHandled());
+    //        CollectionAssert.IsEmpty(controller.HandledMessages);
+    //    }
 
-        [Test]
-        public void messages_handler_when_stoped()
-        {
-            //GIVEN
-            var controller = new QueuedTestController1();
-            var mainQueue = new QueuedHandler(controller, "Main Queue");
-            mainQueue.Start();
-            mainQueue.Stop();
+    //    [Test]
+    //    public void messages_handler_when_stoped()
+    //    {
+    //        //GIVEN
+    //        var controller = new QueuedTestController1();
+    //        var mainQueue = new QueuedHandler(controller, "Main Queue");
+    //        mainQueue.Start();
+    //        mainQueue.Stop();
 
-            //WHEN
-            mainQueue.Enqueue(new QueuedTestMessage1());
+    //        //WHEN
+    //        mainQueue.Enqueue(new QueuedTestMessage1());
 
-            //EXPECT
-            Assert.AreEqual(false, controller.MessageHandled());
-            CollectionAssert.IsEmpty(controller.HandledMessages);
-        }
+    //        //EXPECT
+    //        Assert.AreEqual(false, controller.MessageHandled());
+    //        CollectionAssert.IsEmpty(controller.HandledMessages);
+    //    }
 
-        [Test]
-        public void multiple_messages_handler()
-        {
-            //GIVEN
-            var controller = new QueuedTestController1();
-            var mainQueue = new QueuedHandler(controller, "Main Queue");
-            mainQueue.Start();
+    //    [Test]
+    //    public void multiple_messages_handler()
+    //    {
+    //        //GIVEN
+    //        var controller = new QueuedTestController1();
+    //        var mainQueue = new QueuedHandler(controller, "Main Queue");
+    //        mainQueue.Start();
 
-            //WHEN
-            var msg1 = new QueuedTestMessage1();
-            var msg2 = new QueuedTestMessage2();
-            mainQueue.Enqueue(msg1);
-            mainQueue.Enqueue(msg2);
+    //        //WHEN
+    //        var msg1 = new QueuedTestMessage1();
+    //        var msg2 = new QueuedTestMessage2();
+    //        mainQueue.Enqueue(msg1);
+    //        mainQueue.Enqueue(msg2);
 
-            //EXPECT
-            Assert.AreEqual(true, controller.MessageHandled());
-            CollectionAssert.AreEqual(new List<Message> { msg1, msg2 }, controller.HandledMessages);
-        }
+    //        //EXPECT
+    //        Assert.AreEqual(true, controller.MessageHandled());
+    //        CollectionAssert.AreEqual(new List<Message> { msg1, msg2 }, controller.HandledMessages);
+    //    }
 
-    }
+    //}
 
     public class when_stop
     {
