@@ -8,7 +8,16 @@ namespace Platform.Messages
         public class RequestShutdown : Message{}
         public abstract class WriteMessage : Message {}
 
-        public class RequestStoreWipe : WriteMessage
+        public class RequestStoreReset : WriteMessage
+        {
+            public readonly Action<StoreResetCompleted> Envelope;
+            public RequestStoreReset(Action<StoreResetCompleted> envelope)
+            {
+                Envelope = envelope;
+            }
+        }
+
+        public class StoreResetCompleted : Message
         {
             
         }

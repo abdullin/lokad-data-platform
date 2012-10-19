@@ -1,10 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
@@ -15,7 +11,7 @@ namespace Platform.Node
     class Program
     {
         public static readonly ILogger Log = LogManager.GetLoggerFor<Program>();
-        static ManualResetEventSlim _exitWait = new ManualResetEventSlim(false);
+        static readonly ManualResetEventSlim ExitWait = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
             var options = new NodeOptions();
@@ -86,13 +82,13 @@ namespace Platform.Node
             }
             else
             {
-                _exitWait.Wait();
+                ExitWait.Wait();
             }
         }
 
         static void ExitAction(int i)
         {
-            _exitWait.Set();
+            ExitWait.Set();
             Environment.Exit(i);
         }
     }
