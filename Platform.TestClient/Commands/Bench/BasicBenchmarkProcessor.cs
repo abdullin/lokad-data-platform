@@ -26,10 +26,13 @@ namespace Platform.TestClient.Commands.Bench
                 // TODO: setup proper ping inside server starter
                 token.WaitHandle.WaitOne(10000);
 
-                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("5 20"));
+                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("5 20 44"));
+                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("10 10 44"));
 
-                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("10 10"));
-                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("2 50"));
+                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("5 20 600"));
+                success &= new WriteEventsFloodProcessor().Execute(context, token, Args("10 10 600"));
+                
+                
                 success &= new BasicTestProcessor().Execute(context, token, Args("10 10000 10 20"));
                 return success;
             }
