@@ -61,15 +61,18 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
             //context.Completed();
             // througput
-            var totalBytes = bytes.Length * threadCount * repeatForEachThread * batchSize;
+            var totalMessages = threadCount * repeatForEachThread * batchSize;
+            var totalBytes = bytes.Length * totalMessages;
             
             var key = string.Format("WB-{0}-{1}-{2}-{3}", threadCount, repeatForEachThread, batchSize, bytes.Length);
 
             var bytesPerSec = (totalBytes * 1000D / totalMs);
-            var msgPerSec = (1000D * threadCount * repeatForEachThread * batchSize / totalMs);
+            var msgPerSec = (1000D * totalMessages / totalMs);
 
             context.Log.Debug("Throughput: {0} or {1}", FormatEvil.SpeedInBytes(bytesPerSec), (int)msgPerSec);
             context.Log.Debug("Average latency {0}ms", (int)totalMs / threadCount);
+            context.Log.Debug("Sent total {0} with {1}msg in {2}ms", FormatEvil.SizeInBytes(totalBytes), totalMessages, totalMs);
+
             PerfUtils.LogTeamCityGraphData(key + "-bytesPerSec", (int)bytesPerSec);
             PerfUtils.LogTeamCityGraphData(key + "-msgPerSec", (int)msgPerSec);
             return true;
