@@ -32,7 +32,7 @@ namespace Platform.TestClient
             AzureStoreConfiguration azureConfig;
             if (AzureStoreConfiguration.TryParse(clientOptions.StoreLocation, out azureConfig))
             {
-                Platform = new AzurePlatformClient(azureConfig);
+                Platform = new AzurePlatformClient(azureConfig, ClientHttpBase);
             }
             else
             {
