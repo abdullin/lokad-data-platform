@@ -51,8 +51,11 @@ namespace Platform.TestClient.Commands.Bench
             list.Add(new WriteEventsFloodProcessor(), "5 20 600");
             list.Add(new WriteEventsFloodProcessor(), "10 10 600");
             list.Add(new BasicTestProcessor(), "10 10000 10 20");
+
             list.Add(new WriteBatchFloodProcessor(), "1 50000 5");
             list.Add(new WriteBatchFloodProcessor(), "5 50000 5");
+            list.Add(new WriteBatchFloodProcessor(), "1 10000 5");
+            list.Add(new WriteBatchFloodProcessor(), "5 10000 5");
             
             try
             {
