@@ -70,7 +70,11 @@ namespace Platform.TestClient
         {
             if (Options.Command.Any())
             {
-                ExecuteLine(string.Join(" ", Options.Command));
+                var @join = string.Join(" ", Options.Command);
+                if (!ExecuteLine(@join))
+                {
+                    Application.Exit(ExitCode.Error, "Error while processing " + @join);
+                }
                 return;
             }
             
