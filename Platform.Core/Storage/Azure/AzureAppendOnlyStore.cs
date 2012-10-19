@@ -21,7 +21,7 @@ namespace Platform.Storage.Azure
             _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
             {
-                _blob.Create(ChunkSize);
+                _blob.Create(512);
                 _blob.SetCommittedSize(0);
             }
 
@@ -61,13 +61,19 @@ namespace Platform.Storage.Azure
             if (!source.CanSeek)
                 throw new InvalidOperationException("Seek must be supported by a stream.");
 
-            var length = source.Length;
+            
 
+            //if (offset + length > _blobSpaceSize)
+            //{
+            //    var newSize = _blobSpaceSize + ChunkSize;
+            //    _blob.SetLength(newSize);
+            //    _blobSpaceSize = newSize;
+            //}
+            var length = source.Length;
             if (offset + length > _blobSpaceSize)
             {
-                var newSize = _blobSpaceSize + ChunkSize;
-                _blob.SetLength(newSize);
-                _blobSpaceSize = newSize;
+                _blob.SetLength(offset + length);
+                _blobSpaceSize = offset + length;
             }
 
             _blob.WritePages(source, offset);
