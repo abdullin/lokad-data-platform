@@ -59,12 +59,14 @@ namespace Platform.TestClient.Commands
             // througput
             var totalBytes = bytes.Length * threadCount * repeatForEachThread * batchSize;
             
-            var key = string.Format("WB-{0}-{1}-{2}-{3}-bytesPerSec", threadCount, repeatForEachThread, batchSize,
-                bytes.Length);
+            var key = string.Format("WB-{0}-{1}-{2}-{3}", threadCount, repeatForEachThread, batchSize, bytes.Length);
 
             var bytesPerSec = (totalBytes * 1000D / totalMs);
-            context.Log.Debug("Throughput: {0}", FormatEvil.SpeedInBytes(bytesPerSec));
-            PerfUtils.LogTeamCityGraphData(key, (int)bytesPerSec);
+            var msgPerSec = (1000D * threadCount * repeatForEachThread * batchSize / totalMs);
+
+            context.Log.Debug("Throughput: {0} or {1}", FormatEvil.SpeedInBytes(bytesPerSec), (int)msgPerSec);
+            PerfUtils.LogTeamCityGraphData(key + "-bytesPerSec", (int)bytesPerSec);
+            PerfUtils.LogTeamCityGraphData(key + "-msgPerSec", (int)msgPerSec);
             return true;
         }
     }

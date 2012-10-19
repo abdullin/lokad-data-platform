@@ -11,9 +11,7 @@ namespace Platform
         {
             MaxScale = (long)Math.Pow(1024, ByteOrders.Length - 1);
         }
-
-
-
+        
         public static string SpeedInBytes(double bytesPerSecond)
         {
             if (bytesPerSecond > long.MaxValue)
