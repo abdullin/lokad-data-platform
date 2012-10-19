@@ -61,7 +61,6 @@ namespace Platform.Node.Services.Storage
                     size += bytes.Length;
                     return bytes;
                 }));
-            blob.Delete();
             var totalSeconds = watch.Elapsed.TotalSeconds;
             var speed = size / totalSeconds;
             Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
