@@ -38,7 +38,9 @@ namespace Platform.TestClient.Commands
             var arguments = string.Format("-h {0} -s {1} {2}", context.Client.Options.HttpPort, context.Client.Options.StoreLocation, all);
             context.Log.Debug("Starting {0} with args {1}", file, arguments);
             var proc = Process.Start(new ProcessStartInfo(file, arguments));
-            
+
+            token.WaitHandle.WaitOne(1000 * 2);
+            context.Log.Debug("Consider as started");
             return true;
         }
     }
