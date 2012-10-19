@@ -13,7 +13,7 @@ namespace Platform.TestClient.Commands
 
         public bool Execute(CommandProcessorContext context, string[] args)
         {
-            context.IsAsync();
+            //context.IsAsync();
 
             long total = 0;
             int count = 0;
@@ -47,7 +47,7 @@ namespace Platform.TestClient.Commands
                 threads.Add(task);
             }
             Task.WaitAll(threads.ToArray());
-            context.Completed();
+            //context.Completed();
             context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
             PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-reqPerSec", Key, threadCount, size), (int)(count / global.Elapsed.TotalSeconds));
             return true;

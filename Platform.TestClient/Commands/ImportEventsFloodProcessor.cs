@@ -52,7 +52,7 @@ namespace Platform.TestClient.Commands
             }
 
             Task.WaitAll(threads.ToArray());
-            context.Completed();
+            //context.Completed();
             context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
             PerfUtils.LogTeamCityGraphData(string.Format("{0}-latency-ms", Key), (int)(count / global.Elapsed.TotalSeconds));
             return true;

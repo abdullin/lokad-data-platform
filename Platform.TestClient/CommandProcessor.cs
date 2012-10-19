@@ -48,26 +48,36 @@ namespace Platform.TestClient
                 return false;
             }
 
-            bool result = false;
-            var executedEvent = new AutoResetEvent(false);
-            ThreadPool.QueueUserWorkItem(_ =>
+            var result = false;
+
+            var timeout = context.Client.Options.Timeout;
+            
+
+            try
             {
-                try
+                if (timeout > 0)
+                {
+                    result =
+                        new WaitFor<bool>(TimeSpan.FromSeconds(timeout)).Run(
+                            () => commandProcessor.Execute(context, commandArgs));
+                }
+                else
                 {
                     result = commandProcessor.Execute(context, commandArgs);
-                    executedEvent.Set();
                 }
-                catch (Exception exc)
-                {
-                    result = false;
-                    _log.ErrorException(exc, "Failure while processing {0}", commandName);
-                    executedEvent.Set();
-                }
-            });
-
-            executedEvent.WaitOne(1000);
-            context.WaitForCompletion();
-
+            }
+            catch(TimeoutException ex)
+            {
+                _log.Error("Command didn't finish in {0} seconds", timeout);
+            }
+            catch (Exception exc)
+            {
+                _log.ErrorException(exc, "Failure while processing {0}", commandName);
+            }
+            finally
+            {
+                context.Token.Cancel();
+            }
             return result;
         }
     }

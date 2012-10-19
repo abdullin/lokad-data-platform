@@ -67,6 +67,7 @@
     <Compile Include="ICommandProcessor.cs" />
     <Compile Include="PerfUtils.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="WaitFor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config">

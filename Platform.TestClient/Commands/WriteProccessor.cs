@@ -25,11 +25,11 @@ namespace Platform.TestClient.Commands
                 data = args[2];
             }
 
-            context.IsAsync();
+            //context.IsAsync();
 
             context.Client.Platform.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
 
-            context.Completed();
+            //context.Completed();
             return true;
         }
     }

@@ -100,9 +100,12 @@ namespace Platform.TestClient
         private bool Execute(string[] args)
         {
             Log.Info("Processing command: {0}.", string.Join(" ", args));
-            var context = new CommandProcessorContext(this, Log, new ManualResetEvent(true));
 
-            return _commands.TryProcess(context, args);
+            using (var token = new CancellationTokenSource())
+            {
+                var context = new CommandProcessorContext(this, Log, token);
+                return _commands.TryProcess(context, args);
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Platform.TestClient.Commands
                     int.TryParse(args[1], out maxRecordCount);
             }
 
-            context.IsAsync();
+            //context.IsAsync();
 
             var result = context.Client.Platform.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
             var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
@@ -41,7 +41,7 @@ namespace Platform.TestClient.Commands
             var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().Next : StorageOffset.Zero;
             context.Log.Info("Next stream offset: {0}", nextOffset);
 
-            context.Completed();
+            //context.Completed();
             return true;
         }
     }
