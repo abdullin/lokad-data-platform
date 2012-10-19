@@ -67,7 +67,7 @@
     <Compile Include="Storage\Azure\AzureAppendOnlyStore.cs" />
     <Compile Include="Storage\Azure\AzureStoreConfiguration.cs" />
     <Compile Include="Storage\Azure\PageWriter.cs" />
-    <Compile Include="Storage\IAppendOnlyStore.cs" />
+    <Compile Include="Storage\FileAppendOnlyStore.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
