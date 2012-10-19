@@ -165,7 +165,7 @@ namespace Platform.TestClient.Commands
             var totalMs = watch.ElapsedMilliseconds;
             var byteSize = totalBytes / (batchCount * batchSize);
 
-            var key = string.Format("WB_{0}_{1}_{2}_{3}_bytesPerSec", 1, batchCount, batchSize,byteSize);
+            var key = string.Format("WB-{0}-{1}-{2}-{3}-bytesPerSec", 1, batchCount, batchSize,byteSize);
 
             var bytesPerSec = (totalBytes * 1000D / totalMs);
             context.Log.Debug("Throughput: {0}", FormatEvil.SpeedInBytes(bytesPerSec));

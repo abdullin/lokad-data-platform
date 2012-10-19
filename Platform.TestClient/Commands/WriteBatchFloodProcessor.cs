@@ -59,7 +59,7 @@ namespace Platform.TestClient.Commands
             // througput
             var totalBytes = bytes.Length * threadCount * repeatForEachThread * batchSize;
             
-            var key = string.Format("WB_{0}_{1}_{2}_{3}_bytesPerSec", threadCount, repeatForEachThread, batchSize,
+            var key = string.Format("WB-{0}-{1}-{2}-{3}-bytesPerSec", threadCount, repeatForEachThread, batchSize,
                 bytes.Length);
 
             var bytesPerSec = (totalBytes * 1000D / totalMs);
