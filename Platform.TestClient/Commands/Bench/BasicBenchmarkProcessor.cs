@@ -58,24 +58,26 @@ namespace Platform.TestClient.Commands.Bench
             {
                 foreach (var task in list.Tasks)
                 {
-                    if (!task.Processor.Execute(context, token, task.GetCommandArgs()))
+                    try
                     {
-                        context.Log.Error("Failure while running {0} {1}", task.Processor.Key, task.Args);
+                        if (!task.Processor.Execute(context, token, task.GetCommandArgs()))
+                        {
+                            context.Log.Error("{0} failed while running {1} {2}", Key, task.Processor.Key, task.Args);
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Log.ErrorException(ex, "{0} failed while running {1} {2}", Key, task.Processor.Key, task.Args);
+                        context.Log.Debug(ex.ToString());
                         return false;
                     }
                 }
                 return true;
             }
-            catch (Exception ex)
-            {
-                context.Log.ErrorException(ex, "Exception in {1}: {0}", ex.Message, Key);
-                context.Log.Debug(ex.ToString());
-                return false;
-            }
             finally
             {
                 new ShutdownProcessor().Execute(context, token, new string[0]);
-
             }
         }
     }
