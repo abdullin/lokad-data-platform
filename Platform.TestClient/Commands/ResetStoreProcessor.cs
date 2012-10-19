@@ -8,6 +8,9 @@
 using System.IO;
 using System.Threading;
 using System.Linq;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.StorageClient;
+using Platform.Storage.Azure;
 
 namespace Platform.TestClient.Commands
 {
@@ -25,7 +28,20 @@ namespace Platform.TestClient.Commands
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            string dir = context.Client.Options.StoreLocation;
+            var location = context.Client.Options.StoreLocation;
+            string dir = location;
+
+            AzureStoreConfiguration configuration;
+            if (AzureStoreConfiguration.TryParse(location, out configuration))
+            {
+                context.Log.Info("Azure store detected");
+                var account = CloudStorageAccount.Parse(configuration.ConnectionString);
+                var client = account.CreateCloudBlobClient();
+                client.GetContainerReference(configuration.Container)
+                    .ListBlobs()
+                    .AsParallel().ForAll(i => client.GetBlobReference(i.Uri.ToString()).DeleteIfExists());
+                return true;
+            }
 
             if (args.Any())
             {
