@@ -24,6 +24,16 @@ namespace Platform.Node
                 return;
             }
 
+            if (options.StoreLocation == "test")
+            {
+                var over = Environment.GetEnvironmentVariable("DATAPLATFORM_TESTDIR");
+                if (string.IsNullOrWhiteSpace(over))
+                {
+                    over = @"C:\LokadData\dp-test";
+                }
+                options.StoreLocation = over;
+            }
+
             var list = string.Join(Environment.NewLine,
                 options.GetPairs().Select(p => string.Format("{0} : {1}", p.Key, p.Value)));
 
