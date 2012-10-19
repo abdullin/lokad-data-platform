@@ -36,7 +36,7 @@ namespace SmartApp.Sample3.Continuous
                 Thread.Sleep(seconds * 1000);
                 IInternalPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
 
-                var records = reader.ReadAll(new StorageOffset(nextOffcet));
+                var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -104,7 +104,7 @@ namespace SmartApp.Sample3.Continuous
                 IInternalPlatformClient reader =
                     new FilePlatformClient(@"C:\LokadData\dp-store");
 
-                var records = reader.ReadAll(new StorageOffset(nextOffcet));
+                var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
