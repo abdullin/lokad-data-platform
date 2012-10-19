@@ -6,6 +6,7 @@ using System.Threading;
 using Platform.Storage;
 using Platform.Storage.Azure;
 using Platform.TestClient.Commands;
+using Platform.TestClient.Commands.Bench;
 using ServiceStack.Common;
 
 namespace Platform.TestClient
@@ -53,7 +54,7 @@ namespace Platform.TestClient
             _commands.Register(new WriteProccessor());
             _commands.Register(new EnumerateProcessor());
             _commands.Register(new BasicTestProcessor());
-
+            _commands.Register(new BasicBenchmarkProcessor());
             
             _commands.Register(new ShutdownProcessor());
             _commands.Register(new StartLocalServerProcessor());
@@ -67,21 +68,6 @@ namespace Platform.TestClient
 
         public void Run()
         {
-            if (!string.IsNullOrWhiteSpace(Options.RunFile))
-            {
-                foreach (var ln in 
-                    File.ReadAllLines(Options.RunFile)
-                    .Where(l => !string.IsNullOrWhiteSpace(l))
-                    .Where(l => !l.StartsWith("//")))
-                {
-                    if (!ExecuteLine(ln))
-                    {
-                        Application.Exit(ExitCode.Error, "Failure while running " + ln);
-                    }
-                }
-            }
-
-
             if (Options.Command.Any())
             {
                 ExecuteLine(string.Join(" ", Options.Command));
@@ -104,6 +90,8 @@ namespace Platform.TestClient
                 Console.Write(">>> ");
             }
         }
+
+       
 
         bool ExecuteLine(string line)
         {

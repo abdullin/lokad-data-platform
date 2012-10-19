@@ -15,7 +15,5 @@ namespace Platform.TestClient
         public int Timeout { get; set; }
         [Option("s", "store", DefaultValue = @"C:\LokadData\dp-store", HelpText = "Location of data store to use")]
         public string StoreLocation { get; set; }
-        [Option("r", "run", HelpText = "Location of script file to run", DefaultValue = "")]
-        public string RunFile { get; set; }
     }
 }
