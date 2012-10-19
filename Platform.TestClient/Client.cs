@@ -32,7 +32,7 @@ namespace Platform.TestClient
                 || clientOptions.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
             {
                 var parts = clientOptions.StoreLocation.Split('|');
-                Platform = new AzurePlatformClient(connectionString: parts[0], container: parts[1], serverEndpoint: ClientHttpBase);
+                Platform = new AzurePlatformClient(connectionString: parts[0].Trim('"'), container: parts[1], serverEndpoint: ClientHttpBase);
             }
             else
                 Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);

@@ -53,7 +53,7 @@ namespace Platform.Node
                 || options.StoreLocation.StartsWith("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
             {
                 var parts = options.StoreLocation.Split('|');
-                storageService = new AzureStorageService(connectionString: parts[0], container: parts[1], publisher: mainQueue);
+                storageService = new AzureStorageService(connectionString: parts[0].Trim('"'), container: parts[1], publisher: mainQueue);
             }
             else
                 storageService = new FileStorageService(options.StoreLocation, mainQueue);
