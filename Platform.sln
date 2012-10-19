@@ -25,12 +25,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample3.Tests", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Core.Tests", "Platform.Core.Tests\Platform.Core.Tests.csproj", "{042AF43A-07DD-45C6-8720-90987D238A33}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Platform.Node.Deploy", "Deploy\Platform.Node.Deploy\Platform.Node.Deploy.ccproj", "{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Node.Worker", "Platform.Node.Worker\Platform.Node.Worker.csproj", "{C3D8FB9A-7C32-4E3D-B922-1625DB81F210}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{9F8395BC-11A4-47B7-8D97-E757EAA7E21A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,13 +68,6 @@ Global
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3D8FB9A-7C32-4E3D-B922-1625DB81F210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3D8FB9A-7C32-4E3D-B922-1625DB81F210}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3D8FB9A-7C32-4E3D-B922-1625DB81F210}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3D8FB9A-7C32-4E3D-B922-1625DB81F210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +80,5 @@ Global
 		{5E6D9ED1-BB2B-4940-8A42-53D8C7C1C821} = {8846155F-5016-478B-A62B-3864DA98B899}
 		{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984} = {8846155F-5016-478B-A62B-3864DA98B899}
 		{0E7E52A9-3E62-4726-BC75-1A22F2C14308} = {8846155F-5016-478B-A62B-3864DA98B899}
-		{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13} = {9F8395BC-11A4-47B7-8D97-E757EAA7E21A}
 	EndGlobalSection
 EndGlobal

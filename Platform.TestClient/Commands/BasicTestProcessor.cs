@@ -143,19 +143,33 @@ namespace Platform.TestClient.Commands
         {
             var result = new HashSet<string>();
 
+            int totalBytes = 0;
+            var watch = Stopwatch.StartNew();
             for (int i = 0; i < batchCount; i++)
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
                 context.Client.Platform.WriteEventsInLargeBatch(streamId,
                     Enumerable.Range(0, batchSize).Select(
                         x =>
-                            new RecordForStaging(Encoding.UTF8.GetBytes(string.Format(message, x)))));
+                            {
+                                var bytes = Encoding.UTF8.GetBytes(string.Format(message, x));
+                                totalBytes += bytes.Length;
+                                return new RecordForStaging(bytes);
+                            }));
                 for (int j = 0; j < batchSize; j++)
                 {
                     result.Add(string.Format(message, j));
                 }
             }
 
+            var totalMs = watch.ElapsedMilliseconds;
+            var byteSize = totalBytes / (batchCount * batchSize);
+
+            var key = string.Format("WB_{0}_{1}_{2}_{3}_bytesPerSec", 1, batchCount, batchSize,byteSize);
+
+            var bytesPerSec = (totalBytes * 1000D / totalMs);
+            context.Log.Debug("Throughput: {0}", FormatEvil.SpeedInBytes(bytesPerSec));
+            PerfUtils.LogTeamCityGraphData(key, (int)bytesPerSec);
             return result;
         }
     }

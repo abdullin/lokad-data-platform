@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Platform.TestClient.Commands
 {
-    public class ImportEventsProcessor : ICommandProcessor
+    public class WriteBatchProcessor : ICommandProcessor
     {
         public string Key { get { return "IE"; } }
         public string Usage { get { return "IE [<batchSize> [<streamId> [<streamData>]]]"; } }

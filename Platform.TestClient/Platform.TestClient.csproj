@@ -62,8 +62,8 @@
     <Compile Include="Commands\BasicTestProcessor.cs" />
     <Compile Include="Commands\EnumerateProcessor.cs" />
     <Compile Include="Commands\ExitProcessor.cs" />
-    <Compile Include="Commands\ImportEventsFloodProcessor.cs" />
-    <Compile Include="Commands\ImportEventsProcessor.cs" />
+    <Compile Include="Commands\WriteBatchFloodProcessor.cs" />
+    <Compile Include="Commands\WriteBatchProcessor.cs" />
     <Compile Include="Commands\ReadProcessor.cs" />
     <Compile Include="Commands\ResetStoreProcessor.cs" />
     <Compile Include="Commands\ShutdownProcessor.cs" />
