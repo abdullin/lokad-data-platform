@@ -17,8 +17,8 @@ namespace Platform.TestClient.Commands
         {
             //context.IsAsync();
 
-            long total = 0;
-            int count = 0;
+            long totalMsInAllThreads = 0;
+            int totalMsg = 0;
 
             var threads = new List<Task>();
 
@@ -63,8 +63,8 @@ namespace Platform.TestClient.Commands
                             context.Client.Platform.WriteEvent("name", bytes);
                         }
 
-                        Interlocked.Add(ref total, watch.Elapsed.Ticks);
-                        Interlocked.Add(ref count, messageCount);
+                        Interlocked.Add(ref totalMsInAllThreads, watch.ElapsedMilliseconds);
+                        Interlocked.Add(ref totalMsg, messageCount);
 
                     }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
@@ -72,12 +72,15 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
             
             //context.Completed();
-            context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
-            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-{3}-reqPerSec", 
+            var averageLatency = totalMsInAllThreads *1D / totalMsg;
+            var totalMsgPerSec = totalMsg / global.Elapsed.TotalSeconds;
+            var singleThreadMsgPerSec = totalMsg / (totalMsInAllThreads / 1000D);
+            context.Log.Info("{0} per second total or {1} in each. Latency {2}ms", Math.Round(totalMsgPerSec,2), Math.Round(singleThreadMsgPerSec,2), Math.Round(averageLatency, 2));
+            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-{3}-msgPerSec", 
                 Key, 
                 threadCount, 
                 messageCount, byteSize), 
-                (int)(count / global.Elapsed.TotalSeconds));
+                (int)totalMsgPerSec);
             return true;
         }
     }
