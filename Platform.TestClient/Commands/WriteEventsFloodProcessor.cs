@@ -43,6 +43,10 @@ namespace Platform.TestClient.Commands
                     .Select(i => (byte)(i % byte.MaxValue))
                     .ToArray();
             }
+            else
+            {
+                byteSize = bytes.Length;
+            }
 
 
             var global = Stopwatch.StartNew();
@@ -67,7 +71,11 @@ namespace Platform.TestClient.Commands
             Task.WaitAll(threads.ToArray());
             //context.Completed();
             context.Log.Info("{0} per second", count / global.Elapsed.TotalSeconds);
-            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-reqPerSec", Key, threadCount, messageCount), (int)(count / global.Elapsed.TotalSeconds));
+            PerfUtils.LogTeamCityGraphData(string.Format("{0}-{1}-{2}-{3}-reqPerSec", 
+                Key, 
+                threadCount, 
+                messageCount, byteSize), 
+                (int)(count / global.Elapsed.TotalSeconds));
             return true;
         }
     }
