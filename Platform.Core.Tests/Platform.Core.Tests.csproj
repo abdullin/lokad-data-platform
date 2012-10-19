@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="in_memory_bus.cs" />
+    <Compile Include="queued_handler.cs" />
     <Compile Include="when_format_size_in_bytes.cs" />
   </ItemGroup>
   <ItemGroup>

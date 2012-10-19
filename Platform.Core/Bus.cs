@@ -233,7 +233,7 @@ namespace Platform
         {
             _cancel.Cancel();
             if (null == _thread) return;
-            if (_thread.Wait(_waitToStopThreadMs))
+            if (!_thread.Wait(_waitToStopThreadMs))
             {
                 throw new InvalidOperationException("Failed to stop thread ");
             }
