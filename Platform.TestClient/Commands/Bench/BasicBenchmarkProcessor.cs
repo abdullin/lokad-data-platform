@@ -53,7 +53,8 @@ namespace Platform.TestClient.Commands.Bench
             list.Add(new WriteEventsFloodProcessor(), "10 10 44");
             list.Add(new WriteEventsFloodProcessor(), "5 20 600");
             list.Add(new WriteEventsFloodProcessor(), "10 10 600");
-
+            list.Add(new WriteEventsFloodProcessor(), "1 100 44");
+            list.Add(new WriteEventsFloodProcessor(), "1 100 600");
 
             list.Add(new BasicTestProcessor(), "10 10000 10 20");
 
