@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Platform.TestClient.Commands;
 
 namespace Platform.TestClient
 {
@@ -45,6 +46,7 @@ namespace Platform.TestClient
             if (!_processors.TryGetValue(commandName, out commandProcessor))
             {
                 _log.Info("Unknown command: '{0}'", commandName);
+                new UsageProcessor(this).Execute(context, CancellationToken.None, new string[0]);
                 return false;
             }
 

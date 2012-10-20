@@ -5,43 +5,17 @@ using System.Threading;
 
 namespace Platform.TestClient.Commands.Bench
 {
+    /// <summary>
+    /// Helper processor which runs a set of other processors
+    /// with a cleanup phase
+    /// </summary>
     public class BasicBenchmarkProcessor : ICommandProcessor
     {
         public string Key { get { return "BENCH1"; } }
         public string Usage { get { return "BENCH1"; } }
 
-        
-        public sealed class BenchmarkTask
-        {
-            public readonly ICommandProcessor Processor;
-            public readonly string Args;
 
-            public BenchmarkTask(ICommandProcessor processor, string args)
-            {
-                Processor = processor;
-                Args = args;
-            }
-
-            public string[] GetCommandArgs()
-            {
-                if (string.IsNullOrWhiteSpace(Args))
-                    return new string[0];
-                return Args.Split(' ','\t');
-            }
-            
-        }
-
-        sealed class BenchmarkTaskList
-        {
-            public readonly IList<BenchmarkTask> Tasks = new List<BenchmarkTask>();
-
-            public void Add(ICommandProcessor processor, string args)
-            {
-                Tasks.Add(new BenchmarkTask(processor, args));
-            }
-        }
-
-        static TimeSpan SlowProcessors = TimeSpan.FromSeconds(5);
+        static readonly TimeSpan SlowProcessors = TimeSpan.FromSeconds(5);
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
@@ -105,5 +79,35 @@ namespace Platform.TestClient.Commands.Bench
                 new ShutdownProcessor().Execute(context, token, new string[0]);
             }
         }
+    }
+
+    sealed class BenchmarkTaskList
+    {
+        public readonly IList<BenchmarkTask> Tasks = new List<BenchmarkTask>();
+
+        public void Add(ICommandProcessor processor, string args)
+        {
+            Tasks.Add(new BenchmarkTask(processor, args));
+        }
+    }
+
+    public sealed class BenchmarkTask
+    {
+        public readonly ICommandProcessor Processor;
+        public readonly string Args;
+
+        public BenchmarkTask(ICommandProcessor processor, string args)
+        {
+            Processor = processor;
+            Args = args;
+        }
+
+        public string[] GetCommandArgs()
+        {
+            if (String.IsNullOrWhiteSpace(Args))
+                return new string[0];
+            return Args.Split(' ','\t');
+        }
+            
     }
 }
