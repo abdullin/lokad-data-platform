@@ -28,6 +28,7 @@ namespace Platform.TestClient.Commands.Bench
                     return new string[0];
                 return Args.Split(' ','\t');
             }
+            
         }
 
         sealed class BenchmarkTaskList
@@ -40,19 +41,19 @@ namespace Platform.TestClient.Commands.Bench
             }
         }
 
+        static TimeSpan SlowProcessors = TimeSpan.FromSeconds(5);
+
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
 
             var list = new BenchmarkTaskList();
             list.Add(new ResetStoreProcessor(),"");
             list.Add(new StartLocalServerProcessor(), "-k 300");
+            list.Add(new WriteEventsFloodProcessor(), "5 20 44");
+            list.Add(new WriteEventsFloodProcessor(), "10 10 44");
+            list.Add(new WriteEventsFloodProcessor(), "5 20 600");
+            list.Add(new WriteEventsFloodProcessor(), "10 10 600");
 
-
-            list.Add(new WriteEventsFloodProcessor(), "5 20 200"); // x 100 200
-            list.Add(new WriteEventsFloodProcessor(), "1 100 200"); // x100 200
-            list.Add(new WriteEventsFloodProcessor(), "1 20 1000"); //
-            list.Add(new WriteEventsFloodProcessor(), "10 10 200");
-            list.Add(new WriteEventsFloodProcessor(), "5 10 400");
 
             list.Add(new BasicTestProcessor(), "10 10000 10 20");
 
@@ -67,11 +68,13 @@ namespace Platform.TestClient.Commands.Bench
             {
                 foreach (var task in list.Tasks)
                 {
+                    var watch = Stopwatch.StartNew();
                     try
                     {
+                        context.Log.Debug("{0} running {1} {2}", Key, task.Processor.Key, task.Args);
                         if (!task.Processor.Execute(context, token, task.GetCommandArgs()))
                         {
-                            context.Log.Error("{0} failed while running {1} {2}", Key, task.Processor.Key, task.Args);
+                            context.Log.Error("{0} failed in {1} {2}", Key, task.Processor.Key, task.Args);
                             return false;
                         }
                     }
@@ -80,6 +83,15 @@ namespace Platform.TestClient.Commands.Bench
                         context.Log.ErrorException(ex, "{0} failed while running {1} {2}", Key, task.Processor.Key, task.Args);
                         context.Log.Debug(ex.ToString());
                         return false;
+                    }
+                    finally
+                    {
+                        var timeSpan = watch.Elapsed;
+                        
+                        if (timeSpan > SlowProcessors)
+                        {
+                            context.Log.Debug("{0} {1} duration was {2}s", Math.Round(timeSpan.TotalSeconds,1));
+                        }
                     }
                 }
                 return true;
