@@ -91,7 +91,10 @@ namespace Platform.TestClient.Commands.Bench
                         
                         if (timeSpan > SlowProcessors)
                         {
-                            context.Log.Debug("{0} {1} duration was {2}s", Math.Round(timeSpan.TotalSeconds,1));
+                            context.Log.Debug("{0} {1} duration was {2}s", 
+                                task.Processor.Key,
+                                task.Args,
+                                Math.Round(timeSpan.TotalSeconds,1));
                         }
                     }
                 }
