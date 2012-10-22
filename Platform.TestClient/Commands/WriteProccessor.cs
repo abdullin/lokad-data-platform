@@ -25,12 +25,7 @@ namespace Platform.TestClient.Commands
                 int.TryParse(args[1], out expectedVersion);
                 data = args[2];
             }
-
-            //context.IsAsync();
-
             context.Client.Streams.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
-
-            //context.Completed();
             return true;
         }
     }

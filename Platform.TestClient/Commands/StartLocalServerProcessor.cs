@@ -9,7 +9,10 @@ namespace Platform.TestClient.Commands
     public class StartLocalServerProcessor : ICommandProcessor
     {
         public string Key { get { return "START"; } }
-        public string Usage { get { return "START [args]"; } }
+        public string Usage { get { return @"START [args]
+Starts local server as a separate process, passing it storage and port parameters."; } }
+
+
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var file = @"..\server\Platform.Node.exe";
@@ -32,9 +35,6 @@ namespace Platform.TestClient.Commands
                 return false;
             }
             var all = string.Join(" ", args);
-
-            
-            
             var arguments = string.Format("-h {0} -s {1} {2}", context.Client.Options.HttpPort, context.Client.Options.StoreLocation, all);
             context.Log.Debug("Starting {0} with args {1}", file, arguments);
             var proc = Process.Start(new ProcessStartInfo(file, arguments));
