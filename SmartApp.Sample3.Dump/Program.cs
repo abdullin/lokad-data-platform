@@ -17,7 +17,24 @@ namespace SmartApp.Sample3.Dump
         public static string RawDataPath;
         public static string StorePath;
 
+        static void Main(string[] args)
+        {
+            RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
+            StorePath = ConfigurationManager.AppSettings["StorePath"];
+
+            var httpBase = string.Format("http://127.0.0.1:8080");
+            _reader = new FilePlatformClient(StorePath, httpBase);
+            Thread.Sleep(2000); //waiting for server initialization
+
+            var threads = new List<Task>();
+            threads.Add(Task.Factory.StartNew(DumpComments, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+            threads.Add(Task.Factory.StartNew(DumpPosts, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+
+            Task.WaitAll(threads.ToArray());
+        }
+
         private static IInternalStreamClient _reader;
+
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
             using (var rows = File.OpenText(path))
@@ -37,50 +54,29 @@ namespace SmartApp.Sample3.Dump
             }
         }
 
-        static void Main(string[] args)
-        {
-            RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
-            StorePath = ConfigurationManager.AppSettings["StorePath"];
-
-            var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader = new FilePlatformClient(StorePath, httpBase);
-            Thread.Sleep(2000); //waiting for server initialization
-
-            var threads = new List<Task>();
-            threads.Add(Task.Factory.StartNew(DumpComments, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
-            threads.Add(Task.Factory.StartNew(DumpPosts, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
-
-            Task.WaitAll(threads.ToArray());
-        }
-
-        #region Comments
 
         private static void DumpComments()
         {
             var path = Path.Combine(RawDataPath, "comments.xml");
-            long rowIndex = 0;
 
-            var sw = new Stopwatch();
-            sw.Start();
-
-            var commentBytes = new List<byte[]>();
+            var sw = Stopwatch.StartNew();
+            var buffer = new List<byte[]>(20000);
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
-                rowIndex++;
                 var comment = ParseComments(line);
                 if (comment == null)
                     continue;
+                buffer.Add(comment.ToBinary());
                 
-                commentBytes.Add(comment.ToBinary());
-
-                if (rowIndex % 20000 == 0)
+                if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)));
-                    commentBytes.Clear();
-                    Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
+                    _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
+                    buffer.Clear();
+                    Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", buffer.Count / sw.Elapsed.TotalSeconds, buffer.Count);
                 }
             }
-            _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
+            Console.WriteLine("Comments import complete");
         }
 
         private static Comment ParseComments(string line)
@@ -109,35 +105,33 @@ namespace SmartApp.Sample3.Dump
             }
         }
 
-        #endregion
-
+        
         private static void DumpPosts()
         {
             var path = Path.Combine(RawDataPath, "posts.xml");
 
-            long rowIndex = 0;
-
-            Stopwatch sw = new Stopwatch();
+            
+            var sw = new Stopwatch();
             sw.Start();
 
-            var postBytes = new List<byte[]>();
+            var buffer = new List<byte[]>(20000);
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
-                rowIndex++;
                 var post = PostParse(line);
                 if (post == null)
                     continue;
 
-                postBytes.Add(post.ToBinary());
+                buffer.Add(post.ToBinary());
 
-                if (rowIndex % 20000 == 0)
+                if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)));
-                    postBytes.Clear();
-                    Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
+                    _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
+                    buffer.Clear();
+                    Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", buffer.Count / sw.Elapsed.TotalSeconds, buffer.Count);
                 }
             }
-            _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
+            Console.WriteLine("Posts import complete");
         }
 
         private static Post PostParse(string line)
