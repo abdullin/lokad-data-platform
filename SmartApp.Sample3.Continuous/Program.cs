@@ -33,15 +33,13 @@ namespace SmartApp.Sample3.Continuous
 
         private static void TagProjection(IInternalStreamClient store, IViewContainer views)
         {
-            const int seconds = 1;
             var data = LoadTagData(views);
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
                 long nextOffcet = data.NextOffsetInBytes;
-                Thread.Sleep(seconds * 1000);
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -65,11 +63,15 @@ namespace SmartApp.Sample3.Continuous
 
                     emptyData = false;
                 }
+                SaveTagData(data, views);
 
-                if (!emptyData)
+                if (emptyData)
+                {
+                    Thread.Sleep(1000);
+                }
+                else
                 {
                     Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
-                    SaveTagData(data, views);
                 }
             }
         }
@@ -99,13 +101,11 @@ namespace SmartApp.Sample3.Continuous
 
         private static void CommentProjection(IInternalStreamClient store, IViewContainer views)
         {
-            const int seconds = 1;
             var data = LoadCommentData(views);
             Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
                 long nextOffcet = data.NextOffsetInBytes;
-                Thread.Sleep(seconds * 1000);
                 IInternalStreamClient reader =
                     store;
 
@@ -132,17 +132,22 @@ namespace SmartApp.Sample3.Continuous
 
                     emptyData = false;
                 }
+                SaveCommentData(data, views);
 
-                if (!emptyData)
+                if (emptyData)
+                {
+                    Thread.Sleep(1000);
+                }
+                else
                 {
                     Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
-                    SaveCommentData(data,views);
                 }
             }
         }
 
         static CommentDistributionView LoadCommentData(IViewContainer views)
         {
+
             if (!views.Exists(CommentDistributionView.FileName))
                 return new CommentDistributionView();
 
@@ -154,10 +159,27 @@ namespace SmartApp.Sample3.Continuous
 
         static void SaveCommentData(CommentDistributionView data, IViewContainer views)
         {
-            using (var stream = views.OpenWrite(CommentDistributionView.FileName))
+            var exes = new Stack<Exception>();
+            while(true)
             {
-                JsonSerializer.SerializeToStream(data, stream);
+                    try
+                {
+                    using (var stream = views.OpenWrite(CommentDistributionView.FileName))
+                    {
+                        JsonSerializer.SerializeToStream(data, stream);
+                        return;
+                    }
+                }
+                catch (IOException e)
+                {
+                    exes.Push(e);
+                    if (exes.Count >= 4)
+                        throw new AggregateException(exes);
+
+                    Thread.Sleep(200 * exes.Count);
+                }
             }
+
         }
 
         #endregion
