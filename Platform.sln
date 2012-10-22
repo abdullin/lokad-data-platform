@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample3.Tests", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Core.Tests", "Platform.Core.Tests\Platform.Core.Tests.csproj", "{042AF43A-07DD-45C6-8720-90987D238A33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample4.HostProjection", "SmartApp.Sample4.HostProjection\SmartApp.Sample4.HostProjection.csproj", "{A6409293-788A-4CF0-92FD-D1B4651D7725}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6409293-788A-4CF0-92FD-D1B4651D7725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6409293-788A-4CF0-92FD-D1B4651D7725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6409293-788A-4CF0-92FD-D1B4651D7725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6409293-788A-4CF0-92FD-D1B4651D7725}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,5 +86,6 @@ Global
 		{5E6D9ED1-BB2B-4940-8A42-53D8C7C1C821} = {8846155F-5016-478B-A62B-3864DA98B899}
 		{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984} = {8846155F-5016-478B-A62B-3864DA98B899}
 		{0E7E52A9-3E62-4726-BC75-1A22F2C14308} = {8846155F-5016-478B-A62B-3864DA98B899}
+		{A6409293-788A-4CF0-92FD-D1B4651D7725} = {8846155F-5016-478B-A62B-3864DA98B899}
 	EndGlobalSection
 EndGlobal
