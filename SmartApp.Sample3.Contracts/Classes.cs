@@ -4,12 +4,19 @@ using System.IO;
 
 namespace SmartApp.Sample3.Contracts
 {
+    public static class Location
+    {
+        
+    }
+
     public class TagsDistributionView
     {
         public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
 
         public Dictionary<string, long> Distribution { get; set; }
+
+        public const string FileName = "sample3-tag-count.dat";
     }
 
     public class CommentDistributionView
@@ -18,6 +25,7 @@ namespace SmartApp.Sample3.Contracts
         public int EventsProcessed { get; set; }
 
         public Dictionary<long, int> Distribution { get; set; }
+        public const string FileName = "sample3-comment.dat";
     }
 
     public class Comment

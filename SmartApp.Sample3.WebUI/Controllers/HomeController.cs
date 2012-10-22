@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Mvc;
+using Platform;
 using ServiceStack.Text;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.WebUI.Controllers
 {
+
+
     public class HomeController : Controller
     {
+
+        static readonly IViewContainer Global = PlatformClient.ViewClient(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug"));
         public ActionResult Index()
         {
             return View();
@@ -20,14 +25,15 @@ namespace SmartApp.Sample3.WebUI.Controllers
             return PartialView( model);
         }
 
-        TagsDistributionView GetTagProjectionViewData()
+        static TagsDistributionView GetTagProjectionViewData()
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3-tag-count.dat");
-
-            if (!System.IO.File.Exists(path))
+            if (!Global.Exists(TagsDistributionView.FileName))
                 return null;
 
-            return System.IO.File.ReadAllText(path).FromJson<TagsDistributionView>();
+            using (var stream = Global.OpenRead(TagsDistributionView.FileName))
+            {
+                return JsonSerializer.DeserializeFromStream<TagsDistributionView>(stream);
+            }
         }
 
         public ActionResult Comments()
@@ -38,12 +44,13 @@ namespace SmartApp.Sample3.WebUI.Controllers
 
         CommentDistributionView GetCommentProjectionViewData()
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug\sample3-comment.dat");
-
-            if (!System.IO.File.Exists(path))
+            if (!Global.Exists(CommentDistributionView.FileName))
                 return null;
 
-            return System.IO.File.ReadAllText(path).FromJson<CommentDistributionView>();
+            using (var stream = Global.OpenRead(CommentDistributionView.FileName))
+            {
+                return JsonSerializer.DeserializeFromStream<CommentDistributionView>(stream);
+            }
         }
 
     }
