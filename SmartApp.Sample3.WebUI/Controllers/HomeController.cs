@@ -12,7 +12,7 @@ namespace SmartApp.Sample3.WebUI.Controllers
         const string config = @"C:\LokadData\dp-store";
 
         static readonly ViewClient Global = PlatformClient
-            .ViewClient(config, Conventions.ViewContainer);
+            .GetViewClient(config, Conventions.ViewContainer);
         public ActionResult Index()
         {
             return View();

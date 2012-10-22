@@ -12,7 +12,7 @@ namespace Platform
 {
     public class PlatformClient
     {
-        public static IInternalStreamClient StreamClient(string storage, string serverEndpoint)
+        public static IInternalStreamClient GetStreamClientReaderWriter(string storage, string serverEndpoint)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
@@ -20,6 +20,15 @@ namespace Platform
                 return new FilePlatformClient(storage,serverEndpoint);
             }
             return new AzurePlatformClient(configuration, serverEndpoint);
+        }
+        public static IInternalStreamClient GetStreamReader(string storage)
+        {
+            AzureStoreConfiguration configuration;
+            if (!AzureStoreConfiguration.TryParse(storage, out configuration))
+            {
+                return new FilePlatformClient(storage, null);
+            }
+            return new AzurePlatformClient(configuration, null);
         }
 
         //public static IViewContainer ViewClient(string storage)
@@ -34,7 +43,7 @@ namespace Platform
         //    return new BlobViewRoot(client).GetContainer(configuration.Container);
         //}
 
-        public static ViewClient ViewClient(string storage, string containerName)
+        public static ViewClient GetViewClient(string storage, string containerName)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
