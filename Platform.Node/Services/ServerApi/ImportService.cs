@@ -23,7 +23,7 @@ namespace Platform.Node.Services.ServerApi
                 };
         }
     }
-    public class ImportService : ServiceBase<ClientDto.ImportEvents>
+    public class ImportService : ServiceBase<ClientDto.WriteBatch>
     {
         readonly IPublisher _publisher;
 
@@ -31,7 +31,7 @@ namespace Platform.Node.Services.ServerApi
         {
             _publisher = publisher;
         }
-        protected override object Run(ClientDto.ImportEvents request)
+        protected override object Run(ClientDto.WriteBatch request)
         {
             var token = new ManualResetEventSlim(false);
             _publisher.Publish(new ClientMessage.ImportEvents(request.Stream, request.Location, s => token.Set()));
@@ -41,7 +41,7 @@ namespace Platform.Node.Services.ServerApi
                     try
                     {
                         token.Wait();
-                        return new ClientDto.ImportEventsResponse()
+                        return new ClientDto.WriteBatchResponse()
                             {
                                 Result = "Completed",
                                 Success = true

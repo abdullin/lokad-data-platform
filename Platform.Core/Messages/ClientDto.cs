@@ -4,6 +4,7 @@ namespace Platform.Messages
     {
         public class WriteEvent
         {
+            public const string Url = "/stream/";
             public string Stream { get; set; }
             public byte[] Data { get; set; }
             public int ExpectedVersion { get; set; }
@@ -15,13 +16,14 @@ namespace Platform.Messages
             public bool Success { get; set; }
         }
 
-        public class ImportEvents
+        public class WriteBatch
         {
+            public const string Url = "/import/";
             public string Stream { get; set; }
             public string Location { get; set; }
         }
 
-        public class ImportEventsResponse
+        public class WriteBatchResponse
         {
             public string Result { get; set; }
             public bool Success { get; set; }
@@ -29,7 +31,7 @@ namespace Platform.Messages
 
         public class ShutdownServer
         {
-            
+            public const string Url = "/system/shutdown/";
         }
 
         public class ShutdownServerResponse

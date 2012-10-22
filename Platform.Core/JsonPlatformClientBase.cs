@@ -20,7 +20,7 @@ namespace Platform
         protected void ImportEventsInternal(string streamName, string location)
         {
             ThrowIfClientNotInitialized();
-            var response = Client.Post<ClientDto.ImportEventsResponse>("/import", new ClientDto.ImportEvents()
+            var response = Client.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url, new ClientDto.WriteBatch()
                 {
                     Location = location,
                     Stream = streamName,
@@ -33,7 +33,7 @@ namespace Platform
         public void WriteEvent(string streamName, byte[] data)
         {
             ThrowIfClientNotInitialized();
-            var response = Client.Post<ClientDto.WriteEventResponse>("/stream", new ClientDto.WriteEvent()
+            var response = Client.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url, new ClientDto.WriteEvent()
             {
                 Data = data,
                 Stream = streamName

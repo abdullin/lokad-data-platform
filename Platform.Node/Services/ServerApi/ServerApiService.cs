@@ -17,11 +17,9 @@ namespace Platform.Node.Services.ServerApi
         {
             LoadPlugin(new TaskSupport());
             Routes
-                .Add<ClientDto.WriteEvent>("/stream/", "POST")
-                .Add<ClientDto.WriteEvent>("/stream/{Stream}", "POST")
-                .Add<ClientDto.ImportEvents>("/import/","POST")
-                .Add<ClientDto.ImportEvents>("/import/{Stream}", "POST")
-                .Add<ClientDto.ShutdownServer>("/system/shutdown/", "GET");
+                .Add<ClientDto.WriteEvent>(ClientDto.WriteEvent.Url, "POST")
+                .Add<ClientDto.WriteBatch>(ClientDto.WriteBatch.Url,"POST")
+                .Add<ClientDto.ShutdownServer>(ClientDto.ShutdownServer.Url, "GET");
 
             container.Register(_publisher);
         }
