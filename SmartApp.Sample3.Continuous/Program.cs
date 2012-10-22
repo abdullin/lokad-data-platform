@@ -35,7 +35,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
-                IInternalPlatformClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
+                IInternalStreamClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;
@@ -102,7 +102,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
-                IInternalPlatformClient reader =
+                IInternalStreamClient reader =
                     new FilePlatformClient(@"C:\LokadData\dp-store");
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);

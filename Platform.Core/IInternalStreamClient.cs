@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.StorageClient;
 using Platform.Storage;
+using Platform.Storage.Azure;
 
 namespace Platform
 {
@@ -10,7 +13,7 @@ namespace Platform
     /// Provides raw byte-level access to the storage and messaging of
     /// Data platform
     /// </summary>
-    public interface IInternalPlatformClient
+    public interface IInternalStreamClient
     {
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 
@@ -20,8 +23,31 @@ namespace Platform
 
         void WriteEvent(string streamName, byte[] data);
         void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
+    }
 
-        
+    public class InternalPlatformClient
+    {
+        public readonly IInternalStreamClient Streams;
+        public readonly IViewContainer Views;
+
+
+        public InternalPlatformClient(IInternalStreamClient streams,IViewContainer views)
+        {
+            Streams = streams;
+            Views = views;
+        }
+
+        public static InternalPlatformClient ForFiles(string connection, string root)
+        {
+            return new InternalPlatformClient(new FilePlatformClient(root, connection), new FileViewContainer(Path.Combine(root, "views")));
+        }
+        public static InternalPlatformClient ForAzure(string connection, AzureStoreConfiguration config)
+        {
+                       var account = CloudStorageAccount.Parse(config.ConnectionString);
+            var client = account.CreateCloudBlobClient();
+            var dir = client.GetBlobDirectoryReference(config.Container + "-views");
+            return new InternalPlatformClient(new AzurePlatformClient(config, connection), new BlobStreamingContainer(dir));
+        }
     }
 
 

@@ -17,7 +17,7 @@ namespace SmartApp.Sample3.Dump
         public static string RawDataPath;
         public static string StorePath;
 
-        private static IInternalPlatformClient _reader;
+        private static IInternalStreamClient _reader;
         static IEnumerable<string> ReadLinesSequentially(string path)
         {
             using (var rows = File.OpenText(path))

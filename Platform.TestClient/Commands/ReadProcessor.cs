@@ -31,7 +31,7 @@ namespace Platform.TestClient.Commands
 
             //context.IsAsync();
 
-            var result = context.Client.Platform.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
+            var result = context.Client.Stream.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
             var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
             context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
             foreach (var record in dataRecords)

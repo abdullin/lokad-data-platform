@@ -5,16 +5,27 @@ using Platform.Storage;
 
 namespace Platform
 {
-    public class FilePlatformClient : JsonPlatformClientBase, IInternalPlatformClient
+    public class FilePlatformClient : JsonPlatformClientBase, IInternalStreamClient
     {
-        readonly string _serverFolder;
 
+        readonly string _serverFolder;
         readonly string _checkStreamName;
         readonly string _fileStreamName;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<FilePlatformClient>();
 
-        
+        public FilePlatformClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
+        {
+            _serverFolder = serverFolder;
+            
+            var path = Path.GetFullPath(serverFolder ?? "");
+
+            _checkStreamName = Path.Combine(path,"stream.chk");
+            _fileStreamName = Path.Combine(path,"stream.dat");
+        }
+
+
+
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
         {
             if (maxRecordCount < 0)
@@ -83,16 +94,6 @@ namespace Platform
             {
                 return Read7BitEncodedInt();
             }
-        }
-
-        public FilePlatformClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
-        {
-            _serverFolder = serverFolder;
-            
-            var path = Path.GetFullPath(serverFolder ?? "");
-
-            _checkStreamName = Path.Combine(path, "stream.chk");
-            _fileStreamName = Path.Combine(path, "stream.dat");
         }
 
         public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)

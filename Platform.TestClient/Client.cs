@@ -19,7 +19,7 @@ namespace Platform.TestClient
 
         private readonly CommandProcessor _commands = new CommandProcessor(Log);
         
-        public IInternalPlatformClient Platform;
+        public IInternalStreamClient Stream;
         public string ClientHttpBase;
 
         public Client(ClientOptions clientOptions)
@@ -32,11 +32,11 @@ namespace Platform.TestClient
             AzureStoreConfiguration azureConfig;
             if (AzureStoreConfiguration.TryParse(clientOptions.StoreLocation, out azureConfig))
             {
-                Platform = new AzurePlatformClient(azureConfig, ClientHttpBase);
+                Stream = new AzurePlatformClient(azureConfig, ClientHttpBase);
             }
             else
             {
-                Platform = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
+                Stream = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
             }
 
 

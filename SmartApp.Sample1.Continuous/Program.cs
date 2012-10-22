@@ -15,7 +15,7 @@ namespace SmartApp.Sample1.Continuous
             var nextOffset = LoadData();
             ShowData(nextOffset, true);
             var path = @"C:\LokadData\dp-store";
-            IInternalPlatformClient reader = new FilePlatformClient(path);
+            IInternalStreamClient reader = new FilePlatformClient(path);
             while (true)
             {
                 var last = reader.ReadAll(nextOffset).LastOrDefault();

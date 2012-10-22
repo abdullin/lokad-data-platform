@@ -76,7 +76,7 @@
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="Storage\RetrievedDataRecord.cs" />
-    <Compile Include="IInternalPlatformClient.cs" />
+    <Compile Include="IInternalStreamClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
     <Compile Include="Storage\Azure\StorageExtensions.cs" />
   </ItemGroup>

@@ -6,7 +6,7 @@ using Platform.Storage.Azure;
 
 namespace Platform.Storage
 {
-    public class AzurePlatformClient : JsonPlatformClientBase, IInternalPlatformClient
+    public class AzurePlatformClient : JsonPlatformClientBase, IInternalStreamClient
     {
         readonly CloudPageBlob _blob;
 

@@ -28,7 +28,7 @@ namespace Platform.TestClient.Commands
 
             //context.IsAsync();
 
-            context.Client.Platform.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
+            context.Client.Stream.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
 
             //context.Completed();
             return true;
