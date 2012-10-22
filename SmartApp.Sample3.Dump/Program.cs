@@ -26,9 +26,13 @@ namespace SmartApp.Sample3.Dump
             _reader = new FilePlatformClient(StorePath, httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
-            var threads = new List<Task>();
-            threads.Add(Task.Factory.StartNew(DumpComments, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
-            threads.Add(Task.Factory.StartNew(DumpPosts, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+            var threads = new List<Task>
+                {
+                    Task.Factory.StartNew(DumpComments,
+                        TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
+                    Task.Factory.StartNew(DumpPosts,
+                        TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
+                };
 
             Task.WaitAll(threads.ToArray());
         }
@@ -61,8 +65,10 @@ namespace SmartApp.Sample3.Dump
 
             var sw = Stopwatch.StartNew();
             var buffer = new List<byte[]>(20000);
+            int total = 0;
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
+                total += 1;
                 var comment = ParseComments(line);
                 if (comment == null)
                     continue;
@@ -72,8 +78,12 @@ namespace SmartApp.Sample3.Dump
                 {
                     _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
                     buffer.Clear();
-                    Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", buffer.Count / sw.Elapsed.TotalSeconds, buffer.Count);
+
+                    var speed = total / sw.Elapsed.TotalSeconds;
+                    Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", speed, total);
                 }
+                
+                
             }
             _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
             Console.WriteLine("Comments import complete");
@@ -110,13 +120,14 @@ namespace SmartApp.Sample3.Dump
         {
             var path = Path.Combine(RawDataPath, "posts.xml");
 
-            
-            var sw = new Stopwatch();
-            sw.Start();
+
+            var sw = Stopwatch.StartNew();
 
             var buffer = new List<byte[]>(20000);
+            int total = 0;
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
+                total += 1;
                 var post = PostParse(line);
                 if (post == null)
                     continue;
@@ -127,7 +138,8 @@ namespace SmartApp.Sample3.Dump
                 {
                     _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
                     buffer.Clear();
-                    Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", buffer.Count / sw.Elapsed.TotalSeconds, buffer.Count);
+                    var speed = total / sw.Elapsed.TotalSeconds;
+                    Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", speed, total);
                 }
             }
             _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
