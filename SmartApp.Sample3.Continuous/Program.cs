@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform;
-using ServiceStack.Text;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Continuous
@@ -16,8 +14,9 @@ namespace SmartApp.Sample3.Continuous
 
         static void Main(string[] args)
         {
-            var store = PlatformClient.StreamClient(config,null);
-            var views = PlatformClient.ViewClient(config).GetContainer(Conventions.ViewContainer).Create();
+            var store = PlatformClient.StreamClient(config, null);
+            var views = PlatformClient.ViewClient(config, Conventions.ViewContainer);
+            views.CreateContainer();
             var threads = new List<Task>
                 {
                     Task.Factory.StartNew(() => TagProjection(store, views),
@@ -28,19 +27,15 @@ namespace SmartApp.Sample3.Continuous
 
             Task.WaitAll(threads.ToArray());
         }
-
-        #region tag projection
-
-        private static void TagProjection(IInternalStreamClient store, IViewContainer views)
+        private static void TagProjection(IInternalStreamClient store, ViewClient views)
         {
-            var data = LoadTagData(views);
+            var data = views.ReadAsJsonOrNew<TagsDistributionView>(TagsDistributionView.FileName);
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                long nextOffcet = data.NextOffsetInBytes;
-
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
-                bool emptyData = true;
+                var nextOffset = data.NextOffsetInBytes;
+                var records = store.ReadAll(new StorageOffset(nextOffset), 50000);
+                var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
@@ -63,7 +58,7 @@ namespace SmartApp.Sample3.Continuous
 
                     emptyData = false;
                 }
-                SaveTagData(data, views);
+                views.WriteAsJson(data, TagsDistributionView.FileName);
 
                 if (emptyData)
                 {
@@ -76,41 +71,17 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        static TagsDistributionView LoadTagData(IViewContainer views)
+        
+        private static void CommentProjection(IInternalStreamClient store, ViewClient views)
         {
-            if (!views.Exists(TagsDistributionView.FileName))
-                return new TagsDistributionView();
-
-            using (var stream = views.OpenRead(TagsDistributionView.FileName))
-            {
-                return JsonSerializer.DeserializeFromStream<TagsDistributionView>(stream);
-            }
-        }
-
-        static void SaveTagData(TagsDistributionView data, IViewContainer views)
-        {
-            using (var stream = views.OpenWrite(TagsDistributionView.FileName))
-            {
-                JsonSerializer.SerializeToStream(data, stream);
-            }
-        }
-
-        #endregion
-
-        #region Comments
-
-        private static void CommentProjection(IInternalStreamClient store, IViewContainer views)
-        {
-            var data = LoadCommentData(views);
+            var data = views.ReadAsJsonOrNew<CommentDistributionView>(CommentDistributionView.FileName);
             Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                long nextOffcet = data.NextOffsetInBytes;
-                IInternalStreamClient reader =
-                    store;
+                var nextOffset = data.NextOffsetInBytes;
 
-                var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
-                bool emptyData = true;
+                var records = store.ReadAll(new StorageOffset(nextOffset), 10000);
+                var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
@@ -118,13 +89,10 @@ namespace SmartApp.Sample3.Continuous
                     if (dataRecord.Key != "s3:comment")
                         continue;
 
-                    var comment =Comment.FromBinary(dataRecord.Data);
-                    if (comment == null)
-                        continue;
-
+                    var comment = Comment.FromBinary(dataRecord.Data);
 
                     if (data.Distribution.ContainsKey(comment.UserId))
-                        data.Distribution[comment.UserId]++;
+                        data.Distribution[comment.UserId] += 1;
                     else
                         data.Distribution[comment.UserId] = 1;
 
@@ -132,7 +100,7 @@ namespace SmartApp.Sample3.Continuous
 
                     emptyData = false;
                 }
-                SaveCommentData(data, views);
+                views.WriteAsJson(data, CommentDistributionView.FileName);
 
                 if (emptyData)
                 {
@@ -144,45 +112,5 @@ namespace SmartApp.Sample3.Continuous
                 }
             }
         }
-
-        static CommentDistributionView LoadCommentData(IViewContainer views)
-        {
-
-            if (!views.Exists(CommentDistributionView.FileName))
-                return new CommentDistributionView();
-
-            using (var stream = views.OpenRead(CommentDistributionView.FileName))
-            {
-                return JsonSerializer.DeserializeFromStream<CommentDistributionView>(stream);
-            }
-        }
-
-        static void SaveCommentData(CommentDistributionView data, IViewContainer views)
-        {
-            var exes = new Stack<Exception>();
-            while(true)
-            {
-                    try
-                {
-                    using (var stream = views.OpenWrite(CommentDistributionView.FileName))
-                    {
-                        JsonSerializer.SerializeToStream(data, stream);
-                        return;
-                    }
-                }
-                catch (IOException e)
-                {
-                    exes.Push(e);
-                    if (exes.Count >= 4)
-                        throw new AggregateException(exes);
-
-                    Thread.Sleep(200 * exes.Count);
-                }
-            }
-
-        }
-
-        #endregion
     }
-
 }

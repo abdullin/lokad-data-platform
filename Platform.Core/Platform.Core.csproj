@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Library\ServiceStack\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Text, Version=3.6.9.2502, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Library\ServiceStack\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -64,7 +68,7 @@
     <Compile Include="FileViewContainer.cs" />
     <Compile Include="FormatEvil.cs" />
     <Compile Include="Fsm.cs" />
-    <Compile Include="IViewClient.cs" />
+    <Compile Include="IViewRoot.cs" />
     <Compile Include="JsonPlatformClientBase.cs" />
     <Compile Include="Messages\ClientDto.cs" />
     <Compile Include="PlatformClient.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="IInternalStreamClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
     <Compile Include="Storage\Azure\StorageExtensions.cs" />
+    <Compile Include="ViewClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

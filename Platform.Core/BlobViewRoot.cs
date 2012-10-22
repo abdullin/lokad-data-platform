@@ -10,7 +10,7 @@ namespace Platform
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class BlobViewRoot : IViewClient
+    public sealed class BlobViewRoot : IViewRoot
     {
         readonly CloudBlobClient _client;
 

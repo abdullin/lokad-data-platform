@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 
 namespace Platform
 {
-    public interface IViewClient
+    public interface IViewRoot
     {
         /// <summary>
         /// Gets the container reference, identified by it's name
@@ -64,7 +62,4 @@ namespace Platform
         IEnumerable<string> ListAllNestedItems();
         IEnumerable<ViewDetail> ListAllNestedItemsWithDetail();
     }
-   
-
-
 }

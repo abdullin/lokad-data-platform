@@ -10,7 +10,7 @@ namespace Platform
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data
     /// </summary>
-    public sealed class FileViewContainer : IViewContainer, IViewClient
+    public sealed class FileViewContainer : IViewContainer, IViewRoot
     {
         readonly DirectoryInfo _root;
 
