@@ -57,33 +57,31 @@ namespace SmartApp.Sample3.Dump
 
         private static void DumpComments()
         {
-            string path = Path.Combine(RawDataPath, "comments.xml");
-
+            var path = Path.Combine(RawDataPath, "comments.xml");
             long rowIndex = 0;
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
 
             var commentBytes = new List<byte[]>();
             foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
             {
                 rowIndex++;
-                var comment = CommentParse(line);
+                var comment = ParseComments(line);
                 if (comment == null)
                     continue;
-
 
                 commentBytes.Add(comment.ToBinary());
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)));
                     Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
         }
 
-        private static Comment CommentParse(string line)
+        private static Comment ParseComments(string line)
         {
             try
             {
@@ -132,7 +130,7 @@ namespace SmartApp.Sample3.Dump
 
                 if (rowIndex % 20000 == 0)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)).ToList());
+                    _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)));
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }

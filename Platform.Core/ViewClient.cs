@@ -29,7 +29,7 @@ namespace Platform
                 });
         }
 
-        public TEntity ReadAsJsonOrNew<TEntity>(string name) where TEntity : class,new()
+        public TEntity ReadAsJsonOrGetNew<TEntity>(string name) where TEntity : class,new()
         {
             return ReadAsJsonOrNull<TEntity>(name) ?? new TEntity();
         }

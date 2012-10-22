@@ -29,7 +29,7 @@ namespace SmartApp.Sample3.Continuous
         }
         private static void TagProjection(IInternalStreamClient store, ViewClient views)
         {
-            var data = views.ReadAsJsonOrNew<TagsDistributionView>(TagsDistributionView.FileName);
+            var data = views.ReadAsJsonOrGetNew<TagsDistributionView>(TagsDistributionView.FileName);
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
@@ -44,8 +44,6 @@ namespace SmartApp.Sample3.Continuous
                         continue;
 
                     var post = Post.FromBinary(dataRecord.Data);
-                    if (post == null)
-                        continue;
 
                     foreach (var tag in post.Tags)
                     {
@@ -74,7 +72,7 @@ namespace SmartApp.Sample3.Continuous
         
         private static void CommentProjection(IInternalStreamClient store, ViewClient views)
         {
-            var data = views.ReadAsJsonOrNew<CommentDistributionView>(CommentDistributionView.FileName);
+            var data = views.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
             Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
