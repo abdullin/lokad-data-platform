@@ -20,10 +20,8 @@ namespace Platform.TestClient.Commands
             if (args.Length > 1) int.TryParse(args[1], out repeat);
             if (args.Length> 2) int.TryParse(args[2], out readerCount);
 
-            int readFailures = 0;
-            int writeFailures = 0;
-
-            int corruptions = 0;
+            var readFailures = 0;
+            var writeFailures = 0;
 
             var countdown = new CountdownEvent(1 + readerCount);
 
@@ -36,7 +34,7 @@ namespace Platform.TestClient.Commands
             {
                 var reader = new Thread(() =>
                 {
-                    int clientRepeat = repeat * 10;
+                    var clientRepeat = repeat * 10;
                     for (int j = 0; j < clientRepeat; j++)
                     {
                         token.ThrowIfCancellationRequested();
@@ -52,6 +50,8 @@ namespace Platform.TestClient.Commands
                         }
                         catch (Exception)
                         {
+                            // back off on error
+                            Thread.Sleep(3);
                             Interlocked.Increment(ref readFailures);
                         }
                     }
@@ -67,26 +67,24 @@ namespace Platform.TestClient.Commands
             var writer = new Thread(() =>
                 {
                     var data = new byte[size];
-
                     
                     for (int i = 0; i < repeat; i++)
                     {
                         token.ThrowIfCancellationRequested();
                         try
                         {
-                            
                             using (var ws = context.Client.Views.Advanced.OpenWrite(viewname))
                             {
-                                Thread.Sleep(1);
+                                Thread.Sleep(3);
                                 ws.Write(data, 0, data.Length);
                             }
-                            
+                            Thread.Sleep(11);
                         }
                         catch(Exception)
                         {
                             Interlocked.Increment(ref writeFailures);
                         }
-                        Thread.Sleep(7);
+                        
                     }
                     countdown.Signal();
                 }) {IsBackground = true, Name = "Writer"};
