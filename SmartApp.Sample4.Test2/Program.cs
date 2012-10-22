@@ -11,11 +11,8 @@ namespace SmartApp.Sample4.Test2
     {
         static void Main(string[] args)
         {
-            while (true)
-            {
-                Console.WriteLine("I'm alive");
-                Thread.Sleep(3000);
-            }
+            Console.WriteLine("I'm alive");
+            Thread.Sleep(3000);
         }
     }
 }

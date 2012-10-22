@@ -12,60 +12,71 @@ namespace SmartApp.Sample4.HostProjection
 {
     class Program
     {
-        static ConcurrentDictionary<string, DateTime> _lastChangedDate = new ConcurrentDictionary<string, DateTime>();
+        static Dictionary<string, DateTime> _lastChangedDate = new Dictionary<string, DateTime>();
+        static Dictionary<string, DateTime> _lastStartTime = new Dictionary<string, DateTime>();
         private static List<Process> _startingProcess;
         static void Main(string[] args)
         {
             _startingProcess = new List<Process>();
 
-            Task.Factory.StartNew(x => MonitoringProjectionSourcePath(), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
-            Console.ReadKey();
+            Task.Factory.StartNew(KillProcess);
+            while (true)
+            {
+                MonitoringProjectionSourcePath();
+                Thread.Sleep(5000);
+                
+            }
+        }
+
+        private static void KillProcess()
+        {
+            while (true)
+            {
+                var stopedProcess = new List<string>();
+                foreach (KeyValuePair<string, DateTime> pair in _lastStartTime)
+                {
+                    if (pair.Value.AddSeconds(20) < DateTime.Now)
+                        if(StopProjectionExe(pair.Key))stopedProcess.Add(pair.Key);
+                }
+
+                foreach (string s in stopedProcess)
+                {
+                    _lastStartTime.Remove(s);
+                }
+
+                Thread.Sleep(2000);
+            }
         }
 
         private static void MonitoringProjectionSourcePath()
         {
-            Directory.CreateDirectory(@"C:\LokadData\dp-projection-store");
-            var folderWatcher = new FileSystemWatcher();
-            folderWatcher.Path = @"C:\LokadData\dp-projection-store";
-            folderWatcher.IncludeSubdirectories = true;
-            folderWatcher.Filter = "*.exe";
-            folderWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            const string path = @"C:\LokadData\dp-projection-store";
+            Directory.CreateDirectory(path);
 
-            folderWatcher.Changed += FolderWatcher_Changed;
-            folderWatcher.Created += FolderWatcher_Created;
-            folderWatcher.Deleted += FolderWatcher_Deleted;
-            folderWatcher.Renamed += FolderWatcher_Renamed;
+            var deletedFile = _lastChangedDate.Select(x => x.Key).ToDictionary(x => x, y => File.Exists(y));
 
-            folderWatcher.EnableRaisingEvents = true;
-        }
+            foreach (KeyValuePair<string, bool> pair in deletedFile)
+            {
+                if(!pair.Value)
+                {
+                    StopProjectionExe(pair.Key);
+                    _lastChangedDate.Remove(pair.Key);
+                }
+            }
 
-        static void FolderWatcher_Deleted(object sender, FileSystemEventArgs e)
-        {
-            StopProjectionExe(e.FullPath);
-        }
-
-        static void FolderWatcher_Changed(object sender, FileSystemEventArgs e)
-        {
-            RestartProjection(e.FullPath, e.FullPath);
-        }
-
-        static void FolderWatcher_Created(object sender, FileSystemEventArgs e)
-        {
-            RestartProjection(e.FullPath, e.FullPath);
-        }
-
-        static void FolderWatcher_Renamed(object sender, RenamedEventArgs e)
-        {
-            RestartProjection(e.OldFullPath, e.FullPath);
+            foreach (string file in Directory.GetFiles(path))
+            {
+                if (!_lastChangedDate.ContainsKey(file) || _lastChangedDate[file] != new FileInfo(file).LastWriteTime)
+                {
+                    _lastChangedDate[file] = new FileInfo(file).LastWriteTime;
+                    RestartProjection(file, file);
+                }
+            }
         }
 
         static void RestartProjection(string stopExePath, string startExePath)
         {
-            if (_lastChangedDate.ContainsKey(stopExePath) && _lastChangedDate[stopExePath].AddSeconds(2) > DateTime.Now)
-                return;
-
             StopProjectionExe(stopExePath);
-            _lastChangedDate[stopExePath] = DateTime.Now;
 
             try
             {
@@ -85,6 +96,7 @@ namespace SmartApp.Sample4.HostProjection
             }
         }
 
+
         private static void StartProjectionExe(string startExePath)
         {
             Directory.CreateDirectory(@"C:\LokadData\dp-exe-store");
@@ -93,13 +105,78 @@ namespace SmartApp.Sample4.HostProjection
             if (File.Exists(newPath))
                 File.Delete(newPath);
             File.Copy(startExePath, newPath);
-            Process p = Process.Start(newPath);
-            _startingProcess.Add(p);
 
-            _lastChangedDate[startExePath] = DateTime.Now;
+            StreamWriter streamWriter = null;
+
+            try
+            {
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(@"C:\Projects\lokad-data\SmartApp.Sample4.Test1\bin\Debug\SmartApp.Sample4.Test1.exe");
+                processStartInfo.ErrorDialog = false;
+                processStartInfo.UseShellExecute = false;
+                processStartInfo.RedirectStandardError = true;
+                processStartInfo.RedirectStandardInput = true;
+                processStartInfo.RedirectStandardOutput = true;
+
+                //Execute the process
+                Process process = new Process();
+                _startingProcess.Add(process);
+                process.StartInfo = processStartInfo;
+                process.OutputDataReceived += process_OutputDataReceived;
+                bool processStarted = process.Start();
+                _lastStartTime[startExePath] = DateTime.Now;
+                streamWriter = process.StandardInput;
+                process.BeginOutputReadLine();
+                if (processStarted)
+                {
+                    streamWriter.WriteLine("Message");
+                    streamWriter.WriteLine("Message1");
+                    streamWriter.WriteLine("Message2");
+                    Thread.Sleep(10000);
+                    streamWriter.WriteLine("Message3");
+                    
+                    process.WaitForExit();
+                }
+
+                //var pi = new ProcessStartInfo(newPath);
+                //pi.UseShellExecute = false;
+                //pi.RedirectStandardInput = true;
+                //var p = Process.Start(pi);
+                ////var p = new Process { StartInfo = { FileName = newPath ,UseShellExecute=false,CreateNoWindow=false} };
+                //p.StartInfo.RedirectStandardInput = true;
+                //p.Start();
+
+                //p.StandardInput.WriteLine("This is all data");
+                //bool success = false;
+                //if (p.WaitForExit(35*1000*60))
+                //{
+                //    success = true;
+                //}
+                //else
+                //{
+                //    p.Kill();
+                //}
+
+
+                //
+
+                //Console.WriteLine(p.StandardOutput.ReadToEnd());
+            }
+            catch (Exception exception)
+            {
+            }
+
+
         }
 
-        private static void StopProjectionExe(string stopExePath)
+        static void process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if(!string.IsNullOrWhiteSpace(e.Data))
+            {
+                Console.WriteLine(e.Data);
+            }
+        }
+
+        private static bool StopProjectionExe(string stopExePath)
         {
             for (int i = 0; i < _startingProcess.Count; i++)
             {
@@ -108,10 +185,11 @@ namespace SmartApp.Sample4.HostProjection
                     if (!_startingProcess[i].HasExited)
                         _startingProcess[i].Kill();
                     _startingProcess.RemoveAt(i);
-                    i--;
-                    continue;
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }
