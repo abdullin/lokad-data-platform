@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Platform;
 using Platform.Storage;
+using Platform.StreamClient;
 using ServiceStack.Text;
 
 namespace SmartApp.Sample2.Continuous
@@ -22,7 +23,7 @@ namespace SmartApp.Sample2.Continuous
             {
                 var nextOffcet = data.NextOffset;
                 Thread.Sleep(seconds * 1000);
-                IInternalStreamClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
+                IInternalStreamClient reader = new FileStreamClient(@"C:\LokadData\dp-store");
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet));
                 bool emptyData = true;

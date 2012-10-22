@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.WindowsAzure.StorageClient;
+using Platform.Storage;
 using Platform.Storage.Azure;
 
-namespace Platform.Storage
+namespace Platform.StreamClient
 {
-    public class AzurePlatformClient : JsonPlatformClientBase, IInternalStreamClient
+    public class AzureStreamClient : JsonStreamClientBase, IInternalStreamClient
     {
         readonly CloudPageBlob _blob;
 
-        public AzurePlatformClient(AzureStoreConfiguration config, string serverEndpoint = null)
+        public AzureStreamClient(AzureStoreConfiguration config, string serverEndpoint = null)
             : base(serverEndpoint)
         {
             _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, config.Container + "/" + "stream.dat");

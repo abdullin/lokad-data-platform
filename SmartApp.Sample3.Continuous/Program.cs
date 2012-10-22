@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform;
+using Platform.ViewClient;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Continuous

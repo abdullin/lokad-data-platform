@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Platform;
 using Platform.Storage;
+using Platform.StreamClient;
 
 namespace SmartApp.Sample1.Continuous
 {
@@ -15,7 +16,7 @@ namespace SmartApp.Sample1.Continuous
             var nextOffset = LoadData();
             ShowData(nextOffset, true);
             var path = @"C:\LokadData\dp-store";
-            IInternalStreamClient reader = new FilePlatformClient(path);
+            IInternalStreamClient reader = new FileStreamClient(path);
             while (true)
             {
                 var last = reader.ReadAll(nextOffset).LastOrDefault();

@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 
-namespace Platform
+namespace Platform.ViewClient
 {
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data
@@ -130,78 +128,6 @@ namespace Platform
         public string FullPath
         {
             get { return _root.FullName; }
-        }
-    }
-
-    public sealed class ViewDetail
-    {
-        public string Name;
-        public DateTime LastModifiedUtc;
-        public long Length;
-    }
-
-    [Serializable]
-    public class ViewException : Exception
-    {
-        //
-        // For guidelines regarding the creation of new exception types, see
-        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
-        // and
-        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
-        //
-
-        public ViewException()
-        {
-        }
-
-        public ViewException(string message)
-            : base(message)
-        {
-        }
-
-        public ViewException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-        protected ViewException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public class ViewNotFoundException : ViewException
-    {
-        public ViewNotFoundException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-
-        protected ViewNotFoundException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public class ViewContainerNotFoundException : ViewException
-    {
-        public ViewContainerNotFoundException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-        protected ViewContainerNotFoundException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
         }
     }
 }

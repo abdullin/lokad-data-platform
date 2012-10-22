@@ -1,6 +1,6 @@
 using System;
 
-namespace Platform.Storage.Azure
+namespace Platform
 {
 
 

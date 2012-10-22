@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using Platform;
+using Platform.ViewClient;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.WebUI.Controllers

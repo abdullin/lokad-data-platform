@@ -4,9 +4,8 @@ using System.IO;
 using System.Threading;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-using Platform.Storage;
-using Platform.Storage.Azure;
-using System.Linq;
+using Platform.StreamClient;
+using Platform.ViewClient;
 
 namespace Platform
 {
@@ -17,45 +16,33 @@ namespace Platform
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
             {
-                return new FilePlatformClient(storage,serverEndpoint);
+                return new FileStreamClient(storage,serverEndpoint);
             }
-            return new AzurePlatformClient(configuration, serverEndpoint);
+            return new AzureStreamClient(configuration, serverEndpoint);
         }
         public static IInternalStreamClient GetStreamReader(string storage)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
-                return new FilePlatformClient(storage, null);
+                return new FileStreamClient(storage);
             }
-            return new AzurePlatformClient(configuration, null);
+            return new AzureStreamClient(configuration);
         }
 
-        //public static IViewContainer ViewClient(string storage)
-        //{
-        //    AzureStoreConfiguration configuration;
-        //    if (!AzureStoreConfiguration.TryParse(storage, out configuration))
-        //    {
-        //        return new FileViewContainer(new DirectoryInfo(storage));
-        //    }
-        //    var account = CloudStorageAccount.Parse(configuration.ConnectionString);
-        //    var client = account.CreateCloudBlobClient();
-        //    return new BlobViewRoot(client).GetContainer(configuration.Container);
-        //}
-
-        public static ViewClient GetViewClient(string storage, string containerName)
+        public static ViewClient.ViewClient GetViewClient(string storage, string containerName)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
                 var container = new FileViewContainer(new DirectoryInfo(storage));
-                return new ViewClient(container.GetContainer(containerName), FileActionPolicy);
+                return new ViewClient.ViewClient(container.GetContainer(containerName), FileActionPolicy);
             }
             var account = CloudStorageAccount.Parse(configuration.ConnectionString);
             var client = account.CreateCloudBlobClient();
             var viewContainer = new BlobViewRoot(client).GetContainer(configuration.Container);
 
-            return new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
+            return new ViewClient.ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
         }
 
         static bool FileActionPolicy(Queue<Exception> exceptions)

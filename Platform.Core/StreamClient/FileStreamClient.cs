@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using Platform.Storage;
 
-namespace Platform
+namespace Platform.StreamClient
 {
-    public class FilePlatformClient : JsonPlatformClientBase, IInternalStreamClient
+    public class FileStreamClient : JsonStreamClientBase, IInternalStreamClient
     {
 
         readonly string _serverFolder;
         readonly string _checkStreamName;
         readonly string _fileStreamName;
 
-        static readonly ILogger Log = LogManager.GetLoggerFor<FilePlatformClient>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<FileStreamClient>();
 
-        public FilePlatformClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
+        public FileStreamClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
         {
             _serverFolder = serverFolder;
             

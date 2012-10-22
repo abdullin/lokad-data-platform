@@ -2,13 +2,13 @@ using System;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
-namespace Platform
+namespace Platform.StreamClient
 {
-    public abstract class JsonPlatformClientBase
+    public abstract class JsonStreamClientBase
     {
         public  JsonServiceClient Client;
 
-        public JsonPlatformClientBase(string uri)
+        public JsonStreamClientBase(string uri)
         {
             if (!string.IsNullOrWhiteSpace(uri))
             {

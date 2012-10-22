@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Platform.Storage;
 using Platform.Storage.Azure;
+using Platform.StreamClient;
 using Platform.TestClient.Commands;
 using Platform.TestClient.Commands.Bench;
 using ServiceStack.Common;
@@ -32,11 +33,11 @@ namespace Platform.TestClient
             AzureStoreConfiguration azureConfig;
             if (AzureStoreConfiguration.TryParse(clientOptions.StoreLocation, out azureConfig))
             {
-                Stream = new AzurePlatformClient(azureConfig, ClientHttpBase);
+                Stream = new AzureStreamClient(azureConfig, ClientHttpBase);
             }
             else
             {
-                Stream = new FilePlatformClient(clientOptions.StoreLocation, ClientHttpBase);
+                Stream = new FileStreamClient(clientOptions.StoreLocation, ClientHttpBase);
             }
 
 

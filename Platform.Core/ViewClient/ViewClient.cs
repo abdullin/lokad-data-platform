@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using ServiceStack.Text;
 
-namespace Platform
+namespace Platform.ViewClient
 {
-
-    
     public class ViewClient
     {
         public readonly IViewContainer Advanced;
@@ -22,6 +20,8 @@ namespace Platform
         {
             return GetResult(() =>
                 {
+                    if (!Advanced.Exists(name))
+                        return null;
                     using (var stream = Advanced.OpenRead(name))
                     {
                         return JsonSerializer.DeserializeFromStream<TEntity>(stream);
