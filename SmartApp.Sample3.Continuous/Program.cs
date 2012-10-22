@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform;
-using Platform.Storage;
 using ServiceStack.Text;
 using SmartApp.Sample3.Contracts;
 
@@ -16,9 +13,13 @@ namespace SmartApp.Sample3.Continuous
     {
         static void Main(string[] args)
         {
-            var threads = new List<Task>();
-            threads.Add(Task.Factory.StartNew(TagProjection, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
-            threads.Add(Task.Factory.StartNew(CommentProjection, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness));
+            var threads = new List<Task>
+                {
+                    Task.Factory.StartNew(TagProjection,
+                        TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
+                    Task.Factory.StartNew(CommentProjection,
+                        TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
+                };
 
             Task.WaitAll(threads.ToArray());
         }
