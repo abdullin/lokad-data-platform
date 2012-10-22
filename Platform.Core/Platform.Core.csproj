@@ -67,6 +67,7 @@
     <Compile Include="IViewClient.cs" />
     <Compile Include="JsonPlatformClientBase.cs" />
     <Compile Include="Messages\ClientDto.cs" />
+    <Compile Include="PlatformClient.cs" />
     <Compile Include="Storage\AzurePlatformClient.cs" />
     <Compile Include="Storage\Azure\AzureAppendOnlyStore.cs" />
     <Compile Include="Storage\Azure\AzureStoreConfiguration.cs" />

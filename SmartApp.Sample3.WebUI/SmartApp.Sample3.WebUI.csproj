@@ -126,6 +126,10 @@
     <Content Include="Views\Home\Tags.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
+      <Project>{39F04669-CAA7-4F30-8BE2-6CF79F49F2E6}</Project>
+      <Name>Platform.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SmartApp.Sample3.Contracts\SmartApp.Sample3.Contracts.csproj">
       <Project>{FA56BCB1-EEF4-4ECE-8E41-A506AB5C0984}</Project>
       <Name>SmartApp.Sample3.Contracts</Name>
