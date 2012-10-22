@@ -16,10 +16,21 @@ namespace Platform.TestClient.Commands
             if (args.Length > 0)
                 int.TryParse(args[0], out maxCount);
             var sw = Stopwatch.StartNew();
-            var msgCount = context.Client.Streams.ReadAll(StorageOffset.Zero, maxCount).Count();
+            var records = context.Client.Streams.ReadAll(StorageOffset.Zero, maxCount);
+            int msgCount = 0;
+            long dataSize = 0;
+            foreach (var record in records)
+            {
+                msgCount += 1;
+                dataSize += record.Data.Length;
+            }
+            
             sw.Stop();
-            context.Log.Info("{0} messages per second", (int)(msgCount / sw.Elapsed.TotalSeconds));
-            PerfUtils.LogTeamCityGraphData(string.Format("EN_{0}_msgPerSeq", maxCount), (int)(msgCount / sw.Elapsed.TotalSeconds));
+            var speed = dataSize / sw.Elapsed.TotalSeconds;
+            var messageSpeed = (int) (msgCount / sw.Elapsed.TotalSeconds);
+            context.Log.Info("{0} msgPerSec or {1}", messageSpeed, FormatEvil.SpeedInBytes(speed));
+            PerfUtils.LogTeamCityGraphData(string.Format("EN_{0}_msgPerSec", maxCount), messageSpeed);
+            PerfUtils.LogTeamCityGraphData(string.Format("EN_{0}_bytesPerSec",maxCount),(int) speed);
             return true;
         }
     }
