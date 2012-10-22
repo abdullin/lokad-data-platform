@@ -70,15 +70,17 @@ namespace SmartApp.Sample3.Dump
                 var comment = ParseComments(line);
                 if (comment == null)
                     continue;
-
+                
                 commentBytes.Add(comment.ToBinary());
 
                 if (rowIndex % 20000 == 0)
                 {
                     _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)));
+                    commentBytes.Clear();
                     Console.WriteLine("Comments:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
+            _reader.WriteEventsInLargeBatch("s3:comment", commentBytes.Select(x => new RecordForStaging(x)));
         }
 
         private static Comment ParseComments(string line)
@@ -131,9 +133,11 @@ namespace SmartApp.Sample3.Dump
                 if (rowIndex % 20000 == 0)
                 {
                     _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)));
+                    postBytes.Clear();
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", rowIndex / sw.Elapsed.TotalSeconds, rowIndex);
                 }
             }
+            _reader.WriteEventsInLargeBatch("s3:post", postBytes.Select(x => new RecordForStaging(x)));
         }
 
         private static Post PostParse(string line)
