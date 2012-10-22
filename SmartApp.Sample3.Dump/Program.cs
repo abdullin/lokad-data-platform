@@ -23,7 +23,7 @@ namespace SmartApp.Sample3.Dump
             StorePath = ConfigurationManager.AppSettings["StorePath"];
 
             var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader = new FilePlatformClient(StorePath, httpBase);
+            _reader =  PlatformClient.GetStreamReaderWriter(StorePath, httpBase);
             Thread.Sleep(2000); //waiting for server initialization
 
             var threads = new List<Task>

@@ -12,7 +12,7 @@ namespace Platform
 {
     public class PlatformClient
     {
-        public static IInternalStreamClient GetStreamClientReaderWriter(string storage, string serverEndpoint)
+        public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))

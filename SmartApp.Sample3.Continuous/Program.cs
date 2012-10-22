@@ -9,13 +9,13 @@ namespace SmartApp.Sample3.Continuous
 {
     class Program
     {
-        const string config = @"C:\LokadData\dp-store";
+        const string platformPath = @"C:\LokadData\dp-store";
 
 
         static void Main(string[] args)
         {
-            var store = PlatformClient.GetStreamReader(config);
-            var views = PlatformClient.GetViewClient(config, Conventions.ViewContainer);
+            var store = PlatformClient.GetStreamReader(platformPath);
+            var views = PlatformClient.GetViewClient(platformPath, Conventions.ViewContainer);
             views.CreateContainer();
             var threads = new List<Task>
                 {
@@ -33,8 +33,7 @@ namespace SmartApp.Sample3.Continuous
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                var nextOffset = data.NextOffsetInBytes;
-                var records = store.ReadAll(new StorageOffset(nextOffset), 50000);
+                var records = store.ReadAll(new StorageOffset(data.NextOffsetInBytes), 50000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
