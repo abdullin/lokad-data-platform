@@ -60,7 +60,7 @@ namespace Platform.TestClient.Commands
                         for (int i = 0; i < messageCount; i++)
                         {
                             
-                            context.Client.Stream.WriteEvent("name", bytes);
+                            context.Client.Streams.WriteEvent("name", bytes);
                         }
 
                         Interlocked.Add(ref totalMsInAllThreads, watch.ElapsedMilliseconds);

@@ -10,38 +10,27 @@ namespace Platform.TestClient
     public class Client
     {
         private static readonly ILogger Log = LogManager.GetLoggerFor<Client>();
-        public ClientOptions Options;
+        public readonly ClientOptions Options;
+        readonly CommandProcessorCollection _commands = new CommandProcessorCollection(Log);
         
-
-        private readonly CommandProcessor _commands = new CommandProcessor(Log);
-        
-        public IInternalStreamClient Stream;
+        public IInternalStreamClient Streams;
         public string ClientHttpBase;
         public ViewClient Views;
 
-        public Client(ClientOptions clientOptions)
+        public Client(ClientOptions options)
         {
-            Options = clientOptions;
+            Options = options;
             // TODO : pass server options
-
-            
-            ClientHttpBase = string.Format("http://{0}:{1}", clientOptions.Ip, clientOptions.HttpPort);
-            AzureStoreConfiguration azureConfig;
-            if (AzureStoreConfiguration.TryParse(clientOptions.StoreLocation, out azureConfig))
-            {
-                Stream = new AzureStreamClient(azureConfig, ClientHttpBase);
-            }
-            else
-            {
-                Stream = new FileStreamClient(clientOptions.StoreLocation, ClientHttpBase);
-            }
+            ClientHttpBase = string.Format("http://{0}:{1}", options.Ip, options.HttpPort);
+            Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
+            Streams = PlatformClient.GetStreamReaderWriter(options.StoreLocation, ClientHttpBase);
 
 
 
-            RegisterCommand();
+            RegisterCommands();
         }
 
-        private void RegisterCommand()
+        void RegisterCommands()
         {
             _commands.Register(new ExitProcessor());
             _commands.Register(new WriteEventsFloodProcessor());

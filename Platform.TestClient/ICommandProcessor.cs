@@ -20,4 +20,16 @@ namespace Platform.TestClient
         /// </summary>
         bool Execute(CommandProcessorContext context, CancellationToken token, string[] args);
     }
+
+    public class CommandProcessorContext
+    {
+        public readonly Client Client;
+        public ILogger Log;
+
+        public CommandProcessorContext(Client client, ILogger log)
+        {
+            Log = log;
+            Client = client;
+        }
+    }
 }

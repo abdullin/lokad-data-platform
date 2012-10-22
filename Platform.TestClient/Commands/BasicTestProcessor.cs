@@ -66,7 +66,7 @@ namespace Platform.TestClient.Commands
             var round = Math.Round(watch.Elapsed.TotalSeconds, 2);
             context.Log.Debug("Flooded {0}x{1} in {2}s", threadCount, floodSize, round);
 
-            var records = context.Client.Stream.ReadAll().Where(x => x.Key == streamId);
+            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId);
 
             int index = 0;
             int batchMessageCount = batchCount * batchSize;
@@ -128,7 +128,7 @@ namespace Platform.TestClient.Commands
                     for (int i = 0; i < floodSize; i++)
                     {
                         var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                        context.Client.Stream.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
+                        context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
 
                         result.Add(currentMessage);
                     }
@@ -149,7 +149,7 @@ namespace Platform.TestClient.Commands
             for (int i = 0; i < batchCount; i++)
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
-                context.Client.Stream.WriteEventsInLargeBatch(streamId,
+                context.Client.Streams.WriteEventsInLargeBatch(streamId,
                     Enumerable.Range(0, batchSize).Select(
                         x =>
                             {

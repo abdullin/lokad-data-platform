@@ -15,5 +15,7 @@ namespace Platform.TestClient
         public int Timeout { get; set; }
         [Option("s", "store", DefaultValue = @"C:\LokadData\dp-store", HelpText = "Location of data store to use")]
         public string StoreLocation { get; set; }
+        [Option("v","views", DefaultValue = "views", HelpText = "Container to use for views")]
+        public string ViewsFolder { get; set; }
     }
 }

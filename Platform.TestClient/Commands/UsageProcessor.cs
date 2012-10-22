@@ -5,11 +5,11 @@ namespace Platform.TestClient.Commands
 {
     public class UsageProcessor : ICommandProcessor
     {
-        private readonly CommandProcessor _commands;
+        private readonly CommandProcessorCollection _commands;
         public string Key { get { return "USAGE"; } }
         public string Usage { get { return Key; } }
 
-        public UsageProcessor(CommandProcessor commands)
+        public UsageProcessor(CommandProcessorCollection commands)
         {
             _commands = commands;
         }

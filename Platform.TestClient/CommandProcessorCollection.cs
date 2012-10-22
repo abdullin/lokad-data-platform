@@ -6,12 +6,12 @@ using Platform.TestClient.Commands;
 
 namespace Platform.TestClient
 {
-    public class CommandProcessor
+    public class CommandProcessorCollection
     {
         private readonly IDictionary<string, ICommandProcessor> _processors = new Dictionary<string, ICommandProcessor>();
         private readonly ILogger _log;
 
-        public CommandProcessor(ILogger log)
+        public CommandProcessorCollection(ILogger log)
         {
             _log = log;
         }
