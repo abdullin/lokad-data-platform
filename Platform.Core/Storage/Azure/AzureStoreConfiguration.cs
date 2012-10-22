@@ -2,9 +2,10 @@ using System;
 
 namespace Platform.Storage.Azure
 {
+
+
     public sealed class AzureStoreConfiguration
     {
-
         public readonly string ConnectionString;
         public readonly string Container;
 

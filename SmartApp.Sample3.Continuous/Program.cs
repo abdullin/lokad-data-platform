@@ -13,11 +13,12 @@ namespace SmartApp.Sample3.Continuous
     {
         static void Main(string[] args)
         {
+            var store = new FilePlatformClient(@"C:\LokadData\dp-store");
             var threads = new List<Task>
                 {
-                    Task.Factory.StartNew(TagProjection,
+                    Task.Factory.StartNew(() => TagProjection(store),
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
-                    Task.Factory.StartNew(CommentProjection,
+                    Task.Factory.StartNew(() => CommentProjection(store),
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                 };
 
@@ -26,7 +27,7 @@ namespace SmartApp.Sample3.Continuous
 
         #region tag projection
 
-        private static void TagProjection()
+        private static void TagProjection(IInternalStreamClient store)
         {
             const int seconds = 1;
             var data = LoadTagData();
@@ -35,7 +36,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
-                IInternalStreamClient reader = new FilePlatformClient(@"C:\LokadData\dp-store");
+                IInternalStreamClient reader = store;
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;
@@ -93,7 +94,7 @@ namespace SmartApp.Sample3.Continuous
 
         #region Comments
 
-        private static void CommentProjection()
+        private static void CommentProjection(IInternalStreamClient store)
         {
             const int seconds = 1;
             var data = LoadCommentData();
@@ -103,7 +104,7 @@ namespace SmartApp.Sample3.Continuous
                 long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
                 IInternalStreamClient reader =
-                    new FilePlatformClient(@"C:\LokadData\dp-store");
+                    store;
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;

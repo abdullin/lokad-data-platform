@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.WindowsAzure;
@@ -37,16 +36,19 @@ namespace Platform
             Views = views;
         }
 
-        public static InternalPlatformClient ForFiles(string connection, string root)
+        public static  InternalPlatformClient FromConfig(string connection, string root)
         {
-            return new InternalPlatformClient(new FilePlatformClient(root, connection), new FileViewContainer(Path.Combine(root, "views")));
-        }
-        public static InternalPlatformClient ForAzure(string connection, AzureStoreConfiguration config)
-        {
-                       var account = CloudStorageAccount.Parse(config.ConnectionString);
+            AzureStoreConfiguration configuration;
+            if (!AzureStoreConfiguration.TryParse(root, out configuration))
+            {
+                var fileClient = new FilePlatformClient(root, connection);
+                var fileViews = new FileViewContainer(Path.Combine(root, "views"));
+                return new InternalPlatformClient(fileClient, fileViews);
+            }
+            var account = CloudStorageAccount.Parse(configuration.ConnectionString);
             var client = account.CreateCloudBlobClient();
-            var dir = client.GetBlobDirectoryReference(config.Container + "-views");
-            return new InternalPlatformClient(new AzurePlatformClient(config, connection), new BlobStreamingContainer(dir));
+            var dir = client.GetBlobDirectoryReference(configuration.Container + "-views");
+            return new InternalPlatformClient(new AzurePlatformClient(configuration, connection), new BlobStreamingContainer(dir));
         }
     }
 
