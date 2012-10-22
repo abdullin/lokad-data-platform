@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -41,6 +42,7 @@ namespace Platform.TestClient.Commands
                         token.ThrowIfCancellationRequested();
                         try
                         {
+
                             using (var ws = context.Client.Views.Advanced.OpenRead(viewname))
                             using (var ms = new MemoryStream())
                             {
@@ -62,8 +64,6 @@ namespace Platform.TestClient.Commands
                 reader.Start();
                 threads.Add(reader);
             }
-
-
             var writer = new Thread(() =>
                 {
                     var data = new byte[size];
@@ -74,17 +74,19 @@ namespace Platform.TestClient.Commands
                         token.ThrowIfCancellationRequested();
                         try
                         {
+                            
                             using (var ws = context.Client.Views.Advanced.OpenWrite(viewname))
                             {
                                 Thread.Sleep(1);
                                 ws.Write(data, 0, data.Length);
                             }
-                            Thread.Sleep(7);
+                            
                         }
                         catch(Exception)
                         {
                             Interlocked.Increment(ref writeFailures);
                         }
+                        Thread.Sleep(7);
                     }
                     countdown.Signal();
                 }) {IsBackground = true, Name = "Writer"};

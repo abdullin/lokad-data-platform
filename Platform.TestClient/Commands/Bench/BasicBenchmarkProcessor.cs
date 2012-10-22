@@ -40,6 +40,7 @@ namespace Platform.TestClient.Commands.Bench
             list.Add(new WriteBatchFloodProcessor(), "1 10000 5 50");
             
             list.Add(new EnumerateProcessor(), "75000");
+            list.Add(new ViewReadWriteFloodProcessor(), "1024 50 5");
             try
             {
                 foreach (var task in list.Tasks)
