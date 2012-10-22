@@ -11,14 +11,18 @@ namespace SmartApp.Sample3.Continuous
 {
     class Program
     {
+        const string config = @"C:\LokadData\dp-store";
+
+
         static void Main(string[] args)
         {
-            var store = new FilePlatformClient(@"C:\LokadData\dp-store");
+            var store = PlatformClient.StreamClient(config,null);
+            var views = PlatformClient.ViewClient(config).GetContainer(Conventions.ViewContainer).Create();
             var threads = new List<Task>
                 {
-                    Task.Factory.StartNew(() => TagProjection(store),
+                    Task.Factory.StartNew(() => TagProjection(store, views),
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
-                    Task.Factory.StartNew(() => CommentProjection(store),
+                    Task.Factory.StartNew(() => CommentProjection(store, views),
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                 };
 
@@ -27,18 +31,17 @@ namespace SmartApp.Sample3.Continuous
 
         #region tag projection
 
-        private static void TagProjection(IInternalStreamClient store)
+        private static void TagProjection(IInternalStreamClient store, IViewContainer views)
         {
             const int seconds = 1;
-            var data = LoadTagData();
+            var data = LoadTagData(views);
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
                 long nextOffcet = data.NextOffsetInBytes;
                 Thread.Sleep(seconds * 1000);
-                IInternalStreamClient reader = store;
 
-                var records = reader.ReadAll(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
                 bool emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -66,27 +69,27 @@ namespace SmartApp.Sample3.Continuous
                 if (!emptyData)
                 {
                     Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
-                    SaveTagData(data);
+                    SaveTagData(data, views);
                 }
             }
         }
 
-        static TagsDistributionView LoadTagData()
+        static TagsDistributionView LoadTagData(IViewContainer views)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
+            if (!views.Exists(TagsDistributionView.FileName))
+                return new TagsDistributionView();
 
-            if (!File.Exists(path))
-                return new TagsDistributionView { NextOffsetInBytes = 0, Distribution = new Dictionary<string, long>() };
-
-            return File.ReadAllText(path).FromJson<TagsDistributionView>();
+            using (var stream = views.OpenRead(TagsDistributionView.FileName))
+            {
+                return JsonSerializer.DeserializeFromStream<TagsDistributionView>(stream);
+            }
         }
 
-        static void SaveTagData(TagsDistributionView data)
+        static void SaveTagData(TagsDistributionView data, IViewContainer views)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-tag-count.dat");
-            using (var sw = new StreamWriter(path, false))
+            using (var stream = views.OpenWrite(TagsDistributionView.FileName))
             {
-                sw.Write(data.ToJson());
+                JsonSerializer.SerializeToStream(data, stream);
             }
         }
 
@@ -94,10 +97,10 @@ namespace SmartApp.Sample3.Continuous
 
         #region Comments
 
-        private static void CommentProjection(IInternalStreamClient store)
+        private static void CommentProjection(IInternalStreamClient store, IViewContainer views)
         {
             const int seconds = 1;
-            var data = LoadCommentData();
+            var data = LoadCommentData(views);
             Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
@@ -133,27 +136,27 @@ namespace SmartApp.Sample3.Continuous
                 if (!emptyData)
                 {
                     Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
-                    SaveCommentData(data);
+                    SaveCommentData(data,views);
                 }
             }
         }
 
-        static CommentDistributionView LoadCommentData()
+        static CommentDistributionView LoadCommentData(IViewContainer views)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-comment.dat");
+            if (!views.Exists(CommentDistributionView.FileName))
+                return new CommentDistributionView();
 
-            if (!File.Exists(path))
-                return new CommentDistributionView { NextOffsetInBytes = 0, Distribution = new Dictionary<long, int>() };
-
-            return File.ReadAllText(path).FromJson<CommentDistributionView>();
+            using (var stream = views.OpenRead(CommentDistributionView.FileName))
+            {
+                return JsonSerializer.DeserializeFromStream<CommentDistributionView>(stream);
+            }
         }
 
-        static void SaveCommentData(CommentDistributionView data)
+        static void SaveCommentData(CommentDistributionView data, IViewContainer views)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample3-comment.dat");
-            using (var sw = new StreamWriter(path, false))
+            using (var stream = views.OpenWrite(CommentDistributionView.FileName))
             {
-                sw.Write(data.ToJson());
+                JsonSerializer.SerializeToStream(data, stream);
             }
         }
 

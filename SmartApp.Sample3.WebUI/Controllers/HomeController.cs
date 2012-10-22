@@ -12,8 +12,12 @@ namespace SmartApp.Sample3.WebUI.Controllers
 
     public class HomeController : Controller
     {
+        // TODO: put into config
+        const string config = @"C:\LokadData\dp-store";
 
-        static readonly IViewContainer Global = PlatformClient.ViewClient(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\SmartApp.Sample3.Continuous\bin\Debug"));
+        static readonly IViewContainer Global = PlatformClient
+            .ViewClient(config)
+            .GetContainer(Conventions.ViewContainer);
         public ActionResult Index()
         {
             return View();
