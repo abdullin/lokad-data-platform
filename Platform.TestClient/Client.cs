@@ -48,6 +48,8 @@ namespace Platform.TestClient
             _commands.Register(new ResetStoreProcessor());
             
             _commands.Register(new ReadProcessor());
+
+            _commands.Register(new ViewReadWriteFloodProcessor());
         }
 
          
