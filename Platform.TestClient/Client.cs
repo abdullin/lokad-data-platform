@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using Platform.Storage;
-using Platform.Storage.Azure;
 using Platform.StreamClient;
 using Platform.TestClient.Commands;
 using Platform.TestClient.Commands.Bench;
-using ServiceStack.Common;
 
 namespace Platform.TestClient
 {

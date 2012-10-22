@@ -79,35 +79,35 @@ namespace Platform.TestClient.Commands.Bench
                 new ShutdownProcessor().Execute(context, token, new string[0]);
             }
         }
-    }
 
-    sealed class BenchmarkTaskList
-    {
-        public readonly IList<BenchmarkTask> Tasks = new List<BenchmarkTask>();
-
-        public void Add(ICommandProcessor processor, string args)
+        public sealed class BenchmarkTask
         {
-            Tasks.Add(new BenchmarkTask(processor, args));
-        }
-    }
+            public readonly ICommandProcessor Processor;
+            public readonly string Args;
 
-    public sealed class BenchmarkTask
-    {
-        public readonly ICommandProcessor Processor;
-        public readonly string Args;
+            public BenchmarkTask(ICommandProcessor processor, string args)
+            {
+                Processor = processor;
+                Args = args;
+            }
 
-        public BenchmarkTask(ICommandProcessor processor, string args)
-        {
-            Processor = processor;
-            Args = args;
+            public string[] GetCommandArgs()
+            {
+                if (String.IsNullOrWhiteSpace(Args))
+                    return new string[0];
+                return Args.Split(' ', '\t');
+            }
+
         }
 
-        public string[] GetCommandArgs()
+        sealed class BenchmarkTaskList
         {
-            if (String.IsNullOrWhiteSpace(Args))
-                return new string[0];
-            return Args.Split(' ','\t');
+            public readonly IList<BenchmarkTask> Tasks = new List<BenchmarkTask>();
+
+            public void Add(ICommandProcessor processor, string args)
+            {
+                Tasks.Add(new BenchmarkTask(processor, args));
+            }
         }
-            
     }
 }
