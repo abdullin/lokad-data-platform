@@ -56,11 +56,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="Ensure.cs" />
+    <Compile Include="FilePlatformClient.cs" />
+    <Compile Include="FileViewContainer.cs" />
     <Compile Include="FormatEvil.cs" />
     <Compile Include="Fsm.cs" />
+    <Compile Include="IViewClient.cs" />
     <Compile Include="JsonPlatformClientBase.cs" />
     <Compile Include="Messages\ClientDto.cs" />
     <Compile Include="Storage\AzurePlatformClient.cs" />
