@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Platform.StreamClients;
 
 namespace Platform.Storage
 {

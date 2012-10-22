@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Platform.StreamClients;
 
 namespace Platform.TestClient.Commands
 {

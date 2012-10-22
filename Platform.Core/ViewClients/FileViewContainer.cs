@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Platform.ViewClient
+namespace Platform.ViewClients
 {
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data

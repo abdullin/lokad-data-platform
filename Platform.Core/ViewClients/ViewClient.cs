@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ServiceStack.Text;
 
-namespace Platform.ViewClient
+namespace Platform.ViewClients
 {
     public class ViewClient
     {

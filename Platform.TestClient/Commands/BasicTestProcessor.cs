@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform.Storage;
+using Platform.StreamClients;
 using ServiceStack.Common.Net30;
 
 namespace Platform.TestClient.Commands

@@ -2,7 +2,7 @@ using System;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
-namespace Platform.StreamClient
+namespace Platform.StreamClients
 {
     public abstract class JsonStreamClientBase
     {

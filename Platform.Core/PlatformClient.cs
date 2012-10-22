@@ -4,8 +4,8 @@ using System.IO;
 using System.Threading;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-using Platform.StreamClient;
-using Platform.ViewClient;
+using Platform.StreamClients;
+using Platform.ViewClients;
 
 namespace Platform
 {
@@ -30,19 +30,19 @@ namespace Platform
             return new AzureStreamClient(configuration);
         }
 
-        public static ViewClient.ViewClient GetViewClient(string storage, string containerName)
+        public static ViewClient GetViewClient(string storage, string containerName)
         {
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
                 var container = new FileViewContainer(new DirectoryInfo(storage));
-                return new ViewClient.ViewClient(container.GetContainer(containerName), FileActionPolicy);
+                return new ViewClient(container.GetContainer(containerName), FileActionPolicy);
             }
             var account = CloudStorageAccount.Parse(configuration.ConnectionString);
             var client = account.CreateCloudBlobClient();
             var viewContainer = new BlobViewRoot(client).GetContainer(configuration.Container);
 
-            return new ViewClient.ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
+            return new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
         }
 
         static bool FileActionPolicy(Queue<Exception> exceptions)

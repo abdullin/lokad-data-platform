@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Platform.StreamClient;
+using Platform.StreamClients;
 using Platform.TestClient.Commands;
 using Platform.TestClient.Commands.Bench;
+using Platform.ViewClients;
 
 namespace Platform.TestClient
 {
@@ -16,6 +17,7 @@ namespace Platform.TestClient
         
         public IInternalStreamClient Stream;
         public string ClientHttpBase;
+        public ViewClient Views;
 
         public Client(ClientOptions clientOptions)
         {

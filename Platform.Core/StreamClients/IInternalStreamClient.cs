@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Platform.Storage;
 
-namespace Platform
+namespace Platform.StreamClients
 {
     /// <summary>
     /// Provides raw byte-level access to the storage and messaging of

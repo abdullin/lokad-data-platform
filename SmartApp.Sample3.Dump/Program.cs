@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Platform;
+using Platform.StreamClients;
 using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Dump

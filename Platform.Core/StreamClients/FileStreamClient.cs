@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Platform.Storage;
 
-namespace Platform.StreamClient
+namespace Platform.StreamClients
 {
     public class FileStreamClient : JsonStreamClientBase, IInternalStreamClient
     {

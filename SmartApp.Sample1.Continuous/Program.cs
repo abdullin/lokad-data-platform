@@ -2,9 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Platform;
-using Platform.Storage;
-using Platform.StreamClient;
+using Platform.StreamClients;
 
 namespace SmartApp.Sample1.Continuous
 {

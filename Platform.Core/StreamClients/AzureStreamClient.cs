@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.StorageClient;
 using Platform.Storage;
 using Platform.Storage.Azure;
 
-namespace Platform.StreamClient
+namespace Platform.StreamClients
 {
     public class AzureStreamClient : JsonStreamClientBase, IInternalStreamClient
     {

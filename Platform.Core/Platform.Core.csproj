@@ -60,19 +60,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="ViewClient\BlobViewRoot.cs" />
+    <Compile Include="ViewClients\BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="Ensure.cs" />
-    <Compile Include="StreamClient\FileStreamClient.cs" />
-    <Compile Include="ViewClient\FileViewContainer.cs" />
+    <Compile Include="StreamClients\FileStreamClient.cs" />
+    <Compile Include="ViewClients\FileViewContainer.cs" />
     <Compile Include="FormatEvil.cs" />
     <Compile Include="Fsm.cs" />
-    <Compile Include="ViewClient\IViewRoot.cs" />
-    <Compile Include="StreamClient\JsonStreamClientBase.cs" />
+    <Compile Include="ViewClients\IViewRoot.cs" />
+    <Compile Include="StreamClients\JsonStreamClientBase.cs" />
     <Compile Include="Messages\ClientDto.cs" />
     <Compile Include="PlatformClient.cs" />
-    <Compile Include="StreamClient\AzureStreamClient.cs" />
+    <Compile Include="StreamClients\AzureStreamClient.cs" />
     <Compile Include="Storage\Azure\AzureAppendOnlyStore.cs" />
     <Compile Include="AzureStoreConfiguration.cs" />
     <Compile Include="Storage\Azure\PageWriter.cs" />
@@ -81,10 +81,10 @@
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="Storage\RetrievedDataRecord.cs" />
-    <Compile Include="StreamClient\IInternalStreamClient.cs" />
+    <Compile Include="StreamClients\IInternalStreamClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
     <Compile Include="Storage\Azure\StorageExtensions.cs" />
-    <Compile Include="ViewClient\ViewClient.cs" />
+    <Compile Include="ViewClients\ViewClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

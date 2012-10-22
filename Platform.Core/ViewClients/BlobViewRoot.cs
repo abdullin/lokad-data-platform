@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Platform.ViewClient
+namespace Platform.ViewClients
 {
     /// <summary>
     /// Windows Azure implementation of storage 
