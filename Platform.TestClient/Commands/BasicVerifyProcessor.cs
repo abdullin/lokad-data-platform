@@ -12,14 +12,28 @@ namespace Platform.TestClient.Commands
     public class BasicVerifyProcessor : ICommandProcessor
     {
         public string Key { get { return "BV"; } }
-        public string Usage { get { return Key; } }
+        public string Usage { get { return "BV [TIMEOUT(Sec) BatchSize BatchThreadCount FloodThreadCount]"; } }
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            return WriteFloodAndBatchTogether(context);
+            int timeOut = 30;
+            int batchSize = 10000;
+            int batchThreadCount = 4;
+            int floodThreadCount = 4;
+
+            if (args.Length > 0)
+                int.TryParse(args[0], out timeOut);
+            if (args.Length > 1)
+                int.TryParse(args[1], out batchSize);
+            if (args.Length > 2)
+                int.TryParse(args[2], out batchThreadCount);
+            if (args.Length > 3)
+                int.TryParse(args[3], out floodThreadCount);
+
+            return WriteFloodAndBatchTogether(context, timeOut, batchSize, batchThreadCount, floodThreadCount);
         }
 
-        bool WriteFloodAndBatchTogether(CommandProcessorContext context)
+        bool WriteFloodAndBatchTogether(CommandProcessorContext context, int timeOut, int batchSize, int batchThreadCount, int floodThreadCount)
         {
             int batchCount = 0;
             int floodCount = 0;
@@ -28,7 +42,7 @@ namespace Platform.TestClient.Commands
             var errors = new ConcurrentStack<string>();
             var threads = new List<Task>();
 
-            for (int t = 0; t < 4; t++)
+            for (int t = 0; t < batchThreadCount; t++)
             {
                 var task = Task.Factory.StartNew(() =>
                 {
@@ -37,7 +51,7 @@ namespace Platform.TestClient.Commands
                         try
                         {
                             context.Client.Streams.WriteEventsInLargeBatch("BasicVerify-FloodAndBatch-Write",
-                            Enumerable.Range(0, 1000000).Select(
+                            Enumerable.Range(0, batchSize).Select(
                                 x =>
                                 {
                                     var bytes = Encoding.UTF8.GetBytes("BasicVerify-FloodAndBatch-Write");
@@ -55,7 +69,7 @@ namespace Platform.TestClient.Commands
                 threads.Add(task);
             }
 
-            for (int t = 0; t < 4; t++)
+            for (int t = 0; t < floodThreadCount; t++)
             {
                 var task = Task.Factory.StartNew(() =>
                 {
@@ -74,7 +88,7 @@ namespace Platform.TestClient.Commands
                 }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
             }
-            dt = DateTime.Now.AddSeconds(30);
+            dt = DateTime.Now.AddSeconds(timeOut);
             Task.WaitAll(threads.ToArray());
 
             foreach (var err in errors.ToArray())
