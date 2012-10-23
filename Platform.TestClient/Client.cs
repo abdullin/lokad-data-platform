@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Platform.StreamClients;
 using Platform.TestClient.Commands;
 using Platform.TestClient.Commands.Bench;
@@ -65,10 +66,12 @@ namespace Platform.TestClient
             }
             
             
-            Console.Write(">>> ");
-            string line;
-            while ((line = Console.ReadLine()) != null)
+            
+            
+            while (true)
             {
+                Console.Write(">>> ");
+                var line = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(line))
                 {
                     Console.WriteLine("Empty command. Type 'usage' if unsure.");
@@ -76,8 +79,8 @@ namespace Platform.TestClient
                 else
                 {
                     ExecuteLine(line);
+                    Thread.Sleep(100);
                 }
-                Console.Write(">>> ");
             }
         }
 
