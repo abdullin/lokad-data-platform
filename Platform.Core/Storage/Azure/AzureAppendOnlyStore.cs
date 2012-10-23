@@ -22,8 +22,6 @@ namespace Platform.Storage.Azure
         {
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
             _pageWriter = new PageWriter(512, WriteProc);
-
-            _blob.Container.CreateIfNotExist();
             Initialize();
         }
 
@@ -40,7 +38,8 @@ namespace Platform.Storage.Azure
                         var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(key) + 4 + record.Length;
                         if (stream.Position + newSizeEstimate >= limit)
                         {
-                            _pageWriter.Write(stream.GetBuffer(),0, stream.Position);
+                            writer.Flush();
+                            _pageWriter.Write(stream.ToArray(),0, stream.Position);
                             _pageWriter.Flush();
                             writtenBytes += stream.Position;
                             stream.Seek(0, SeekOrigin.Begin);
@@ -50,7 +49,8 @@ namespace Platform.Storage.Azure
                         writer.Write7BitInt(record.Length);
                         writer.Write(record);
                     }
-                    _pageWriter.Write(stream.GetBuffer(), 0, stream.Position);
+                    writer.Flush();
+                    _pageWriter.Write(stream.ToArray(), 0, stream.Position);
                     _pageWriter.Flush();
                     writtenBytes += stream.Position;
                 }
@@ -91,6 +91,7 @@ namespace Platform.Storage.Azure
 
         void Initialize()
         {
+            _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
             {
                 _blob.Create(ChunkSize);
