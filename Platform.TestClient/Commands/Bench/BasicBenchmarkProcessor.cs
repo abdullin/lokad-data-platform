@@ -21,8 +21,8 @@ namespace Platform.TestClient.Commands.Bench
         {
 
             var list = new BenchmarkTaskList();
-            list.Add(new ResetStoreProcessor(),"");
             list.Add(new StartLocalServerProcessor(), "-k 300");
+            list.Add(new ResetStoreProcessor(), "");
             list.Add(new WriteEventsFloodProcessor(), "5 20 44");
             list.Add(new WriteEventsFloodProcessor(), "10 10 44");
             list.Add(new WriteEventsFloodProcessor(), "5 20 600");
