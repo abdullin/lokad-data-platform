@@ -39,6 +39,7 @@ namespace Platform.TestClient
             _commands.Register(new WriteProccessor());
             _commands.Register(new EnumerateProcessor());
             _commands.Register(new BasicTestProcessor());
+            _commands.Register(new BasicVerifyProcessor());
             _commands.Register(new BasicBenchmarkProcessor());
             
             _commands.Register(new ShutdownProcessor());

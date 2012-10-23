@@ -57,6 +57,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="ClientOptions.cs" />
     <Compile Include="CommandProcessorCollection.cs" />
+    <Compile Include="Commands\BasicVerifyProcessor.cs" />
     <Compile Include="Commands\Bench\BasicBenchmarkProcessor.cs" />
     <Compile Include="Commands\BasicTestProcessor.cs" />
     <Compile Include="Commands\EnumerateProcessor.cs" />

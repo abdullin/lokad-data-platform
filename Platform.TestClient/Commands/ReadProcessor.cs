@@ -8,7 +8,7 @@ namespace Platform.TestClient.Commands
 {
     public class ReadProcessor : ICommandProcessor
     {
-     
+
         public string Key { get { return "RA"; } }
         public string Usage { get { return "RA [<from-offset> <max-record-count>]"; } }
 
@@ -33,14 +33,17 @@ namespace Platform.TestClient.Commands
             //context.IsAsync();
 
             var result = context.Client.Streams.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
-            var dataRecords = result as RetrievedDataRecord[] ?? result.ToArray();
-            context.Log.Info("Read {0} records{1}", dataRecords.Length, dataRecords.Length > 0 ? ":" : ".");
-            foreach (var record in dataRecords)
+
+            StorageOffset next = StorageOffset.Zero;
+            bool empty = true;
+            foreach (var record in result)
             {
                 context.Log.Info("  stream-id: {0}, data: {1}", record.Key, Encoding.UTF8.GetString(record.Data));
+                next = record.Next;
+                empty = false;
             }
 
-            var nextOffset = dataRecords.Length > 0 ? dataRecords.Last().Next : StorageOffset.Zero;
+            var nextOffset = !empty ? next : StorageOffset.Zero;
             context.Log.Info("Next stream offset: {0}", nextOffset);
 
             //context.Completed();
