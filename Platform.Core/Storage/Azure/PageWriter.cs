@@ -39,6 +39,15 @@ namespace Platform.Storage.Azure
             _bytesPending += buffer.Length;
         }
 
+        public void Write(byte[] buffer, int offset, long length)
+        {
+            CheckNotDisposed();
+
+            _pending.Write(buffer, 0, buffer.Length);
+            _bytesPending += (int)length;
+        }
+        
+
         public void Flush()
         {
             CheckNotDisposed();

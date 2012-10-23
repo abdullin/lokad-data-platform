@@ -28,28 +28,36 @@ namespace Platform.Storage.Azure
 
         public void Append(string key, IEnumerable<byte[]> data)
         {
-            var recArray = data.ToArray();
-            using (var stream = new MemoryStream(recArray.Sum(x => 4 + key.Length + 4 + x.Length)))
+            const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
+            long writtenBytes = 0;
+            using (var stream = new MemoryStream())
             {
                 using (var writer = new BitWriter(stream))
                 {
-                    foreach (var record in recArray)
+                    foreach (var record in data)
                     {
+                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(key) + 4 + record.Length;
+                        if (stream.Position + newSizeEstimate >= limit)
+                        {
+                            _pageWriter.Write(stream.GetBuffer(),0, stream.Position);
+                            _pageWriter.Flush();
+                            writtenBytes += stream.Position;
+                            stream.Seek(0, SeekOrigin.Begin);
+                        }
+
                         writer.Write(key);
                         writer.Write7BitInt(record.Length);
                         writer.Write(record);
                     }
+                    _pageWriter.Write(stream.GetBuffer(), 0, stream.Position);
+                    _pageWriter.Flush();
+                    writtenBytes += stream.Position;
                 }
-
-                var bytes = stream.ToArray();
-
-                _pageWriter.Write(bytes);
-                _pageWriter.Flush();
-
-                _blobContentSize += bytes.Length;
-                _blob.SetCommittedSize(_blobContentSize);
             }
+            _blobContentSize += writtenBytes;
+            _blob.SetCommittedSize(_blobContentSize);
         }
+
 
         public void Reset()
         {
