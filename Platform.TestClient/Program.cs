@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 
 namespace Platform.TestClient
@@ -15,10 +12,10 @@ namespace Platform.TestClient
             ServicePointManager.UseNagleAlgorithm = false;
             ServicePointManager.DefaultConnectionLimit = 48;
 
-            var clientOptions = new ClientOptions();
-            if (!CommandLine.CommandLineParser.Default.ParseArguments(args, clientOptions))
+            var options = new ClientOptions();
+            if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
             {
-                Console.WriteLine(clientOptions.GetUsage());
+                Console.WriteLine(options.GetUsage());
                 return;
             }
             
@@ -29,7 +26,13 @@ namespace Platform.TestClient
                     Console.WriteLine(File.ReadAllText("Readme.md"));
                 }
 
-                var client = new Client(clientOptions);
+                foreach (var pair in options.GetPairs())
+                {
+                    Console.WriteLine("  {0,15} : {1}", pair.Key.ToUpperInvariant(), pair.Value);
+                }
+                Console.WriteLine();
+
+                var client = new Client(options);
                 client.Run();
             }
             catch (Exception exception)
