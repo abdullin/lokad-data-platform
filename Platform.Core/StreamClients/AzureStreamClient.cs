@@ -70,7 +70,7 @@ namespace Platform.StreamClients
             }
             finally
             {
-                tempBlob.Delete();
+                //tempBlob.Delete();
             }
         }
 

@@ -109,7 +109,7 @@ namespace Platform.StreamClients
             }
             finally
             {
-                File.Delete(location);
+                //File.Delete(location);
             }
         }
 
