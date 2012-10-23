@@ -18,7 +18,7 @@ namespace Platform.TestClient.Commands
                     new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientDto.ShutdownServerResponse>(
                         "/system/shutdown/");
 
-
+                token.WaitHandle.WaitOne(2000);
                 return result.Success;
             }
             catch(Exception ex)
