@@ -163,7 +163,8 @@ namespace Platform.Node
 
         void Handle(ClientMessage.RequestShutdown m)
         {
-            _mainQueue.Enqueue(new SystemMessage.StartShutdown());
+            Log.Info("Shutting down in a few seconds...");
+            _outputBus.Publish(TimerMessage.Schedule.Create(TimeSpan.FromSeconds(2), new PublishEnvelope(_mainQueue), new SystemMessage.StartShutdown()));
         }
 
         void IHandle<Message>.Handle(Message message)
