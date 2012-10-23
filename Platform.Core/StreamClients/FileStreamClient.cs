@@ -122,6 +122,9 @@ namespace Platform.StreamClients
                 {
                     bin.Write(record.Data.Length);
                     bin.Write(record.Data);
+
+                    if (fs.Position > MessageSizeLimit)
+                        throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
                 }
             }
         }

@@ -84,8 +84,12 @@ namespace Platform.StreamClients
                     {
                         writer.Write(record.Data.Length);
                         writer.Write(record.Data);
+
+                        if (stream.Position > MessageSizeLimit)
+                            throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
                     }
                 }
+                
                 return stream.ToArray();
             }
         }
