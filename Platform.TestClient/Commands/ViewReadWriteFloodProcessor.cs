@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -12,6 +13,8 @@ namespace Platform.TestClient.Commands
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             context.Client.Views.CreateContainer();
+            var counters = new ConcurrentDictionary<string, int>();
+
             int size = 1024;
             int repeat = 20;
             int readerCount = 5;
@@ -45,11 +48,14 @@ namespace Platform.TestClient.Commands
                             }
                             Thread.Sleep(5);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            counters.AddOrUpdate(ex.ToString(), s => 1, (s, i1) => i1 + 1);
+                            Interlocked.Increment(ref readFailures);
+                            
                             // back off on error
                             Thread.Sleep(3);
-                            Interlocked.Increment(ref readFailures);
+                            
                         }
                     }
                     countdown.Signal();
@@ -77,8 +83,9 @@ namespace Platform.TestClient.Commands
                             }
                             Thread.Sleep(11);
                         }
-                        catch(Exception)
+                        catch(Exception ex)
                         {
+                            counters.AddOrUpdate(ex.ToString(), s => 1, (s, i1) => i1 + 1);
                             Interlocked.Increment(ref writeFailures);
                         }
                         
@@ -99,6 +106,13 @@ namespace Platform.TestClient.Commands
             if (readFailures > 0)
             {
                 PerfUtils.LogTeamCityGraphData(key + "-readFail", readFailures);
+            }
+
+            context.Log.Debug("Errors");
+
+            foreach (var counter in counters)
+            {
+                context.Log.Debug("{0} : {1}", counter.Value, counter.Key);
             }
             return true;
         }
