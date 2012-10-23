@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NodeController.cs" />
     <Compile Include="NodeOptions.cs" />
     <Compile Include="Services\ServerApi\ImportService.cs" />
     <Compile Include="Services\ServerApi\PlatformServerApiService.cs" />
