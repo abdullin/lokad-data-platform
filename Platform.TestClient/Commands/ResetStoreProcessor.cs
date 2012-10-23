@@ -6,11 +6,9 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Threading;
-using System.Linq;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.StorageClient;
+using Platform.Messages;
+using ServiceStack.ServiceClient.Web;
 
 namespace Platform.TestClient.Commands
 {
@@ -23,49 +21,23 @@ namespace Platform.TestClient.Commands
 
         public string Usage
         {
-            get { return "RS [dir]"; }
+            get { return "RS"; }
         }
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            var location = context.Client.Options.StoreLocation;
-            string dir = location;
+            try
+            {
+                var result = new JsonServiceClient(context.Client.ClientHttpBase)
+                    .Post<ClientDto.ResetStoreResponse>(ClientDto.ResetStore.Url, new ClientDto.ResetStore());
 
-            AzureStoreConfiguration configuration;
-            if (AzureStoreConfiguration.TryParse(location, out configuration))
-            {
-                context.Log.Info("Azure store detected");
-                try
-                {
-                    var account = CloudStorageAccount.Parse(configuration.ConnectionString);
-                    var client = account.CreateCloudBlobClient();
-                    client.GetContainerReference(configuration.Container)
-                        .ListBlobs()
-                        .AsParallel().ForAll(i => client.GetBlobReference(i.Uri.ToString()).DeleteIfExists());
-                }
-                catch(AggregateException e)
-                {
-                    foreach (var innerException in e.InnerExceptions)
-                    {
-                        context.Log.ErrorException(innerException, "Error while store reset: ", innerException.Message);
-                    }
-                    return false;
-                }
-                return true;
+                return result.Success;
             }
-
-            if (args.Any())
+            catch (Exception e)
             {
-                dir = string.Join(" ", args);
+                context.Log.Info("Failed to get response: " + e.Message);
+                return false;
             }
-            if (Directory.Exists(dir))
-            {
-                context.Log.Info("Cleaning {0}", dir);
-                Directory.Delete(dir, true);
-            }
-            Directory.CreateDirectory(dir);
-            
-            return true;
         }
     }
 }

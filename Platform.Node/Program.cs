@@ -63,6 +63,7 @@ namespace Platform.Node
             bus.Subscribe<ClientMessage.AppendEvents>(storageService);
             bus.Subscribe<SystemMessage.Init>(storageService);
             bus.Subscribe<ClientMessage.ImportEvents>(storageService);
+            bus.Subscribe<ClientMessage.RequestStoreReset>(storageService);
 
             mainQueue.Start();
 
@@ -98,5 +99,4 @@ namespace Platform.Node
             Environment.Exit(i);
         }
     }
-
 }

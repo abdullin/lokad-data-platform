@@ -69,6 +69,7 @@ namespace Platform.Node.Services.Storage
         {
             _store.Reset();
             Log.Info("Storage cleared");
+            message.Envelope(new ClientMessage.StoreResetCompleted());
         }
 
         static IEnumerable<byte[]> EnumerateStaging(CloudBlob blob)

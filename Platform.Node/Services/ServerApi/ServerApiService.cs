@@ -19,6 +19,7 @@ namespace Platform.Node.Services.ServerApi
             Routes
                 .Add<ClientDto.WriteEvent>(ClientDto.WriteEvent.Url, "POST")
                 .Add<ClientDto.WriteBatch>(ClientDto.WriteBatch.Url,"POST")
+                .Add<ClientDto.ResetStore>(ClientDto.ResetStore.Url, "POST")
                 .Add<ClientDto.ShutdownServer>(ClientDto.ShutdownServer.Url, "GET");
 
             container.Register(_publisher);

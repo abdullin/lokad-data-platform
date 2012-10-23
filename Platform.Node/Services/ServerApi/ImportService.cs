@@ -23,6 +23,41 @@ namespace Platform.Node.Services.ServerApi
                 };
         }
     }
+
+    public class ResetStoreService : ServiceBase<ClientDto.ResetStore>
+    {
+        readonly IPublisher _publisher;
+
+        public ResetStoreService(IPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+        protected override object Run(ClientDto.ResetStore request)
+        {
+            var token = new ManualResetEventSlim(false);
+
+            _publisher.Publish(new ClientMessage.RequestStoreReset(s => token.Set()));
+
+            return Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        token.Wait();
+                        return new ClientDto.ResetStoreResponse
+                            {
+                                Result = "Completed",
+                                Success = true
+                            };
+                    }
+                    finally
+                    {
+                        token.Dispose();
+                    }
+                });
+        }
+    }
+
     public class ImportService : ServiceBase<ClientDto.WriteBatch>
     {
         readonly IPublisher _publisher;

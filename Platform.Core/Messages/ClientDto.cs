@@ -39,5 +39,16 @@ namespace Platform.Messages
             public string Result { get; set; }
             public bool Success { get; set; }
         }
+
+        public class ResetStore
+        {
+            public const string Url = "/reset/";
+        }
+
+        public class ResetStoreResponse
+        {
+            public string Result { get; set; }
+            public bool Success { get; set; }
+        }
     }
 }
