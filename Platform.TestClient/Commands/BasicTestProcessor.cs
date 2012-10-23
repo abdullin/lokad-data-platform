@@ -33,7 +33,7 @@ namespace Platform.TestClient.Commands
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            
+
             int batchCount = 10;
             int batchSize = 10000;
             int threadCount = 10;
@@ -125,10 +125,19 @@ namespace Platform.TestClient.Commands
                 {
                     for (int i = 0; i < floodSize; i++)
                     {
-                        var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                        context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
+                        try
+                        {
+                            var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
+                            context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
 
-                        result.Add(currentMessage);
+                            result.Add(currentMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                           context.Log.Error(ex.Message);
+                            throw ex;
+                        }
+                        
                     }
                 }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
@@ -150,11 +159,20 @@ namespace Platform.TestClient.Commands
                 context.Client.Streams.WriteEventsInLargeBatch(streamId,
                     Enumerable.Range(0, batchSize).Select(
                         x =>
+                        {
+                            try
                             {
                                 var bytes = Encoding.UTF8.GetBytes(string.Format(message, x));
                                 totalBytes += bytes.Length;
                                 return new RecordForStaging(bytes);
-                            }));
+                            }
+                            catch (Exception ex)
+                            {
+                                context.Log.Error(ex.Message);
+                                throw ex;
+                            }
+
+                        }));
                 for (int j = 0; j < batchSize; j++)
                 {
                     result.Add(string.Format(message, j));
@@ -162,11 +180,11 @@ namespace Platform.TestClient.Commands
             }
 
             var totalMs = watch.ElapsedMilliseconds;
-            var byteSize = totalBytes / (batchCount * batchSize);
+            var byteSize = batchSize * batchCount > 0 ? totalBytes / (batchCount * batchSize) : 0;
 
-            var key = string.Format("WB-{0}-{1}-{2}-{3}-bytesPerSec", 1, batchCount, batchSize,byteSize);
+            var key = string.Format("WB-{0}-{1}-{2}-{3}-bytesPerSec", 1, batchCount, batchSize, byteSize);
 
-            var bytesPerSec = (totalBytes * 1000D / totalMs);
+            var bytesPerSec = totalMs > 0 ? (totalBytes * 1000D / totalMs) : 0;
             context.Log.Debug("Throughput: {0}", FormatEvil.SpeedInBytes(bytesPerSec));
             PerfUtils.LogTeamCityGraphData(key, (int)bytesPerSec);
             return result;
