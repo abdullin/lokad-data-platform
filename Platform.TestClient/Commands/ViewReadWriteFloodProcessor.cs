@@ -95,8 +95,14 @@ namespace Platform.TestClient.Commands
             countdown.Wait();
 
             var key = string.Format("{0}-{1}-{2}-{3}", Key, size, repeat, readerCount);
-            PerfUtils.LogTeamCityGraphData(key + "-writeFail", writeFailures);
-            PerfUtils.LogTeamCityGraphData(key + "-readFail", readFailures);
+            if (writeFailures > 0)
+            {
+                PerfUtils.LogTeamCityGraphData(key + "-writeFail", writeFailures);
+            }
+            if (readFailures > 0)
+            {
+                PerfUtils.LogTeamCityGraphData(key + "-readFail", readFailures);
+            }
             return true;
 
         }
