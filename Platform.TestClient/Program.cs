@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -17,11 +18,17 @@ namespace Platform.TestClient
             var clientOptions = new ClientOptions();
             if (!CommandLine.CommandLineParser.Default.ParseArguments(args, clientOptions))
             {
+                Console.WriteLine(clientOptions.GetUsage());
                 return;
             }
             
             try
             {
+                if (File.Exists("Readme.md"))
+                {
+                    Console.WriteLine(File.ReadAllText("Readme.md"));
+                }
+
                 var client = new Client(clientOptions);
                 client.Run();
             }

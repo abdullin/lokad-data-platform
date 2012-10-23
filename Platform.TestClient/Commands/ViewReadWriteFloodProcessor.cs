@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -29,18 +28,16 @@ namespace Platform.TestClient.Commands
 
             var threads = new List<Thread>();
 
-
-            for (int i = 0; i < readerCount; i++)
+            for (var i = 0; i < readerCount; i++)
             {
                 var reader = new Thread(() =>
                 {
                     var clientRepeat = repeat * 10;
-                    for (int j = 0; j < clientRepeat; j++)
+                    for (var j = 0; j < clientRepeat; j++)
                     {
                         token.ThrowIfCancellationRequested();
                         try
                         {
-
                             using (var ws = context.Client.Views.Advanced.OpenRead(viewname))
                             using (var ms = new MemoryStream())
                             {
@@ -104,7 +101,6 @@ namespace Platform.TestClient.Commands
                 PerfUtils.LogTeamCityGraphData(key + "-readFail", readFailures);
             }
             return true;
-
         }
     }
 }

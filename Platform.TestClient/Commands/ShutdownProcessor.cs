@@ -8,7 +8,8 @@ namespace Platform.TestClient.Commands
     public class ShutdownProcessor : ICommandProcessor
     {
         public string Key { get { return "SHUTDOWN"; } }
-        public string Usage { get { return Key; } }
+        public string Usage { get { return @"SHUTDOWN
+    Sends immediate shutdown request to the server."; } }
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             try

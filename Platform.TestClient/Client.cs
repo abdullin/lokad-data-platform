@@ -25,8 +25,6 @@ namespace Platform.TestClient
             Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
             Streams = PlatformClient.GetStreamReaderWriter(options.StoreLocation, ClientHttpBase);
 
-
-
             RegisterCommands();
         }
 
@@ -73,7 +71,7 @@ namespace Platform.TestClient
             {
                 if (string.IsNullOrWhiteSpace(line))
                 {
-                    Console.WriteLine("Empty command");
+                    Console.WriteLine("Empty command. Type 'usage' if unsure.");
                 }
                 else
                 {

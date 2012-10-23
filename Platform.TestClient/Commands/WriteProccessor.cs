@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Platform.TestClient.Commands
 {
     public class WriteProccessor : ICommandProcessor
     {
         public string Key { get { return "WR"; } }
-        public string Usage { get { return "WR [<stream-id> <expected-version> <data>]"; } }
+        public string Usage { get { return @"WR [<stream-id> <expected-version> <data>]
+    Writes a single event to the event store"; } }
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var eventStreamId = "default stream";

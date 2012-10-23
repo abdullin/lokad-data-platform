@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using Platform.StreamClients;
 
@@ -8,7 +7,8 @@ namespace Platform.TestClient.Commands
     public class EnumerateProcessor : ICommandProcessor
     {
         public string Key { get { return "EN"; } }
-        public string Usage { get { return "EN [maxcount]"; } }
+        public string Usage { get { return @"EN [maxcount]
+    Scans through up to <maxcount> records from the beginning of the stream"; } }
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
             var maxCount = 10000;

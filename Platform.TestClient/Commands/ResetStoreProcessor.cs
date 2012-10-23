@@ -11,7 +11,6 @@ using System.Threading;
 using System.Linq;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-using Platform.Storage.Azure;
 
 namespace Platform.TestClient.Commands
 {

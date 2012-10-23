@@ -10,7 +10,7 @@ namespace Platform.TestClient.Commands
     {
         public string Key { get { return "START"; } }
         public string Usage { get { return @"START [args]
-Starts local server as a separate process, passing it storage and port parameters."; } }
+    Starts local server as a separate process, passing it storage and port parameters."; } }
 
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
