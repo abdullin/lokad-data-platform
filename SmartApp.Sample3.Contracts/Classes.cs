@@ -35,13 +35,13 @@ namespace SmartApp.Sample3.Contracts
         public int EventsProcessed { get; set; }
 
         public Dictionary<long, int> Distribution { get; set; }
-        public Dictionary<long, string> UserNames { get; set; }
+        public Dictionary<long, User> UserNames { get; set; }
         public const string FileName = "sample3-comment.dat";
 
         public CommentDistributionView()
         {
             Distribution = new Dictionary<long, int>();
-            UserNames = new Dictionary<long, string>();
+            UserNames = new Dictionary<long, User>();
         }
     }
 
@@ -188,13 +188,13 @@ namespace SmartApp.Sample3.Contracts
         public UserCommentsDistributionView()
         {
             Distribution = new Dictionary<long, long[]>();
-            UserNames = new Dictionary<long, string>();
+            Users = new Dictionary<long, User>();
         }
 
         public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
         public Dictionary<long, long[]> Distribution { get; private set; }
-        public Dictionary<long, string> UserNames { get; set; }
+        public Dictionary<long, User> Users { get; set; }
 
 
         public const string FileName = "user-reputation.json";
@@ -204,7 +204,7 @@ namespace SmartApp.Sample3.Contracts
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Reputation { get; set; }
+        public long Reputation { get; set; }
 
         private const int Signature = 4345;
 
@@ -234,7 +234,8 @@ namespace SmartApp.Sample3.Contracts
                 return new User
                 {
                     Id = bin.ReadInt64(),
-                    Name = bin.ReadString()
+                    Name = bin.ReadString(),
+                    Reputation = bin.ReadInt64()
                 };
             }
         }

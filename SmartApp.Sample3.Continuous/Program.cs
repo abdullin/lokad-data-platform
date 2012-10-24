@@ -95,7 +95,7 @@ namespace SmartApp.Sample3.Continuous
                     if (dataRecord.Key == "s3:user")
                     {
                         var user = User.FromBinary(dataRecord.Data);
-                        data.UserNames[user.Id] = user.Name;
+                        data.UserNames[user.Id] = user;
                         emptyData = false;
                         continue;
                     }
@@ -144,7 +144,7 @@ namespace SmartApp.Sample3.Continuous
                     if (dataRecord.Key == "s3:user")
                     {
                         var user = User.FromBinary(dataRecord.Data);
-                        data.UserNames[user.Id] = user.Name;
+                        data.Users[user.Id] = user;
                         emptyData = false;
                     }
 

@@ -15,19 +15,17 @@
 </dl>
 
 <table class="table table-striped table-condensed table-bordered">
-    <tr>
+    <tr> 
         <th>User</th>
         <th>Comments per day of week</th>
     </tr>
 
     @if (Model.Distribution.Any())
     {
-        var maxCommentsLimit = Model.Distribution.Max(x => x.Value.Sum()) * 0.1d;
-
-        foreach (var pair in Model.Distribution.Where(x => maxCommentsLimit < x.Value.Sum()).OrderByDescending(x => x.Value.Sum()).Take(15))
+        foreach (var pair in Model.Distribution.OrderByDescending(x => Model.Users[x.Key].Reputation).Take(15))
         {
             <tr>
-                <td>@Model.UserNames[pair.Key]</td>
+                <td>@Model.Users[pair.Key]</td>
                 <td><span class="bar">@JsonSerializer.SerializeToString(pair.Value).Trim('[', ']') </span></td>
             </tr>
         }

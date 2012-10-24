@@ -32,7 +32,7 @@
         foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value).Take(15))
         {
         <tr>
-            <td>@Model.UserNames[pair.Key]</td>
+            <td>@Model.UserNames[pair.Key].Name <span class="badge badge-success pull-right">@Model.UserNames[pair.Key].Reputation</span></td>
             <td>@pair.Value</td>
         </tr>
         }

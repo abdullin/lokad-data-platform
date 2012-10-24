@@ -220,7 +220,7 @@ namespace SmartApp.Sample3.Dump
                            {
                                Id = long.TryParse(Get(line, "Id"), out  defaultLong) ? defaultLong : -1,
                                Name = HttpUtility.HtmlDecode(Get(line, "DisplayName")),
-                               Reputation = HttpUtility.HtmlDecode(Get(line, "Reputation"))
+                               Reputation = long.TryParse(Get(line, "Reputation"), out defaultLong) ? defaultLong : -1
                            };
 
                 return user;
