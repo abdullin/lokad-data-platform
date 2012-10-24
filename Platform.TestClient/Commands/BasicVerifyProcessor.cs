@@ -32,7 +32,9 @@ namespace Platform.TestClient.Commands
                 int.TryParse(args[3], out floodThreadCount);
 
             return WriteFloodAndBatchTogether(context, timeOut, batchSize, batchThreadCount, floodThreadCount) |
-                   ReadMessageWithNextoffset(context);
+                   ReadMessageWithNextOffset(context) |
+                   WriteReadDifferentTypes(context) |
+                   ViewClientReadWrite(context);
 
         }
 
@@ -129,7 +131,7 @@ namespace Platform.TestClient.Commands
 
             foreach (var err in errors.ToArray())
             {
-                Console.WriteLine(err);
+                context.Log.Error(err);
             }
 
             return errors.Count == 0;
@@ -139,10 +141,10 @@ namespace Platform.TestClient.Commands
 
         #region Read messages
 
-        private bool ReadMessageWithNextoffset(CommandProcessorContext context)
+        private bool ReadMessageWithNextOffset(CommandProcessorContext context)
         {
             var result = true;
-            var records = context.Client.Streams.ReadAll(maxRecordCount: 100);
+            var records = context.Client.Streams.ReadAll(maxRecordCount: 20);
             RetrievedDataRecord prevRecord = default(RetrievedDataRecord);
             bool firstRecord = true;
             foreach (var record in records)
@@ -157,8 +159,8 @@ namespace Platform.TestClient.Commands
                     var expectedBytes = record.Data.Except(prevNextRecord.Data).ToList();
                     if (record.Key != prevNextRecord.Key | expectedBytes.Count != 0)
                     {
-                        Console.WriteLine("Expected key: {0}, Received key: {1}", record.Key, prevNextRecord.Key);
-                        Console.WriteLine("Expected dat: {0}, Received key: {1}", record.Data.Length, prevNextRecord.Data.Length);
+                        context.Log.Error("Expected key: {0}, Received key: {1}", record.Key, prevNextRecord.Key);
+                        context.Log.Error("Expected dat: {0}, Received key: {1}", record.Data.Length, prevNextRecord.Data.Length);
                         result = false;
                     }
                 }
@@ -171,5 +173,146 @@ namespace Platform.TestClient.Commands
 
         #endregion
 
+        #region Write and read different types
+
+        bool WriteReadDifferentTypes(CommandProcessorContext context)
+        {
+            string streamId = Guid.NewGuid().ToString();
+
+            int intVal = 101;
+            long longVal = 102;
+            char charVal = 'A';
+            string stringVal = "Hello server";
+            DateTime dateVal = new DateTime(2012, 10, 25, 1, 2, 3);
+            double doubleVal = 103.0;
+
+            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(intVal));
+            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(longVal));
+            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(charVal));
+            context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(stringVal));
+            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(dateVal.ToBinary()));
+            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(doubleVal));
+
+            var batchBody = new List<RecordForStaging>
+                           {
+                               new RecordForStaging(BitConverter.GetBytes(intVal)),
+                               new RecordForStaging(BitConverter.GetBytes(longVal)),
+                               new RecordForStaging(BitConverter.GetBytes(charVal)),
+                               new RecordForStaging(Encoding.UTF8.GetBytes(stringVal)),
+                               new RecordForStaging(BitConverter.GetBytes(dateVal.ToBinary())),
+                               new RecordForStaging(BitConverter.GetBytes(doubleVal))
+                           };
+
+            context.Client.Streams.WriteEventsInLargeBatch(streamId, batchBody);
+
+            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId).ToList();
+            bool result = true;
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (BitConverter.ToInt32(records[i * 6 + 0].Data, 0) != intVal)
+                {
+                    context.Log.Error("could not read the INT");
+                    result = false;
+                }
+                if (BitConverter.ToInt64(records[i * 6 + 1].Data, 0) != longVal)
+                {
+                    context.Log.Error("could not read the LONG");
+                    result = false;
+                }
+                if (BitConverter.ToChar(records[i * 6 + 2].Data, 0) != charVal)
+                {
+                    context.Log.Error("could not read the CHAR");
+                    result = false;
+                }
+                if (Encoding.UTF8.GetString(records[i * 6 + 3].Data) != stringVal)
+                {
+                    context.Log.Error("could not read the STRING");
+                    result = false;
+                }
+                if (DateTime.FromBinary(BitConverter.ToInt64(records[i * 6 + 4].Data, 0)) != dateVal)
+                {
+                    context.Log.Error("could not read the DATETIME");
+                    result = false;
+                }
+                if (BitConverter.ToDouble(records[i * 6 + 5].Data, 0) != doubleVal)
+                {
+                    context.Log.Error("could not read the DOUBLE");
+                    result = false;
+                }
+            }
+
+
+            return result;
+        }
+
+        #endregion
+
+        #region Write/Read view client
+
+        bool ViewClientReadWrite(CommandProcessorContext context)
+        {
+            bool result = true;
+            var views = context.Client.Views;
+            views.CreateContainer();
+
+            string streamId = Guid.NewGuid().ToString();
+            var testData = Enumerable.Range(1, 100);
+
+            context.Client.Streams.WriteEventsInLargeBatch(streamId,testData.Select(x=>new RecordForStaging(BitConverter.GetBytes(x))));
+
+            var data = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
+
+            var records = context.Client.Streams.ReadAll(new StorageOffset(data.NextOffsetInBytes)).Where(x=>x.Key==streamId);
+
+            foreach (var record in records)
+            {
+                data.Distribution.Add(BitConverter.ToInt32(record.Data,0));
+                data.NextOffsetInBytes = record.Next.OffsetInBytes;
+            }
+
+            views.WriteAsJson(data, ViewClientTest.FileName);
+
+            var writedData = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
+
+            if(data.NextOffsetInBytes!=writedData.NextOffsetInBytes)
+            {
+                context.Log.Error("Different Next.OffsetInBytes");
+                result = false;
+            }
+            if(data.Distribution.Count!=writedData.Distribution.Count)
+            {
+                context.Log.Error("Different records count");
+                result = false;
+                return result;
+            }
+
+            for (int i = 0; i < data.Distribution.Count; i++)
+            {
+                if(data.Distribution[i]!=writedData.Distribution[i])
+                {
+                    context.Log.Error("Different record value");
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
+        private class ViewClientTest
+        {
+            public long NextOffsetInBytes { get; set; }
+            public List<int> Distribution { get; private set; }
+            public const string FileName = "ViewClientTest.dat";
+
+            public ViewClientTest()
+            {
+                Distribution = new List<int>();
+            }
+        }
+
+        #endregion
     }
+
+
 }
