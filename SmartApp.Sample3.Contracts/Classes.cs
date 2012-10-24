@@ -175,4 +175,61 @@ namespace SmartApp.Sample3.Contracts
             }
         }
     }
+
+    public sealed class UserCommentsDistributionView
+    {
+        public UserCommentsDistributionView()
+        {
+            Distribution = new Dictionary<long, long[]>();
+            UserNames = new Dictionary<long, string>();
+        }
+
+        public long NextOffsetInBytes { get; set; }
+        public int EventsProcessed { get; set; }
+        public Dictionary<long, long[]> Distribution { get; private set; }
+        public Dictionary<long, string> UserNames { get; set; }
+
+
+        public const string FileName = "user-reputation.json";
+    }
+
+    public class User
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Reputation { get; set; }
+
+        private const int Signature = 4345;
+
+        public byte[] ToBinary()
+        {
+            using (var m = new MemoryStream())
+            using (var bin = new BinaryWriter(m))
+            {
+                bin.Write(Signature);
+                bin.Write(Id);
+                bin.Write(Name);
+                bin.Write(Reputation);
+
+                return m.ToArray();
+            }
+        }
+
+        public static User FromBinary(byte[] data)
+        {
+            using (var m = new MemoryStream(data))
+            using (var bin = new BinaryReader(m))
+            {
+                var retrived = bin.ReadInt32();
+                if (retrived != Signature)
+                    throw new InvalidOperationException("Signature mismatch");
+
+                return new User
+                {
+                    Id = bin.ReadInt64(),
+                    Name = bin.ReadString()
+                };
+            }
+        }
+    }
 }

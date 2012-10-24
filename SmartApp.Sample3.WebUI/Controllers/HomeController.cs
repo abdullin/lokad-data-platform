@@ -27,5 +27,11 @@ namespace SmartApp.Sample3.WebUI.Controllers
             var model = Global.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
             return PartialView(model);
         }
+
+        public ActionResult Users()
+        {
+            var model = Global.ReadAsJsonOrGetNew<UserCommentsDistributionView>(UserCommentsDistributionView.FileName);
+            return PartialView(model);
+        }
     }
 }

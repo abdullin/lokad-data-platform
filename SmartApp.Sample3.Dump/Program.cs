@@ -32,6 +32,8 @@ namespace SmartApp.Sample3.Dump
                     Task.Factory.StartNew(DumpComments,
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
                     Task.Factory.StartNew(DumpPosts,
+                        TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness),
+                    Task.Factory.StartNew(DumpUsers,
                         TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness)
                 };
 
@@ -176,6 +178,57 @@ namespace SmartApp.Sample3.Dump
                 return null;
             }
 
+        }
+
+        private static void DumpUsers()
+        {
+            var path = Path.Combine(RawDataPath, "users.xml");
+
+            var sw = Stopwatch.StartNew();
+
+            var buffer = new List<byte[]>(20000);
+            int total = 0;
+            foreach (var line in ReadLinesSequentially(path).Where(l => l.StartsWith("  <row ")))
+            {
+                total += 1;
+                var user = UserParse(line);
+
+                if (user == null)
+                    continue;
+
+                buffer.Add(user.ToBinary());
+
+                if (buffer.Count == buffer.Capacity)
+                {
+                    _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => new RecordForStaging(x)));
+                    buffer.Clear();
+                    var speed = total/sw.Elapsed.TotalSeconds;
+                    Console.WriteLine("Users:\r\n\t{0} per second\r\n\tAdded {1} users", speed, total);
+                }
+            }
+
+            _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => new RecordForStaging(x)));
+            Console.WriteLine("Users import complete");
+        }
+
+        static User UserParse(string line)
+        {
+            try
+            {
+                long defaultLong;
+                var user = new User
+                           {
+                               Id = long.TryParse(Get(line, "Id"), out  defaultLong) ? defaultLong : -1,
+                               Name = HttpUtility.HtmlDecode(Get(line, "DisplayName")),
+                               Reputation = HttpUtility.HtmlDecode(Get(line, "Reputation"))
+                           };
+
+                return user;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static string Get(string line, string attributeName)
