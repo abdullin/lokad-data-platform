@@ -59,6 +59,9 @@ namespace Platform.StreamClients
             Queue<Exception> errors = null;
             while (true)
             {
+                if (remaining <= 0)
+                    yield break;
+
                 using (var enumerator = Advanced.ReadAll(position, remaining).GetEnumerator())
                 {
                     try

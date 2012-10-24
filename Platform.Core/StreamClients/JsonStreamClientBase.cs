@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
@@ -7,13 +6,13 @@ namespace Platform.StreamClients
 {
     public abstract class JsonStreamClientBase
     {
-        public  JsonServiceClient Client;
+        public  JsonServiceClient WriteClient;
 
-        public JsonStreamClientBase(string uri)
+        protected JsonStreamClientBase(string uri)
         {
             if (!string.IsNullOrWhiteSpace(uri))
             {
-                Client = new JsonServiceClient(uri);
+                WriteClient = new JsonServiceClient(uri);
             }
         }
 
@@ -24,8 +23,8 @@ namespace Platform.StreamClients
             ThrowIfClientNotInitialized();
             try
             {
-                var response = Client.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
-                    new ClientDto.WriteBatch()
+                var response = WriteClient.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
+                    new ClientDto.WriteBatch
                         {
                             Location = location,
                             Stream = streamName,
@@ -44,12 +43,11 @@ namespace Platform.StreamClients
 
         public void WriteEvent(string streamName, byte[] data)
         {
-            
             ThrowIfClientNotInitialized();
             try
             {
-                var response = Client.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
-                    new ClientDto.WriteEvent()
+                var response = WriteClient.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
+                    new ClientDto.WriteEvent
                         {
                             Data = data,
                             Stream = streamName
@@ -64,15 +62,12 @@ namespace Platform.StreamClients
                 var message = string.Format("Connection failure: {0}", ex.Status);
                 throw new PlatformClientException(message, ex);   
             }
-
         }
 
         void ThrowIfClientNotInitialized()
         {
-            if (null == Client)
-            {
-                throw new InvalidOperationException("Client was not initialized");
-            }
+            if (null != WriteClient) return;
+            throw new PlatformClientException("This client is read-only");
         }
     }
 }
