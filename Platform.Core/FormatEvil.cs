@@ -49,5 +49,29 @@ namespace Platform
             }
             return "0 Bytes";
         }
+
+        public static string ToHumanReadable(double value)
+        {
+            var maxRadix = (int)(Math.Log10(value) / 3) * 3;
+
+            if (maxRadix > 9)
+                maxRadix = 9;
+
+            if (maxRadix < 0)
+                maxRadix = 0;
+
+            var normalizedValue = value / Math.Pow(10, maxRadix);
+            switch (maxRadix)
+            {
+                case 3:
+                    return string.Format("{0} K", (int) normalizedValue);
+                case 6:
+                    return string.Format("{0} M", (int)normalizedValue);
+                case 9:
+                    return string.Format("{0} B", (int)normalizedValue);
+                default:
+                    return string.Format("{0}", (int)value);
+            }
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace Platform.TestClient
             _commands.Register(new BasicTestProcessor());
             _commands.Register(new BasicVerifyProcessor());
             _commands.Register(new BasicBenchmarkProcessor());
+            _commands.Register(new SmartAppBenchmarkProcessor());
             
             _commands.Register(new ShutdownProcessor());
             _commands.Register(new StartLocalServerProcessor());
