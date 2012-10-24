@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Platform.Messages;
 
 namespace Platform.Node.Services.Storage
@@ -61,8 +62,20 @@ namespace Platform.Node.Services.Storage
             var speed = size / totalSeconds;
             Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
+
+            ThreadPool.QueueUserWorkItem(state => CleanupFile(msg));
         }
 
+        static void CleanupFile(ClientMessage.ImportEvents msg)
+        {
+            try
+            {
+                File.Delete(msg.StagingLocation);
+            }
+            catch {}
+        }
+
+    
 
         public void Handle(SystemMessage.Init message)
         {

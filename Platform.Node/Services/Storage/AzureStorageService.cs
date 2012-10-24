@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.WindowsAzure.StorageClient;
 using Platform.Messages;
 using Platform.Storage.Azure;
@@ -63,6 +64,17 @@ namespace Platform.Node.Services.Storage
             Log.Info("Import {0} in {1}sec: {2} m/s or {3}", count, Math.Round(totalSeconds, 4), Math.Round(count / totalSeconds), FormatEvil.SpeedInBytes(speed));
 
             msg.Envelope(new ClientMessage.ImportEventsCompleted());
+
+            ThreadPool.QueueUserWorkItem(state => CleanupBlob(blob));
+        }
+
+        static void CleanupBlob(CloudBlob blob)
+        {
+            try
+            {
+                blob.DeleteIfExists();
+            }
+            catch (Exception ex) {}
         }
 
         public void Handle(ClientMessage.RequestStoreReset message)
