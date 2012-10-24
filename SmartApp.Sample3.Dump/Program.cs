@@ -234,12 +234,13 @@ namespace SmartApp.Sample3.Dump
         private static string Get(string line, string attributeName)
         {
             var start = line.IndexOf(attributeName + "=\"");
-            var end = line.Substring(start + attributeName.Length + 2).IndexOf("\"");
+            var startOffset = start + attributeName.Length + 2;
+            var end = line.IndexOf("\"", startOffset);
 
             if (start == -1 || end == -1)
                 return "";
 
-            return line.Substring(start + attributeName.Length + 2, end);
+            return line.Substring(startOffset, end - startOffset);
         }
     }
 
