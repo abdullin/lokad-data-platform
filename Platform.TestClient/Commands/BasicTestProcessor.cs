@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Platform.StreamClients;
 
 namespace Platform.TestClient.Commands
@@ -60,7 +59,7 @@ namespace Platform.TestClient.Commands
             context.Log.Debug("Imported {0}x{1} in {2}s", batchCount, batchSize, elapsedSeconds);
 
             watch.Restart();
-            var floodMessages = FloodWrite(context, streamId, threadCount, floodSize);
+            var floodMessages = FloodWrite(context,token, streamId, threadCount, floodSize);
             var round = Math.Round(watch.Elapsed.TotalSeconds, 2);
             context.Log.Debug("Flooded {0}x{1} in {2}s", threadCount, floodSize, round);
 
@@ -113,36 +112,45 @@ namespace Platform.TestClient.Commands
             return true;
         }
 
-        HashSet<string> FloodWrite(CommandProcessorContext context, string streamId, int threadCount, int floodSize)
+        HashSet<string> FloodWrite(CommandProcessorContext context, CancellationToken token, string streamId, int threadCount, int floodSize)
         {
             var result = new ConcurrentBag<string>();
 
-            var threads = new List<Task>();
+            
+            var countdown = new CountdownEvent(threadCount);
             for (int t = 0; t < threadCount; t++)
             {
                 int t1 = t;
-                var task = Task.Factory.StartNew(() =>
-                {
-                    for (int i = 0; i < floodSize; i++)
+                var task = new Thread(() =>
                     {
                         try
                         {
-                            var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                            context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
+                            for (int i = 0; i < floodSize; i++)
+                            {
+                                if (token.IsCancellationRequested) return;
+                                var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
+                                context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
 
-                            result.Add(currentMessage);
+                                result.Add(currentMessage);
+                            }
                         }
                         catch (Exception ex)
                         {
-                           context.Log.Error(ex.Message);
-                            throw ex;
+                            context.Log.Error(ex.Message);
+                            throw;
                         }
-                        
-                    }
-                }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
-                threads.Add(task);
+                        finally
+                        {
+                            countdown.Signal();
+                        }
+                    })
+                    {
+                        IsBackground = true,
+                        Name = "BT_FloodThread_" + t
+                    };
+                task.Start();
             }
-            Task.WaitAll(threads.ToArray());
+            countdown.Wait(token);
 
             return new HashSet<string>(result);
         }
