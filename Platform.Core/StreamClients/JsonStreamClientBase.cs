@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
@@ -14,7 +15,6 @@ namespace Platform.StreamClients
             {
                 Client = new JsonServiceClient(uri);
             }
-
         }
 
         public const int MessageSizeLimit = 1024 * 1024 * 2;
@@ -22,26 +22,49 @@ namespace Platform.StreamClients
         protected void ImportEventsInternal(string streamName, string location)
         {
             ThrowIfClientNotInitialized();
-            var response = Client.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url, new ClientDto.WriteBatch()
+            try
+            {
+                var response = Client.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
+                    new ClientDto.WriteBatch()
+                        {
+                            Location = location,
+                            Stream = streamName,
+                        });
+                if (!response.Success)
                 {
-                    Location = location,
-                    Stream = streamName,
-                });
-
-            if (!response.Success)
-                throw new InvalidOperationException(response.Result ?? "Client error");
+                    throw new PlatformClientException(response.Result ?? "Server error");
+                }
+            }
+            catch (WebException ex)
+            {
+                var message = string.Format("Connection failure: {0}", ex.Status);
+                throw new PlatformClientException(message, ex);
+            }
         }
 
         public void WriteEvent(string streamName, byte[] data)
         {
+            
             ThrowIfClientNotInitialized();
-            var response = Client.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url, new ClientDto.WriteEvent()
+            try
             {
-                Data = data,
-                Stream = streamName
-            });
-            if (!response.Success)
-                throw new InvalidOperationException(response.Result ?? "Client error");
+                var response = Client.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
+                    new ClientDto.WriteEvent()
+                        {
+                            Data = data,
+                            Stream = streamName
+                        });
+                if (!response.Success)
+                {
+                    throw new PlatformClientException(response.Result ?? "Server error");
+                }
+            }
+            catch(WebException ex)
+            {
+                var message = string.Format("Connection failure: {0}", ex.Status);
+                throw new PlatformClientException(message, ex);   
+            }
+
         }
 
         void ThrowIfClientNotInitialized()
