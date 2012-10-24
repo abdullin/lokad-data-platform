@@ -34,18 +34,19 @@ namespace SmartApp.Sample3.Continuous
         private static void TagProjection(IInternalStreamClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<TagsDistributionView>(TagsDistributionView.FileName);
-            Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
+            var processingInfo = views.ReadAsJsonOrGetNew<ProcessingInfoView>(TagsDistributionView.FileName + ".info");
+            Console.WriteLine("Next post offset: {0}", processingInfo.NextOffsetInBytes);
             while (true)
             {
-                var nextOffcet = data.NextOffsetInBytes;
-                data.LastOffsetInBytes = data.NextOffsetInBytes;
-                data.DateProcessingUtc = DateTime.UtcNow;
+                var nextOffcet = processingInfo.NextOffsetInBytes;
+                processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
+                processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
                 var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
+                    processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                     if (dataRecord.Key != "s3:post")
                         continue;
@@ -59,11 +60,12 @@ namespace SmartApp.Sample3.Continuous
                         else
                             data.Distribution[tag] = 1;
                     }
-                    data.EventsProcessed += 1;
+                    processingInfo.EventsProcessed += 1;
 
                     emptyData = false;
                 }
-                views.WriteAsJson(data, TagsDistributionView.FileName);
+
+                views.WriteAsJson(processingInfo, TagsDistributionView.FileName + ".info");
 
                 if (emptyData)
                 {
@@ -71,7 +73,8 @@ namespace SmartApp.Sample3.Continuous
                 }
                 else
                 {
-                    Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
+                    views.WriteAsJson(data, TagsDistributionView.FileName);
+                    Console.WriteLine("Next post offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
         }
@@ -79,23 +82,24 @@ namespace SmartApp.Sample3.Continuous
         private static void CommentProjection(IInternalStreamClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
-            Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
+            var processingInfo = views.ReadAsJsonOrGetNew<ProcessingInfoView>(CommentDistributionView.FileName + ".info");
+            Console.WriteLine("Next comment offset: {0}", processingInfo.NextOffsetInBytes);
             while (true)
             {
-                var nextOffset = data.NextOffsetInBytes;
-                data.LastOffsetInBytes = data.NextOffsetInBytes;
-                data.LastProcessingDateUtc = DateTime.UtcNow;
+                var nextOffset = processingInfo.NextOffsetInBytes;
+                processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
+                processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAll(new StorageOffset(nextOffset), 10000);
+                var records = store.ReadAll(new StorageOffset(nextOffset), 50000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
+                    processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                     if (dataRecord.Key == "s3:user")
                     {
                         var user = User.FromBinary(dataRecord.Data);
-                        data.UserNames[user.Id] = user;
+                        data.Users[user.Id] = user;
                         emptyData = false;
                         continue;
                     }
@@ -110,19 +114,20 @@ namespace SmartApp.Sample3.Continuous
                     else
                         data.Distribution[comment.UserId] = 1;
 
-                    data.EventsProcessed += 1;
+                    processingInfo.EventsProcessed += 1;
 
                     emptyData = false;
                 }
-                views.WriteAsJson(data, CommentDistributionView.FileName);
 
+                views.WriteAsJson(processingInfo, CommentDistributionView.FileName + ".info");
                 if (emptyData)
                 {
                     Thread.Sleep(1000);
                 }
                 else
                 {
-                    Console.WriteLine("Next comment offset: {0}", data.NextOffsetInBytes);
+                    views.WriteAsJson(data, CommentDistributionView.FileName);
+                    Console.WriteLine("Next comment offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
         }
@@ -130,16 +135,18 @@ namespace SmartApp.Sample3.Continuous
         private static void UserCommentsPerDayDistributionProjection(IInternalStreamClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<UserCommentsDistributionView>(UserCommentsDistributionView.FileName);
-            Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
+            var processingInfo =
+                views.ReadAsJsonOrGetNew<ProcessingInfoView>(UserCommentsDistributionView.FileName + ".info");
+            Console.WriteLine("Next user offset: {0}", processingInfo.NextOffsetInBytes);
             while (true)
             {
-                var nextOffcet = data.NextOffsetInBytes;
+                var nextOffcet = processingInfo.NextOffsetInBytes;
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
-                    data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
+                    processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                     if (dataRecord.Key == "s3:user")
                     {
@@ -160,12 +167,12 @@ namespace SmartApp.Sample3.Continuous
                     var dayOfWeek = (int)comment.CreationDate.Date.DayOfWeek;
                     data.Distribution[comment.UserId][dayOfWeek]++;
 
-                    data.EventsProcessed += 1;
+                    processingInfo.EventsProcessed += 1;
 
                     emptyData = false;
                 }
 
-                views.WriteAsJson(data, UserCommentsDistributionView.FileName);
+                views.WriteAsJson(processingInfo, UserCommentsDistributionView.FileName + ".info");
 
                 if (emptyData)
                 {
@@ -173,7 +180,8 @@ namespace SmartApp.Sample3.Continuous
                 }
                 else
                 {
-                    Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
+                    views.WriteAsJson(data, UserCommentsDistributionView.FileName);
+                    Console.WriteLine("Next user offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
         }

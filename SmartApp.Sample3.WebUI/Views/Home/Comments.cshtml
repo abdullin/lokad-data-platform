@@ -1,22 +1,22 @@
 ﻿@using Platform
 @using SmartApp.Sample3.WebUI
-@model SmartApp.Sample3.Contracts.CommentDistributionView
+@model Tuple<SmartApp.Sample3.Contracts.CommentDistributionView, SmartApp.Sample3.Contracts.ProcessingInfoView>
 
 @{
         double speed = 0;
         if (Model != null)
         {
-            speed = (Model.NextOffsetInBytes - Model.LastOffsetInBytes)/(DateTime.UtcNow - Model.LastProcessingDateUtc).TotalSeconds;
+            speed = (Model.Item2.NextOffsetInBytes - Model.Item2.LastOffsetInBytes)/(DateTime.UtcNow - Model.Item2.DateProcessingUtc).TotalSeconds;
         }
 }
 
 <h2 class="page-header">Comments projection</h2>
 <dl class="dl-horizontal">
     <dt>Events proccessed:</dt>
-    <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
+    <dd>@(Model != null ? Model.Item2.EventsProcessed : 0)</dd>
 
     <dt>Bytes proccessed:</dt>
-    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
+    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.Item2.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
 
     <dt>Date</dt>
     <dd>@DateTime.Now</dd>
@@ -24,17 +24,17 @@
 
 <table class="table table-striped table-condensed table-bordered">
     <tr>
-        <th>UserId</th>
+        <th>User</th>
         <th>Number of comments</th>
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value).Take(15))
+        foreach (var pair in Model.Item1.Distribution.OrderByDescending(x => x.Value).Take(15))
         {
-        <tr>
-            <td>@Model.UserNames[pair.Key].Name <span class="badge badge-success pull-right">@Model.UserNames[pair.Key].Reputation</span></td>
-            <td>@pair.Value</td>
-        </tr>
+            <tr>
+                <td>@(Model.Item1.Users.ContainsKey(pair.Key) ? Model.Item1.Users[pair.Key].Name : pair.Key.ToString()) <span class="badge badge-success pull-right">@(Model.Item1.Users.ContainsKey(pair.Key)?Model.Item1.Users[pair.Key].Reputation:0)</span></td>
+                <td>@pair.Value</td>
+            </tr>
         }
     }
 </table>

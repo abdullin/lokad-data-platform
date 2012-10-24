@@ -9,14 +9,16 @@ namespace SmartApp.Sample3.Contracts
         public const string ViewContainer = "dp-views";
     }
 
-    public class TagsDistributionView
+    public class ProcessingInfoView
     {
         public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
-
         public DateTime DateProcessingUtc { get; set; }
         public long LastOffsetInBytes { get; set; }
+    }
 
+    public class TagsDistributionView
+    {
         public Dictionary<string, long> Distribution { get; set; }
 
         public const string FileName = "sample3-tag-count.dat";
@@ -29,20 +31,30 @@ namespace SmartApp.Sample3.Contracts
 
     public class CommentDistributionView
     {
-        public DateTime LastProcessingDateUtc { get; set; }
-        public long LastOffsetInBytes { get; set; }
-        public long NextOffsetInBytes { get; set; }
-        public int EventsProcessed { get; set; }
-
         public Dictionary<long, int> Distribution { get; set; }
-        public Dictionary<long, User> UserNames { get; set; }
+        public Dictionary<long, User> Users { get; set; }
         public const string FileName = "sample3-comment.dat";
 
         public CommentDistributionView()
         {
             Distribution = new Dictionary<long, int>();
-            UserNames = new Dictionary<long, User>();
+            Users = new Dictionary<long, User>();
         }
+    }
+
+    public sealed class UserCommentsDistributionView
+    {
+        public UserCommentsDistributionView()
+        {
+            Distribution = new Dictionary<long, long[]>();
+            Users = new Dictionary<long, User>();
+        }
+
+        public Dictionary<long, long[]> Distribution { get; private set; }
+        public Dictionary<long, User> Users { get; set; }
+
+
+        public const string FileName = "user-reputation.dat";
     }
 
     public class Comment
@@ -182,24 +194,7 @@ namespace SmartApp.Sample3.Contracts
             }
         }
     }
-
-    public sealed class UserCommentsDistributionView
-    {
-        public UserCommentsDistributionView()
-        {
-            Distribution = new Dictionary<long, long[]>();
-            Users = new Dictionary<long, User>();
-        }
-
-        public long NextOffsetInBytes { get; set; }
-        public int EventsProcessed { get; set; }
-        public Dictionary<long, long[]> Distribution { get; private set; }
-        public Dictionary<long, User> Users { get; set; }
-
-
-        public const string FileName = "user-reputation.json";
-    }
-
+    
     public class User
     {
         public long Id { get; set; }

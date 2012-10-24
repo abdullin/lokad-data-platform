@@ -1,6 +1,6 @@
 ﻿@using Platform
 @using SmartApp.Sample3.WebUI
-@model SmartApp.Sample3.Contracts.TagsDistributionView
+@model Tuple<SmartApp.Sample3.Contracts.TagsDistributionView, SmartApp.Sample3.Contracts.ProcessingInfoView>
 
 <h2 class="page-header">Tags projection</h2>
 <dl class="dl-horizontal">
@@ -8,14 +8,14 @@
         double speed = 0;
         if (Model != null)
         {
-            speed = (Model.NextOffsetInBytes - Model.LastOffsetInBytes)/(DateTime.UtcNow - Model.DateProcessingUtc).TotalSeconds;
+            speed = (Model.Item2.NextOffsetInBytes - Model.Item2.LastOffsetInBytes)/(DateTime.UtcNow - Model.Item2.DateProcessingUtc).TotalSeconds;
         }
     }
     <dt>Events proccessed:</dt>
-    <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
+    <dd>@(Model != null ? Model.Item2.EventsProcessed : 0)</dd>
 
     <dt>Bytes proccessed:</dt>
-    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
+    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.Item2.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
 
     <dt>Date</dt>
     <dd>@DateTime.Now</dd>
@@ -30,7 +30,7 @@
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.Distribution.OrderByDescending(x => x.Value).Take(15))
+        foreach (var pair in Model.Item1.Distribution.OrderByDescending(x => x.Value).Take(15))
         {
         <tr>
             <td>@pair.Key</td>

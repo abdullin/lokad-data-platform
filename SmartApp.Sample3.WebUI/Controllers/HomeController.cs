@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using Platform;
 using Platform.ViewClients;
 using SmartApp.Sample3.Contracts;
@@ -19,19 +20,22 @@ namespace SmartApp.Sample3.WebUI.Controllers
         public ActionResult Tags()
         {
             var model = Global.ReadAsJsonOrGetNew<TagsDistributionView>(TagsDistributionView.FileName);
-            return PartialView( model);
+            var info = Global.ReadAsJsonOrGetNew<ProcessingInfoView>(TagsDistributionView.FileName + ".info");
+            return PartialView(Tuple.Create(model, info));
         }
 
         public ActionResult Comments()
         {
             var model = Global.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
-            return PartialView(model);
+            var info = Global.ReadAsJsonOrGetNew<ProcessingInfoView>(CommentDistributionView.FileName + ".info");
+            return PartialView(Tuple.Create(model, info));
         }
 
         public ActionResult Users()
         {
             var model = Global.ReadAsJsonOrGetNew<UserCommentsDistributionView>(UserCommentsDistributionView.FileName);
-            return PartialView(model);
+            var info = Global.ReadAsJsonOrGetNew<ProcessingInfoView>(UserCommentsDistributionView.FileName + ".info");
+            return PartialView(Tuple.Create(model, info));
         }
     }
 }

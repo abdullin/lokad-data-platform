@@ -1,14 +1,14 @@
 ﻿@using ServiceStack.Text
 @using SmartApp.Sample3.WebUI
-@model SmartApp.Sample3.Contracts.UserCommentsDistributionView
+@model Tuple<SmartApp.Sample3.Contracts.UserCommentsDistributionView, SmartApp.Sample3.Contracts.ProcessingInfoView>
 
 <h2 class="page-header">Users projection</h2>
 <dl class="dl-horizontal">
     <dt>Events proccessed:</dt>
-    <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
+    <dd>@(Model != null ? Model.Item2.EventsProcessed : 0)</dd>
 
     <dt>Bytes proccessed:</dt>
-    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0)</dd>
+    <dd>@FormatUtil.SizeInBytes(Model.Item2 != null ? Model.Item2.NextOffsetInBytes : 0)</dd>
 
     <dt>Date</dt>
     <dd>@DateTime.Now</dd>
@@ -20,12 +20,16 @@
         <th>Comments per day of week</th>
     </tr>
 
-    @if (Model.Distribution.Any())
+    @if (Model.Item1.Distribution.Any())
     {
-        foreach (var pair in Model.Distribution.OrderByDescending(x => Model.Users[x.Key].Reputation).Take(15))
+        var data = Model.Item1.Distribution
+            .OrderByDescending(x => Model.Item1.Users.ContainsKey(x.Key) ? Model.Item1.Users[x.Key].Reputation : 0)
+            .Take(15);
+
+        foreach (var pair in data)
         {
             <tr>
-                <td>@Model.Users[pair.Key]</td>
+                <td>@(Model.Item1.Users.ContainsKey(pair.Key)? Model.Item1.Users[pair.Key].Name : pair.Key.ToString())</td>
                 <td><span class="bar">@JsonSerializer.SerializeToString(pair.Value).Trim('[', ']') </span></td>
             </tr>
         }
