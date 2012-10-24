@@ -69,7 +69,8 @@ namespace Platform.Node.Services.Timer
         void Schedule(TimeSpan fireIn, Action<IScheduler, object> action, object state);
     }
 
-    public sealed class ThreadBasedScheduler : IScheduler
+    // ReSharper restore InconsistentNaming
+    public class ThreadBasedScheduler : IScheduler
     {
         readonly ITimeProvider _provider;
         volatile bool _selfDestruct;
@@ -98,18 +99,24 @@ namespace Platform.Node.Services.Timer
                 {
                     _tasks.Add(task.DueTimeUtc, task);
                 }
-                bool processed = false;
-                while (_tasks.Count > 0 && _tasks.First().Key <= _provider.UtcNow)
-                {
-                    var scheduled = _tasks.First();
-                    _tasks.RemoveAt(0);
-                    scheduled.Value.Action(this, scheduled.Value.State);
-                    processed = true;
-                }
+                var processed = ProcessCurrentTime();
 
                 if (!processed)
                     Thread.Sleep(1);
             }
+        }
+
+        bool ProcessCurrentTime()
+        {
+            bool processed = false;
+            while (_tasks.Count > 0 && _tasks.First().Key <= _provider.UtcNow)
+            {
+                var scheduled = _tasks.First();
+                _tasks.RemoveAt(0);
+                scheduled.Value.Action(this, scheduled.Value.State);
+                processed = true;
+            }
+            return processed;
         }
 
 

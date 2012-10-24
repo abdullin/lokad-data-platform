@@ -45,12 +45,17 @@
   <ItemGroup>
     <Compile Include="in_memory_bus.cs" />
     <Compile Include="queued_handler.cs" />
+    <Compile Include="timer_service.cs" />
     <Compile Include="when_format_size_in_bytes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
       <Project>{39F04669-CAA7-4F30-8BE2-6CF79F49F2E6}</Project>
       <Name>Platform.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
+      <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
+      <Name>Platform.Node</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
