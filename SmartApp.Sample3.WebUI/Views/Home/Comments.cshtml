@@ -1,5 +1,14 @@
-﻿@using SmartApp.Sample3.WebUI
+﻿@using Platform
+@using SmartApp.Sample3.WebUI
 @model SmartApp.Sample3.Contracts.CommentDistributionView
+
+@{
+        double speed = 0;
+        if (Model != null)
+        {
+            speed = (Model.NextOffsetInBytes - Model.LastOffsetInBytes)/(DateTime.UtcNow - Model.LastProcessingDateUtc).TotalSeconds;
+        }
+}
 
 <h2 class="page-header">Comments projection</h2>
 <dl class="dl-horizontal">
@@ -7,13 +16,13 @@
     <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
 
     <dt>Bytes proccessed:</dt>
-    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0)</dd>
+    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
 
     <dt>Date</dt>
     <dd>@DateTime.Now</dd>
 </dl>
 
-<table class="table table-striped table-condensed table-bordered table-bordered">
+<table class="table table-striped table-condensed table-bordered">
     <tr>
         <th>UserId</th>
         <th>Number of comments</th>

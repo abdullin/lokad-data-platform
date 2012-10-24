@@ -14,6 +14,9 @@ namespace SmartApp.Sample3.Contracts
         public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
 
+        public DateTime DateProcessingUtc { get; set; }
+        public long LastOffsetInBytes { get; set; }
+
         public Dictionary<string, long> Distribution { get; set; }
 
         public const string FileName = "sample3-tag-count.dat";
@@ -26,15 +29,19 @@ namespace SmartApp.Sample3.Contracts
 
     public class CommentDistributionView
     {
+        public DateTime LastProcessingDateUtc { get; set; }
+        public long LastOffsetInBytes { get; set; }
         public long NextOffsetInBytes { get; set; }
         public int EventsProcessed { get; set; }
 
         public Dictionary<long, int> Distribution { get; set; }
+        public Dictionary<long, string> UserNames { get; set; }
         public const string FileName = "sample3-comment.dat";
 
         public CommentDistributionView()
         {
             Distribution = new Dictionary<long, int>();
+            UserNames = new Dictionary<long, string>();
         }
     }
 

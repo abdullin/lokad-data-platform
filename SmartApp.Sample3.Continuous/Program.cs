@@ -37,7 +37,11 @@ namespace SmartApp.Sample3.Continuous
             Console.WriteLine("Next post offset: {0}", data.NextOffsetInBytes);
             while (true)
             {
-                var records = store.ReadAll(new StorageOffset(data.NextOffsetInBytes), 50000);
+                var nextOffcet = data.NextOffsetInBytes;
+                data.LastOffsetInBytes = data.NextOffsetInBytes;
+                data.DateProcessingUtc = DateTime.UtcNow;
+
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -72,7 +76,6 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        
         private static void CommentProjection(IInternalStreamClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
@@ -80,12 +83,22 @@ namespace SmartApp.Sample3.Continuous
             while (true)
             {
                 var nextOffset = data.NextOffsetInBytes;
+                data.LastOffsetInBytes = data.NextOffsetInBytes;
+                data.LastProcessingDateUtc = DateTime.UtcNow;
 
                 var records = store.ReadAll(new StorageOffset(nextOffset), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     data.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
+
+                    if (dataRecord.Key == "s3:user")
+                    {
+                        var user = User.FromBinary(dataRecord.Data);
+                        data.UserNames[user.Id] = user.Name;
+                        emptyData = false;
+                        continue;
+                    }
 
                     if (dataRecord.Key != "s3:comment")
                         continue;

@@ -1,19 +1,29 @@
-﻿@using SmartApp.Sample3.WebUI
+﻿@using Platform
+@using SmartApp.Sample3.WebUI
 @model SmartApp.Sample3.Contracts.TagsDistributionView
 
 <h2 class="page-header">Tags projection</h2>
 <dl class="dl-horizontal">
+    @{
+        double speed = 0;
+        if (Model != null)
+        {
+            speed = (Model.NextOffsetInBytes - Model.LastOffsetInBytes)/(DateTime.UtcNow - Model.DateProcessingUtc).TotalSeconds;
+        }
+    }
     <dt>Events proccessed:</dt>
     <dd>@(Model != null ? Model.EventsProcessed : 0)</dd>
 
     <dt>Bytes proccessed:</dt>
-    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0)</dd>
+    <dd>@FormatUtil.SizeInBytes(Model != null ? Model.NextOffsetInBytes : 0) (@FormatEvil.SpeedInBytes(speed))</dd>
 
     <dt>Date</dt>
     <dd>@DateTime.Now</dd>
 </dl>
 
-<table class="table table-striped table-condensed">
+<div id = "tag-chart"></div>
+
+<table class="table table-striped table-condensed table-bordered">
     <tr>
         <th>Tags</th>
         <th>Number of tags</th>
