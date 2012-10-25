@@ -1,9 +1,14 @@
-lokad-data-platform
-===================
+Lokad Data Platform Sample
+==========================
 
-Data Platform sample from Lokad
+This is Data Platform sample from Lokad - showing principles of storing and processing large (GBytes and TBytes) data streams in the cloud. It is based on concepts from Lokad.CQRS, Lokad.Cloud and EventStore.
 
+Some introductory information:
 
+* [Introducing Data Platform](http://abdullin.com/journal/2012/10/20/introducing-lokad-data-platform.html)
+* [Scalability targets of Data Platform](http://abdullin.com/journal/2012/10/20/scalability-targets-of-lokad-data-platform.html)
+
+More documentation will be available, once we push through first production deployments internally.
 
 Credits
 -------
