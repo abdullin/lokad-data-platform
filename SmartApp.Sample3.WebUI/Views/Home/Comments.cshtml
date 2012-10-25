@@ -29,7 +29,7 @@
     </tr>
     @if (Model != null)
     {
-        foreach (var pair in Model.Item1.Distribution.OrderByDescending(x => x.Value).Take(15))
+        foreach (var pair in Model.Item1.Distribution.OrderByDescending(x => Model.Item1.Users.ContainsKey(x.Key)?Model.Item1.Users[x.Key].Reputation:0).Take(15))
         {
             <tr>
                 <td>@(Model.Item1.Users.ContainsKey(pair.Key) ? Model.Item1.Users[pair.Key].Name : pair.Key.ToString()) <span class="badge badge-success pull-right">@(Model.Item1.Users.ContainsKey(pair.Key)?Model.Item1.Users[pair.Key].Reputation:0)</span></td>
