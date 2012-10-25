@@ -11,13 +11,13 @@ namespace SmartApp.Sample3.Continuous
 {
     class Program
     {
-        const string platformPath = @"C:\LokadData\dp-store";
+        const string PlatformPath = @"C:\LokadData\dp-store";
 
 
         static void Main(string[] args)
         {
-            var store = PlatformClient.GetStreamReader(platformPath);
-            var views = PlatformClient.GetViewClient(platformPath, Conventions.ViewContainer);
+            var store = PlatformClient.GetStreamReader(PlatformPath);
+            var views = PlatformClient.GetViewClient(PlatformPath, Conventions.ViewContainer);
             views.CreateContainer();
             var threads = new List<Task>
                 {
@@ -42,7 +42,7 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -73,7 +73,14 @@ namespace SmartApp.Sample3.Continuous
                 }
                 else
                 {
-                    views.WriteAsJson(data, TagsDistributionView.FileName);
+                    try
+                    {
+                        views.WriteAsJson(data, TagsDistributionView.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception on writing view - {0}\r\n{1}", TagsDistributionView.FileName, ex.Message);
+                    }
                     Console.WriteLine("Next post offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
@@ -90,7 +97,7 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAll(new StorageOffset(nextOffset), 50000);
+                var records = store.ReadAll(new StorageOffset(nextOffset), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -126,7 +133,15 @@ namespace SmartApp.Sample3.Continuous
                 }
                 else
                 {
-                    views.WriteAsJson(data, CommentDistributionView.FileName);
+                    try
+                    {
+                        views.WriteAsJson(data, CommentDistributionView.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception on writing view - {0}\r\n{1}", CommentDistributionView.FileName, ex.Message);
+                    }
+                    
                     Console.WriteLine("Next comment offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
@@ -142,7 +157,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 var nextOffcet = processingInfo.NextOffsetInBytes;
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 50000);
+                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -153,6 +168,7 @@ namespace SmartApp.Sample3.Continuous
                         var user = User.FromBinary(dataRecord.Data);
                         data.Users[user.Id] = user;
                         emptyData = false;
+                        continue;
                     }
 
                     if (dataRecord.Key != "s3:comment") continue;
@@ -180,7 +196,15 @@ namespace SmartApp.Sample3.Continuous
                 }
                 else
                 {
-                    views.WriteAsJson(data, UserCommentsDistributionView.FileName);
+                    try
+                    {
+                        views.WriteAsJson(data, UserCommentsDistributionView.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception on writing view - {0}\r\n{1}", UserCommentsDistributionView.FileName, ex.Message);
+                    }
+
                     Console.WriteLine("Next user offset: {0}", processingInfo.NextOffsetInBytes);
                 }
             }
