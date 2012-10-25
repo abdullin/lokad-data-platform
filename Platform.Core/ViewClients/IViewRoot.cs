@@ -5,6 +5,10 @@ using System.Runtime.Serialization;
 
 namespace Platform.ViewClients
 {
+    /// <summary>
+    /// Equivalent of streaming root from Lokad.CQRS. It abstracts away
+    /// unrerlying binary storage (can be file, memory or Azure).
+    /// </summary>
     public interface IViewRoot
     {
         /// <summary>
@@ -14,12 +18,18 @@ namespace Platform.ViewClients
         /// <returns>new container referece</returns>
         IViewContainer GetContainer(string name);
 
-
+        /// <summary>
+        /// Get a list of containers from the current root (supply non-null
+        /// prefix to enable filtering)
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         IEnumerable<string> ListContainers(string prefix = null);
     }
 
     /// <summary>
-    /// Represents storage container reference.
+    /// Represents storage container reference, equivalent of streaming
+    /// container from Lokad.CQRS.
     /// </summary>
     public interface IViewContainer
     {
@@ -36,7 +46,17 @@ namespace Platform.ViewClients
         /// <returns></returns>
         IViewContainer GetContainer(string name);
 
+        /// <summary>
+        /// Opens file in the current container for reading operation.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         Stream OpenRead(string name);
+        /// <summary>
+        /// Open file in the current container for the writing operations.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         Stream OpenWrite(string name);
         void TryDelete(string name);
         bool Exists(string name);
@@ -75,13 +95,6 @@ namespace Platform.ViewClients
     [Serializable]
     public class ViewException : Exception
     {
-        //
-        // For guidelines regarding the creation of new exception types, see
-        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
-        // and
-        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
-        //
-
         public ViewException()
         {
         }
@@ -129,11 +142,6 @@ namespace Platform.ViewClients
         {
         }
 
-        protected ViewContainerNotFoundException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
+
     }
 }
