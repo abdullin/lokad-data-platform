@@ -93,13 +93,9 @@ namespace Platform.ViewClients
     }
 
     [Serializable]
-    public class ViewException : Exception
+    public abstract class ViewException : Exception
     {
-        public ViewException()
-        {
-        }
-
-        public ViewException(string message)
+        protected ViewException(string message)
             : base(message)
         {
         }
