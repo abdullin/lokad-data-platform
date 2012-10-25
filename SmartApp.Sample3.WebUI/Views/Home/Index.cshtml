@@ -23,8 +23,24 @@
 
 <script>
     $(document).ready(function () {
-        setInterval(function () { $('#tag_result').load("@Url.Action("Tags")"); }, 5000);
-        setInterval(function () { $('#comment_result').load("@Url.Action("Comments")"); }, 5000);
-        setInterval(function () { $("#users_result").load("@Url.Action("Users")"); }, 5000);
+        refreshUsers();
+        refreshTags();
+        refreshComments();
+
+        setInterval(refreshTags(), 5000);
+        setInterval(refreshComments, 5000);
+        setInterval(refreshUsers, 5000);
     });
+
+    function refreshTags() {
+        $('#tag_result').load("@Url.Action("Tags")");
+    }
+
+    function refreshComments() {
+        $('#comment_result').load("@Url.Action("Comments")");
+    }
+
+    function refreshUsers() {
+        $("#users_result").load("@Url.Action("Users")");
+    }
 </script>
