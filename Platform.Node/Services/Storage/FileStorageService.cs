@@ -8,7 +8,11 @@ using Platform.Messages;
 
 namespace Platform.Node.Services.Storage
 {
-    public sealed class FileStorageService : IStorageService
+    public sealed class FileStorageService :
+        IHandle<ClientMessage.AppendEvents>,
+        IHandle<SystemMessage.Init>,
+        IHandle<ClientMessage.ImportEvents>,
+        IHandle<ClientMessage.RequestStoreReset>
     {
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;

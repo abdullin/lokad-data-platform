@@ -48,23 +48,25 @@ namespace Platform.Node
             bus.Subscribe<TimerMessage.Schedule>(timer);
 
             // switch, based on configuration
-
-            IStorageService storageService;
             AzureStoreConfiguration azureConfig;
             if (AzureStoreConfiguration.TryParse(options.StoreLocation, out azureConfig))
             {
-                storageService = new AzureStorageService(azureConfig, mainQueue);
+                var storageService = new AzureStorageService(azureConfig, mainQueue);
+                bus.Subscribe<ClientMessage.AppendEvents>(storageService);
+                bus.Subscribe<SystemMessage.Init>(storageService);
+                bus.Subscribe<ClientMessage.ImportEvents>(storageService);
+                bus.Subscribe<ClientMessage.RequestStoreReset>(storageService);
             }
             else
             {
-                storageService = new FileStorageService(options.StoreLocation, mainQueue);
+                var storageService = new FileStorageService(options.StoreLocation, mainQueue);
+                bus.Subscribe<ClientMessage.AppendEvents>(storageService);
+                bus.Subscribe<SystemMessage.Init>(storageService);
+                bus.Subscribe<ClientMessage.ImportEvents>(storageService);
+                bus.Subscribe<ClientMessage.RequestStoreReset>(storageService);
             }
 
-            bus.Subscribe<ClientMessage.AppendEvents>(storageService);
-            bus.Subscribe<SystemMessage.Init>(storageService);
-            bus.Subscribe<ClientMessage.ImportEvents>(storageService);
-            bus.Subscribe<ClientMessage.RequestStoreReset>(storageService);
-
+            
             mainQueue.Start();
 
             mainQueue.Enqueue(new SystemMessage.Init());

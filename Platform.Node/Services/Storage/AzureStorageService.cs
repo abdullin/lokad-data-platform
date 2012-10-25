@@ -10,7 +10,12 @@ using Platform.Storage.Azure;
 
 namespace Platform.Node.Services.Storage
 {
-    public sealed class AzureStorageService : IStorageService
+    public sealed class AzureStorageService :
+        IHandle<ClientMessage.AppendEvents>,
+        IHandle<SystemMessage.Init>,
+        IHandle<ClientMessage.ImportEvents>,
+        IHandle<ClientMessage.RequestStoreReset>
+
     {
         readonly static ILogger Log = LogManager.GetLoggerFor<AzureStorageService>();
         readonly IPublisher _publisher;
