@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,13 +9,20 @@ namespace SmartApp.Sample1.Continuous
 {
     class Program
     {
-        static void Main(string[] args)
+        public static string StorePath;
+
+        static void Main()
         {
+            StorePath = ConfigurationManager.AppSettings["StorePath"];
             const int seconds = 1;
             var nextOffset = LoadData();
             ShowData(nextOffset, true);
-            var path = @"C:\LokadData\dp-store";
-            IInternalStreamClient reader = new FileStreamClient(path);
+            IInternalStreamClient reader = new FileStreamClient(StorePath);
+
+            var views = Path.Combine(StorePath, "dp-views");
+            if (!Directory.Exists(views))
+                Directory.CreateDirectory(views);
+
             while (true)
             {
                 var last = reader.ReadAll(nextOffset).LastOrDefault();
@@ -36,19 +44,19 @@ namespace SmartApp.Sample1.Continuous
 
         static StorageOffset LoadData()
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample1.dat");
+            var path = Path.Combine(StorePath, "dp-views", "sample1.dat");
 
             if (!File.Exists(path))
                 return StorageOffset.Zero;
 
-            long nextOffset = 0;
+            long nextOffset;
             long.TryParse(File.ReadAllText(path), out nextOffset);
             return new StorageOffset(nextOffset);
         }
 
         static void SaveData(StorageOffset nextOffcet)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample1.dat");
+            var path = Path.Combine(StorePath,"dp-views", "sample1.dat");
             using (var sw = new StreamWriter(path, false))
             {
                 sw.Write(nextOffcet.OffsetInBytes);
