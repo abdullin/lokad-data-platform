@@ -9,6 +9,10 @@ using Platform.ViewClients;
 
 namespace Platform
 {
+    /// <summary>
+    /// Entry point for configuring access to the core of DataPlatform (both views and 
+    /// data streams)
+    /// </summary>
     public class PlatformClient
     {
         public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint)

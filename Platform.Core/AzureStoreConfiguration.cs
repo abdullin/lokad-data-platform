@@ -3,7 +3,9 @@ using System;
 namespace Platform
 {
 
-
+    /// <summary>
+    /// Helper class for configuring azure store location
+    /// </summary>
     public sealed class AzureStoreConfiguration
     {
         public readonly string ConnectionString;

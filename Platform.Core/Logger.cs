@@ -3,10 +3,13 @@ using NLog;
 
 namespace Platform
 {
-    
+    /// <summary>
+    /// Static class that is responsible for wiring in
+    /// proper logger infrastructure (NLOG in this case)
+    /// </summary>
     public static class LogManager
     {
-        private static bool _Initialized;
+        private static bool _initialized;
 
         public static string LogsDirectory
         {
@@ -30,10 +33,10 @@ namespace Platform
         public static void Init(string componentName, string logsDirectory)
         {
             //Ensure.NotNull(componentName, "componentName");
-            if (_Initialized)
+            if (_initialized)
                 throw new InvalidOperationException("Cannot initialize twice");
 
-            _Initialized = true;
+            _initialized = true;
 
             SetLogsDirectoryIfNeeded(logsDirectory);
             SetComponentName(componentName);
@@ -47,7 +50,7 @@ namespace Platform
 
         private static void EnsureInitialized()
         {
-            if (!_Initialized)
+            if (!_initialized)
                 throw new InvalidOperationException("Init method must be called");
         }
 

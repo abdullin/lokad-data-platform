@@ -3,6 +3,10 @@ using System.Diagnostics.Contracts;
 
 namespace Platform
 {
+    /// <summary>
+    /// Set of helper methods that are slightly more readable than
+    /// plain exception throws (but are equivalent to  them)
+    /// </summary>
     public static class Ensure
     {
         public static void NotNull<T>(T argument, string argumentName) where T : class

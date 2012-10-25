@@ -2,6 +2,10 @@ using System;
 
 namespace Platform
 {
+    /// <summary>
+    /// Helper class to manage application lifetime explicitly, when it runs as console
+    /// application
+    /// </summary>
     public class Application
     {
         private static readonly ILogger Log = LogManager.GetLoggerFor<Application>();
