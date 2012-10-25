@@ -54,7 +54,7 @@ namespace SmartApp.Sample3.Contracts
         public Dictionary<long, User> Users { get; set; }
 
 
-        public const string FileName = "user-reputation.dat";
+        public const string FileName = "sample3-comments-per-day.dat";
     }
 
     public class Comment
