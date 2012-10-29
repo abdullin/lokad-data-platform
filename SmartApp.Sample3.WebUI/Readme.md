@@ -13,19 +13,33 @@ Preparing
 0. Download dump of StackOverflow (SO) data from here http://media10.simplex.tv/content/xtendx/stu/stackoverflow/
 
          Example output of Platform.Node
-            [09528,01,07:51:06.535] KillSwitch : -1
-            HttpPort : 8080
-            StoreLocation : C:\LokadData\dp-store
-            Starting everything. Press enter to initiate shutdown
-            [09528,10,07:51:06.636] Initializing
-            [09528,10,07:51:06.914] Storage starting
-            [09528,10,07:51:06.914] Storage ready
-            [09528,10,07:51:06.914] Starting
-            [09528,10,07:51:06.914] We are the master
+                Starting everything. Press enter to initiate shutdown
+                [08860,01,03:30:53.395] KillSwitch : -1
+                HttpPort : 8080
+                StoreLocation : C:\LokadData\dp-store
+                [08860,10,03:30:53.474] Initializing
+                [08860,10,03:30:53.689] Storage starting
+                [08860,10,03:30:53.689] Storage ready
+                [08860,10,03:30:53.692] Starting
+                [08860,10,03:30:53.692] We are the master
 
-1. Run Platform.Node.exe with administrative credentials from /bin/server folder.
+1. Run Platform.Node.exe with administrative credentials from bin\server folder.
+
 2. Run SmartApp.Sample3.Dump.exe from SmartApp.Sample3.Dump\bin\Debug to start converting StackOverflow data to events.
-
+            
+            Example output of Sample3.Dump
+                Posts:
+                        2154,86755111984 per second
+                        Added 20000 posts
+                Users:
+                        24973,0849975076 per second
+                        Added 240000 users
+                Comments:
+                        7975,45800039576 per second
+                        Added 80000 posts
+                Users:
+                        25818,8020977499 per second
+                        Added 260000 users
 
 Sample
 ------
@@ -33,17 +47,19 @@ Sample
 Run SmartApp.Sample3.Continuous.exe from SmartApp.Sample3.Continuous\bin\Debug
 Application start events processing
 
-        Example output:
-            Next comment offset: 0
-            Next post offset: 0
-            Next user offset: 382904
-            Next comment offset: 382904
-            Next comment offset: 759473
-            Next user offset: 759473
-            Next comment offset: 1135234
-            Next user offset: 1135234
+            Example output:
+                Next comment offset: 0
+                Next post offset: 0
+                Next user offset: 382904
+                Next comment offset: 382904
+                Next comment offset: 759473
+                Next user offset: 759473
+                Next comment offset: 1135234
+                Next user offset: 1135234
 
 To view Results run web application SmartApp.Sample3.WebUI and open site. 
 
         Example:
             http://localhost:50438/
+
+        ![Sample 3 Demo] [https://raw.github.com/Lokad/lokad-data-platform/master/SmartApp.Sample3.WebUI/Content/img/sample3.demo.png]

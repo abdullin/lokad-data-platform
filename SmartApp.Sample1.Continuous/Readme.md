@@ -18,7 +18,7 @@ Preparing
             [09528,10,07:51:06.914] Starting
             [09528,10,07:51:06.914] We are the master
 
-1. Run Platform.Node.exe with administrative credentials from /bin/server folder.
+1. Run Platform.Node.exe with administrative credentials from bin\server folder.
 2. Run SmartApp.Sample3.Dump.exe from SmartApp.Sample3.Dump\bin\Debug to start converting StackOverflow data to events.
 
 
