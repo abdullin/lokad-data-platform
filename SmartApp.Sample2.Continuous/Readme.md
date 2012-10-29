@@ -9,6 +9,7 @@ Preparing
 0. Download dump of StackOverflow (SO) data from here http://media10.simplex.tv/content/xtendx/stu/stackoverflow/
 
 1. Run Platform.Node.exe with administrative credentials from bin\server folder.
+
         Example output of Platform.Node
             [08448,01,03:20:32.083] KillSwitch : -1
             HttpPort : 8080
@@ -40,8 +41,8 @@ Preparing
 Sample
 ------
 
-Run SmartApp.Sample1.Continuous.exe from SmartApp.Sample2.Continuous\bin\Debug
-Application dumps to console window "Next offset" of event stream.
+Run SmartApp.Sample2.Continuous.exe from SmartApp.Sample2.Continuous\bin\Debug
+Application dumps to console window distribution of events in events stream by length.
 
         Example output:
             [324]: 1419
