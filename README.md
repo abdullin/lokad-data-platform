@@ -19,3 +19,10 @@ Thanks to the authors and maintainers of these projects for letting us stand on 
 * [Service Stack](http://www.servicestack.net/) (and especially authors of async branch)
 * [NLog](http://nlog-project.org/)
 * [NUnit](http://www.nunit.org/)
+
+Samples
+-------
+
+1. [Sample 1] (https://github.com/Lokad/lokad-data-platform/tree/master/SmartApp.Sample2.Continuous) - Sequential read event stream and shows "Next offset"
+2. [Sample 2] (https://github.com/Lokad/lokad-data-platform/tree/master/SmartApp.Sample2.Continuous) - Show distribution of event by size
+3. [Sample 3] (https://github.com/Lokad/lokad-data-platform/tree/master/SmartApp.Sample3.WebUI) - Show aggregated data from event steam.
