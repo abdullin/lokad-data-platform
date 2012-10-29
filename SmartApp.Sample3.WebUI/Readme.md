@@ -62,4 +62,6 @@ To view Results run web application SmartApp.Sample3.WebUI and open site.
         Example:
             http://localhost:50438/
 
-        ![Sample 3 Demo] [https://raw.github.com/Lokad/lokad-data-platform/master/SmartApp.Sample3.WebUI/Content/img/sample3.demo.png]
+Sample 3 UI
+--------
+![Sample 3 Demo] (https://raw.github.com/Lokad/lokad-data-platform/master/SmartApp.Sample3.WebUI/Content/img/sample3.demo.png)
