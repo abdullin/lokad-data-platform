@@ -3,9 +3,9 @@
 
 Application demonstrate projections work. Now it contains 
 
-    1. TagProjection - Post aggregation by tags
-    2. CommentProjection - Comments aggregation by user
-    3. UserCommentsPerDayDistributionProjection - User comments detstribution by day of week
+1. TagProjection - Post aggregation by tags
+2. CommentProjection - Comments aggregation by user
+3. UserCommentsPerDayDistributionProjection - User comments detstribution by day of week
 
 Preparing
 ---------
