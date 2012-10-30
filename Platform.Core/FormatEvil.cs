@@ -1,17 +1,26 @@
+#region (c) 2010-2012 Lokad All rights reserved
+
+// You must not remove this notice, or any other, from this software.
+// This document is the property of LOKAD SAS and must not be disclosed.
+
+#endregion
+
 using System;
 
 namespace Platform
 {
     public static class FormatEvil
     {
-        static readonly string[] ByteOrders = new[] { "EB", "PB", "TB", "GB", "MB", "KB", "Bytes" };
-        static readonly long MaxScale;
+        static readonly string[] ByteOrders = new[] {"EB", "PB", "TB", "GB", "MB", "KB", "Bytes"};
+
+        static readonly
+            long MaxScale;
 
         static FormatEvil()
         {
-            MaxScale = (long)Math.Pow(1024, ByteOrders.Length - 1);
+            MaxScale = (long) Math.Pow(1024, ByteOrders.Length - 1);
         }
-        
+
         public static string SpeedInBytes(double bytesPerSecond)
         {
             if (bytesPerSecond > long.MaxValue)
@@ -42,7 +51,6 @@ namespace Platform
                         return String.Format("{0:##.#} {1}", divide, order);
                     }
                     return String.Format("{0:##.##} {1}", divide, order);
-
                 }
 
                 max /= 1024;
@@ -52,7 +60,7 @@ namespace Platform
 
         public static string ToHumanReadable(double value)
         {
-            var maxRadix = (int)(Math.Log10(value) / 3) * 3;
+            var maxRadix = (int) (Math.Log10(value) / 3) * 3;
 
             if (maxRadix > 9)
                 maxRadix = 9;
@@ -66,11 +74,11 @@ namespace Platform
                 case 3:
                     return string.Format("{0} K", (int) normalizedValue);
                 case 6:
-                    return string.Format("{0} M", (int)normalizedValue);
+                    return string.Format("{0} M", (int) normalizedValue);
                 case 9:
-                    return string.Format("{0} B", (int)normalizedValue);
+                    return string.Format("{0} B", (int) normalizedValue);
                 default:
-                    return string.Format("{0}", (int)value);
+                    return string.Format("{0}", (int) value);
             }
         }
     }
