@@ -38,9 +38,9 @@ namespace Platform.TestClient.Commands
 
         }
 
-        #region Write and Read Flood/Batch messages
 
-        bool WriteFloodAndBatchTogether(CommandProcessorContext context, int timeOut, int batchSize, int batchThreadCount, int floodThreadCount)
+        bool WriteFloodAndBatchTogether(CommandProcessorContext context, int timeOut, int batchSize,
+            int batchThreadCount, int floodThreadCount)
         {
             string streamId = Guid.NewGuid().ToString();
             const string batchMsg = "BasicVerify-Batch-Test-Message";
@@ -82,20 +82,20 @@ namespace Platform.TestClient.Commands
             for (int t = 0; t < floodThreadCount; t++)
             {
                 var task = Task.Factory.StartNew(() =>
-                {
-                    while (DateTime.Now < dt)
                     {
-                        try
+                        while (DateTime.Now < dt)
                         {
-                            context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(floodMsg));
-                            Interlocked.Add(ref floodCount, 1);
+                            try
+                            {
+                                context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(floodMsg));
+                                Interlocked.Add(ref floodCount, 1);
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Push(ex.Message);
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            errors.Push(ex.Message);
-                        }
-                    }
-                }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
+                    }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
             }
             dt = DateTime.Now.AddSeconds(timeOut);
@@ -110,7 +110,7 @@ namespace Platform.TestClient.Commands
         }
 
         private static bool ReadAddMessages(CommandProcessorContext context, string streamId, string batchMsg, string floodMsg,
-                                            ConcurrentStack<string> errors, int batchCount, int floodCount)
+            ConcurrentStack<string> errors, int batchCount, int floodCount)
         {
             var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId);
             foreach (var record in records)
@@ -137,9 +137,7 @@ namespace Platform.TestClient.Commands
             return errors.Count == 0;
         }
 
-        #endregion
 
-        #region Read messages
 
         private bool ReadMessageWithNextOffset(CommandProcessorContext context)
         {
@@ -171,9 +169,7 @@ namespace Platform.TestClient.Commands
             return result;
         }
 
-        #endregion
 
-        #region Write and read different types
 
         bool WriteReadDifferentTypes(CommandProcessorContext context)
         {
@@ -246,9 +242,7 @@ namespace Platform.TestClient.Commands
             return result;
         }
 
-        #endregion
 
-        #region Write/Read view client
 
         bool ViewClientReadWrite(CommandProcessorContext context)
         {
@@ -259,15 +253,15 @@ namespace Platform.TestClient.Commands
             string streamId = Guid.NewGuid().ToString();
             var testData = Enumerable.Range(1, 100);
 
-            context.Client.Streams.WriteEventsInLargeBatch(streamId,testData.Select(x=>new RecordForStaging(BitConverter.GetBytes(x))));
+            context.Client.Streams.WriteEventsInLargeBatch(streamId, testData.Select(x => new RecordForStaging(BitConverter.GetBytes(x))));
 
             var data = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
 
-            var records = context.Client.Streams.ReadAll(new StorageOffset(data.NextOffsetInBytes)).Where(x=>x.Key==streamId);
+            var records = context.Client.Streams.ReadAll(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.Key == streamId);
 
             foreach (var record in records)
             {
-                data.Distribution.Add(BitConverter.ToInt32(record.Data,0));
+                data.Distribution.Add(BitConverter.ToInt32(record.Data, 0));
                 data.NextOffsetInBytes = record.Next.OffsetInBytes;
             }
 
@@ -275,12 +269,12 @@ namespace Platform.TestClient.Commands
 
             var writedData = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
 
-            if(data.NextOffsetInBytes!=writedData.NextOffsetInBytes)
+            if (data.NextOffsetInBytes != writedData.NextOffsetInBytes)
             {
                 context.Log.Error("Different Next.OffsetInBytes");
                 result = false;
             }
-            if(data.Distribution.Count!=writedData.Distribution.Count)
+            if (data.Distribution.Count != writedData.Distribution.Count)
             {
                 context.Log.Error("Different records count");
                 result = false;
@@ -289,7 +283,7 @@ namespace Platform.TestClient.Commands
 
             for (int i = 0; i < data.Distribution.Count; i++)
             {
-                if(data.Distribution[i]!=writedData.Distribution[i])
+                if (data.Distribution[i] != writedData.Distribution[i])
                 {
                     context.Log.Error("Different record value");
                     result = false;
@@ -311,7 +305,6 @@ namespace Platform.TestClient.Commands
             }
         }
 
-        #endregion
     }
 
 
