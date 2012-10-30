@@ -31,11 +31,12 @@ namespace Platform.TestClient.Commands
             if (args.Length > 3)
                 int.TryParse(args[3], out floodThreadCount);
 
-            return WriteFloodAndBatchTogether(context, timeOut, batchSize, batchThreadCount, floodThreadCount) |
-                   ReadMessageWithNextOffset(context) |
-                   WriteReadDifferentTypes(context) |
-                   ViewClientReadWrite(context);
+            bool totalResult = WriteFloodAndBatchTogether(context, timeOut, batchSize, batchThreadCount, floodThreadCount);
+            totalResult =totalResult && ReadMessageWithNextOffset(context);
+            totalResult =totalResult && WriteReadDifferentTypes(context) ;
+            totalResult =totalResult && ReadAndWriteDataFromView(context);
 
+            return totalResult;
         }
 
 
@@ -98,20 +99,26 @@ namespace Platform.TestClient.Commands
                     }, TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
                 threads.Add(task);
             }
+
             dt = DateTime.Now.AddSeconds(timeOut);
             Task.WaitAll(threads.ToArray());
 
+            context.Log.Info("Add {0} flood messages", floodCount);
+            context.Log.Info("Add {0} batch", batchCount);
 
+            var readErrors = ReadAddMessages(context, streamId, batchMsg, floodMsg, batchCount * batchSize, floodCount);
+            errors.PushRange(readErrors.ToArray());
 
-            Console.WriteLine("Add {0} flood messages", floodCount);
-            Console.WriteLine("Add {0} batch", batchCount);
+            foreach (var err in errors.ToArray())
+                context.Log.Error(err);
 
-            return ReadAddMessages(context, streamId, batchMsg, floodMsg, errors, batchCount * batchSize, floodCount);
+            return errors.Count == 0;
         }
 
-        private static bool ReadAddMessages(CommandProcessorContext context, string streamId, string batchMsg, string floodMsg,
-            ConcurrentStack<string> errors, int batchCount, int floodCount)
+        private static List<string> ReadAddMessages(CommandProcessorContext context, string streamId, string batchMsg, 
+            string floodMsg, int batchCount, int floodCount)
         {
+            var errors = new List<string>();
             var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId);
             foreach (var record in records)
             {
@@ -121,55 +128,42 @@ namespace Platform.TestClient.Commands
                 else if (msg.Equals(floodMsg))
                     floodCount--;
                 else
-                    errors.Push("strange message: " + msg);
+                    errors.Add("strange message: " + msg);
             }
 
             if (batchCount != 0)
-                errors.Push("Unread " + batchCount + " batch messages");
+                errors.Add("Unread " + batchCount + " batch messages");
             if (floodCount != 0)
-                errors.Push("Unread " + floodCount + " flood messages");
+                errors.Add("Unread " + floodCount + " flood messages");
 
-            foreach (var err in errors.ToArray())
-            {
-                context.Log.Error(err);
-            }
-
-            return errors.Count == 0;
+            return errors;
         }
-
-
 
         private bool ReadMessageWithNextOffset(CommandProcessorContext context)
         {
             var result = true;
-            var records = context.Client.Streams.ReadAll(maxRecordCount: 20);
-            RetrievedDataRecord prevRecord = default(RetrievedDataRecord);
-            bool firstRecord = true;
-            foreach (var record in records)
-            {
-                if (firstRecord)
-                {
-                    firstRecord = false;
-                }
-                else
-                {
-                    var prevNextRecord = context.Client.Streams.ReadAll(prevRecord.Next, 1).First();
-                    var expectedBytes = record.Data.Except(prevNextRecord.Data).ToList();
-                    if (record.Key != prevNextRecord.Key | expectedBytes.Count != 0)
-                    {
-                        context.Log.Error("Expected key: {0}, Received key: {1}", record.Key, prevNextRecord.Key);
-                        context.Log.Error("Expected dat: {0}, Received key: {1}", record.Data.Length, prevNextRecord.Data.Length);
-                        result = false;
-                    }
-                }
+            var records = context.Client.Streams.ReadAll(maxRecordCount: 20).ToArray();
 
-                prevRecord = record;
+            if(records.Length==0)
+                return true;
+
+            RetrievedDataRecord prevRecord = records[0];
+
+            for (int i = 1; i < records.Length; i++)
+            {
+                var prevNextRecord = context.Client.Streams.ReadAll(prevRecord.Next, 1).First();
+                var expectedBytes = records[i].Data.Except(prevNextRecord.Data).ToList();
+                if (records[i].Key != prevNextRecord.Key | expectedBytes.Count != 0)
+                {
+                    context.Log.Error("Expected key: {0}, Received key: {1}", records[i].Key, prevNextRecord.Key);
+                    context.Log.Error("Expected dat: {0}, Received key: {1}", records[i].Data.Length, prevNextRecord.Data.Length);
+                    result = false;
+                }
+                prevRecord = records[i];
             }
 
             return result;
         }
-
-
 
         bool WriteReadDifferentTypes(CommandProcessorContext context)
         {
@@ -201,7 +195,7 @@ namespace Platform.TestClient.Commands
 
             context.Client.Streams.WriteEventsInLargeBatch(streamId, batchBody);
 
-            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId).ToList();
+            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId).ToArray();
             bool result = true;
 
             for (int i = 0; i < 2; i++)
@@ -242,9 +236,7 @@ namespace Platform.TestClient.Commands
             return result;
         }
 
-
-
-        bool ViewClientReadWrite(CommandProcessorContext context)
+        bool ReadAndWriteDataFromView(CommandProcessorContext context)
         {
             bool result = true;
             var views = context.Client.Views;
@@ -255,7 +247,7 @@ namespace Platform.TestClient.Commands
 
             context.Client.Streams.WriteEventsInLargeBatch(streamId, testData.Select(x => new RecordForStaging(BitConverter.GetBytes(x))));
 
-            var data = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
+            var data = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
             var records = context.Client.Streams.ReadAll(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.Key == streamId);
 
@@ -265,9 +257,9 @@ namespace Platform.TestClient.Commands
                 data.NextOffsetInBytes = record.Next.OffsetInBytes;
             }
 
-            views.WriteAsJson(data, ViewClientTest.FileName);
+            views.WriteAsJson(data, IntDistribution.FileName);
 
-            var writedData = views.ReadAsJsonOrGetNew<ViewClientTest>(ViewClientTest.FileName);
+            var writedData = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
             if (data.NextOffsetInBytes != writedData.NextOffsetInBytes)
             {
@@ -293,13 +285,13 @@ namespace Platform.TestClient.Commands
             return result;
         }
 
-        private class ViewClientTest
+        private class IntDistribution
         {
             public long NextOffsetInBytes { get; set; }
             public List<int> Distribution { get; private set; }
             public const string FileName = "ViewClientTest.dat";
 
-            public ViewClientTest()
+            public IntDistribution()
             {
                 Distribution = new List<int>();
             }
