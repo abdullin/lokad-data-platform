@@ -20,6 +20,16 @@ namespace Platform.Node
             ServicePointManager.DefaultConnectionLimit = 48;
 
             var options = new NodeOptions();
+
+            var lineAsString = string.Join(" ", args);
+
+            if (lineAsString == "/?" || lineAsString == "--help")
+            {
+                Console.WriteLine("Usage");
+                Console.WriteLine(options.GetUsage());
+                return;
+            }
+
             if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
             {
                 return;
