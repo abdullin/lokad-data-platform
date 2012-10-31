@@ -17,14 +17,22 @@ namespace SmartApp.Sample3.Dump
     {
         public static string RawDataPath;
         public static string StorePath;
-
+        public static string StoreConnection;
         static void Main(string[] args)
         {
             RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
             StorePath = ConfigurationManager.AppSettings["StorePath"];
+            StoreConnection = ConfigurationManager.AppSettings["StoreConnection"];
 
-            var httpBase = string.Format("http://127.0.0.1:8080");
-            _reader =  PlatformClient.GetStreamReaderWriter(StorePath, httpBase);
+            Console.WriteLine("This is Sample3.Dump tool");
+            Console.WriteLine("Using settings from the .config file");
+            Console.WriteLine("  RawDataPath (put stack overflow dump here): {0}", RawDataPath);
+            Console.WriteLine("  StoreDataPath: {0}", StorePath);
+            Console.WriteLine("  StoreConnection: {0}", StoreConnection);
+
+
+            
+            _reader =  PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
             Thread.Sleep(2000); //waiting for server initialization
 
             var threads = new List<Task>
