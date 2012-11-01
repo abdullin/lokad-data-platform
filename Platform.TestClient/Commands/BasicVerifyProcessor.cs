@@ -32,9 +32,9 @@ namespace Platform.TestClient.Commands
                 int.TryParse(args[3], out floodThreadCount);
 
             bool totalResult = WriteFloodAndBatchTogether(context, timeOut, batchSize, batchThreadCount, floodThreadCount);
-            totalResult =totalResult && ReadMessageWithNextOffset(context);
-            totalResult =totalResult && WriteReadDifferentTypes(context) ;
-            totalResult =totalResult && ReadAndWriteDataFromView(context);
+            totalResult = totalResult & ReadMessageWithNextOffset(context);
+            totalResult = totalResult & WriteReadDifferentTypes(context);
+            totalResult = totalResult & ReadAndWriteDataFromView(context);
 
             return totalResult;
         }
@@ -115,7 +115,7 @@ namespace Platform.TestClient.Commands
             return errors.Count == 0;
         }
 
-        private static List<string> ReadAddMessages(CommandProcessorContext context, string streamId, string batchMsg, 
+        private static List<string> ReadAddMessages(CommandProcessorContext context, string streamId, string batchMsg,
             string floodMsg, int batchCount, int floodCount)
         {
             var errors = new List<string>();
@@ -144,7 +144,7 @@ namespace Platform.TestClient.Commands
             var result = true;
             var records = context.Client.Streams.ReadAll(maxRecordCount: 20).ToArray();
 
-            if(records.Length==0)
+            if (records.Length == 0)
                 return true;
 
             RetrievedDataRecord prevRecord = records[0];
