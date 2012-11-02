@@ -2,65 +2,85 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Platform;
+using Platform.Storage;
 using Platform.StreamClients;
+using Platform.ViewClients;
 
 namespace SmartApp.Sample1.Continuous
 {
     class Program
     {
+        private static IInternalStreamClient _client;
+        static ViewClient _view;
+        public static string RawDataPath;
         public static string StorePath;
-
+        public static string StoreConnection;
+        static string _userName;
         static void Main()
         {
+            RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
             StorePath = ConfigurationManager.AppSettings["StorePath"];
-            const int seconds = 1;
-            var nextOffset = LoadData();
-            ShowData(nextOffset, true);
-            IInternalStreamClient reader = new FileStreamClient(StorePath);
+            StoreConnection = ConfigurationManager.AppSettings["StoreConnection"];
 
-            var views = Path.Combine(StorePath, "dp-views");
-            if (!Directory.Exists(views))
-                Directory.CreateDirectory(views);
+            Console.WriteLine("You name:");
+            _userName = Console.ReadLine();
+            Console.WriteLine("Chat starting...");
 
+
+            _client = PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
+            _view = PlatformClient.GetViewClient(StorePath, "sample1");
+            _view.CreateContainer();
+
+            Task.Factory.StartNew(ScanChat,
+                TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
+
+            string messages;
+            while ((messages = Console.ReadLine()) != "exit")
+            {
+                _client.WriteEvent("chat", Encoding.UTF8.GetBytes(string.Format("{0}|{1}", _userName, messages)));
+            }
+        }
+
+        private static void ScanChat()
+        {
+            var lastMessage = _view.ReadAsJsonOrNull<Sample1LastReadMessage>("sample1.dat");
+            var nextOffset =  lastMessage == null ? new StorageOffset(0) : new StorageOffset(lastMessage.LastOffset);
             while (true)
             {
-                var last = reader.ReadAll(nextOffset).LastOrDefault();
-
-                if (!last.IsEmpty)
+                StorageOffset last=StorageOffset.Zero;
+                bool existMessages = false;
+                var messages = _client.ReadAll(nextOffset).Where(x => x.Key == "chat");
+                foreach (RetrievedDataRecord message in messages)
                 {
-                    nextOffset = last.Next;
-                    ShowData(nextOffset, false);
-                    SaveData(nextOffset);
+                    last = message.Next;
+                    existMessages = true;
+                    var text = Encoding.UTF8.GetString(message.Data);
+                    if (text.StartsWith(_userName))
+                        continue;
+                    Console.WriteLine(text);
                 }
-                Thread.Sleep(seconds * 1000);
+
+                if(existMessages)
+                {
+                    _view.WriteAsJson(new Sample1LastReadMessage(last.OffsetInBytes), "sample1.dat");
+                    nextOffset = last;
+                }
+
+                Thread.Sleep(1000);
             }
         }
+    }
 
-        private static void ShowData(StorageOffset data, bool dumpData)
+    class Sample1LastReadMessage
+    {
+        public Sample1LastReadMessage(long last)
         {
-            Console.WriteLine("[{2}] Next offset({1}): {0}", data, dumpData ? "from storage" : "real data", DateTime.Now);
+            LastOffset = last;
         }
-
-        static StorageOffset LoadData()
-        {
-            var path = Path.Combine(StorePath, "dp-views", "sample1.dat");
-
-            if (!File.Exists(path))
-                return StorageOffset.Zero;
-
-            long nextOffset;
-            long.TryParse(File.ReadAllText(path), out nextOffset);
-            return new StorageOffset(nextOffset);
-        }
-
-        static void SaveData(StorageOffset nextOffcet)
-        {
-            var path = Path.Combine(StorePath,"dp-views", "sample1.dat");
-            using (var sw = new StreamWriter(path, false))
-            {
-                sw.Write(nextOffcet.OffsetInBytes);
-            }
-        }
+        public long LastOffset { get; set; }
     }
 }
