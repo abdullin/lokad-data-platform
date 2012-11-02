@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,7 +9,7 @@ using Platform.Storage;
 using Platform.StreamClients;
 using Platform.ViewClients;
 
-namespace SmartApp.Sample1.Continuous
+namespace SmartApp.Sample1.Chat
 {
     class Program
     {

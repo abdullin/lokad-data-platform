@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Core", "Platform.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Node", "Platform.Node\Platform.Node.csproj", "{9B95971F-9DC9-4981-A7CB-8F6576EA39BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample1.Continuous", "SmartApp.Sample1.Continuous\SmartApp.Sample1.Continuous.csproj", "{C78D9059-3E80-4DA1-91EE-345D26298371}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample1.Chat", "SmartApp.Sample1.Continuous\SmartApp.Sample1.Chat.csproj", "{C78D9059-3E80-4DA1-91EE-345D26298371}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample2.Continuous", "SmartApp.Sample2.Continuous\SmartApp.Sample2.Continuous.csproj", "{F2159E41-F9B6-4EC8-8748-413CDC1DA1A9}"
 EndProject

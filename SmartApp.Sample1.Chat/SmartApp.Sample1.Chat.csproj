@@ -7,8 +7,8 @@
     <ProjectGuid>{C78D9059-3E80-4DA1-91EE-345D26298371}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartApp.Sample1.Continuous</RootNamespace>
-    <AssemblyName>SmartApp.Sample1.Continuous</AssemblyName>
+    <RootNamespace>SmartApp.Sample1.Chat</RootNamespace>
+    <AssemblyName>SmartApp.Sample1.Chat</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
