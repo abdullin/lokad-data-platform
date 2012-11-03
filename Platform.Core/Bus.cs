@@ -8,10 +8,15 @@ using System.Threading.Tasks;
 
 namespace Platform
 {
+    /// <summary>
+    /// Base class for messages
+    /// </summary>
     public abstract class Message
     {
     }
-
+    /// <summary>
+    /// Defines instance of the message handling object
+    /// </summary>
     internal interface IMessageHandler
     {
         string HandlerName { get; }
@@ -98,6 +103,12 @@ namespace Platform
         void ReplyWith<T>(T message) where T : Message;
     }
 
+    /// <summary>
+    /// Helper class, which dispatches incoming messages to subscribed message handlers.
+    /// Dispatching is simply passing message to handling method on available instance.
+    /// This class is ported from Event Store and is a more polished implementation
+    /// of "RedirectToWhen" from Lokad.CQRS
+    /// </summary>
     public sealed class InMemoryBus : IBus, IPublisher, ISubscriber, IHandle<Message>
     {
 
@@ -199,17 +210,23 @@ namespace Platform
             _handler.Handle(message);
         }
     }
+    /// <summary>
+    /// Special handler, which maintains an in-memory queue, sequentially passing
+    /// messages to the specified message handler. This is done in a separate
+    /// thread.
+    /// </summary>
     public sealed class QueuedHandler : IHandle<Message>, IPublisher
     {
         readonly IHandle<Message> _consumer;
         readonly ConcurrentQueue<Message> _queue = new ConcurrentQueue<Message>();
         private static readonly ILogger Log = LogManager.GetLoggerFor<QueuedHandler>();
-        Task _thread;
+        Thread _thread;
 
         readonly int _waitToStopThreadMs;
+        private readonly ManualResetEventSlim _stopped = new ManualResetEventSlim(false);
 
         readonly string _name;
-        readonly CancellationTokenSource _cancel = new CancellationTokenSource();
+        volatile bool _selfDestruct;
 
 
         public QueuedHandler(IHandle<Message> consumer, string name, int waitToStopThreadMs = 10000)
@@ -224,16 +241,22 @@ namespace Platform
             if (null != _thread)
                 throw new InvalidOperationException("Thread is already running");
 
+            _thread = new Thread(ReadMessagesFromQueue)
+                {
+                    IsBackground = true,
+                    Name = _name
+                };
 
-            _thread = Task.Factory.StartNew(() => ReadMessagesFromQueue(_cancel.Token), TaskCreationOptions.LongRunning);
-
+            _thread.Start();
         }
 
         public void Stop()
         {
-            _cancel.Cancel();
+            _selfDestruct = true;
             if (null == _thread) return;
-            if (!_thread.Wait(_waitToStopThreadMs))
+
+            
+            if (!_stopped.Wait(_waitToStopThreadMs))
             {
                 throw new InvalidOperationException("Failed to stop thread ");
             }
@@ -246,11 +269,9 @@ namespace Platform
             _queue.Enqueue(message);
         }
 
-        void ReadMessagesFromQueue(CancellationToken token)
+        void ReadMessagesFromQueue()
         {
-            Thread.CurrentThread.Name = _name;
-
-            while (!token.IsCancellationRequested)
+            while (!_selfDestruct)
             {
                 Message result;
 
@@ -267,9 +288,10 @@ namespace Platform
                 }
                 else
                 {
-                    token.WaitHandle.WaitOne(1);
+                    Thread.Sleep(1);
                 }
             }
+            _stopped.Set();
         }
 
         void IPublisher.Publish(Message message)

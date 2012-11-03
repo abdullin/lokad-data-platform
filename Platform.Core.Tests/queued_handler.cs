@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Platform.Core.Tests
