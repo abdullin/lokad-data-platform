@@ -18,12 +18,7 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.WriteEvent request)
         {
             var token = new ManualResetEventSlim(false);
-
-            
-            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data,s =>
-                {
-                    token.Set();
-                }));
+            _publisher.Publish(new ClientMessage.AppendEvents(request.Stream,request.Data,s => token.Set()));
 
             return Task.Factory.StartNew(() =>
                 {
@@ -40,7 +35,6 @@ namespace Platform.Node.Services.ServerApi
                     {
                         token.Dispose();
                     }
-                
                 });
         }
     }

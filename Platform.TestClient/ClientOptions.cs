@@ -3,6 +3,9 @@ using Platform.CommandLine;
 
 namespace Platform.TestClient
 {
+    /// <summary>
+    /// Command line options for the client
+    /// </summary>
     public sealed class ClientOptions : CommandLineOptionsBase
     {
         [Option("i", "ip", DefaultValue = "localhost", HelpText = "IP address of server")]

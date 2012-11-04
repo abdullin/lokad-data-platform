@@ -1,15 +1,14 @@
 using System;
 using System.Threading;
-using ServiceStack.Net30;
 
 namespace Platform.TestClient
 {
 
     /// <summary>
     /// Helper class for invoking tasks with timeout. Overhead is 0,005 ms.
+    /// It is taken from Lokad.Shared libraries.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
-    [Immutable]
     public sealed class WaitFor<TResult>
     {
         readonly TimeSpan _timeout;

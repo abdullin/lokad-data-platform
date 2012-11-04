@@ -4,7 +4,7 @@ namespace Platform
 {
 
     /// <summary>
-    /// Helper class for configuring azure store location
+    /// Value object defining configuration of an Azure storage setup
     /// </summary>
     public sealed class AzureStoreConfiguration
     {

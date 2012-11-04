@@ -1,10 +1,10 @@
-using System.Reflection;
-using System.Text;
 using Platform.CommandLine;
-using System.Linq;
 
 namespace Platform.Node
 {
+    /// <summary>
+    /// Command line options for the server
+    /// </summary>
     class NodeOptions : CommandLineOptionsBase
     {
         [Option("k", "killswitch", DefaultValue = -1, HelpText = "Kill server in seconds")]
