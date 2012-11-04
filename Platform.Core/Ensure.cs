@@ -22,6 +22,72 @@ namespace Platform
             if (number < 0)
                 throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be non negative.");
         }
+    }
 
+    public static class TopicName
+    {
+        static bool IsAlphanumberic(char c)
+        {
+            if (c >= 'a' && c <= 'z')
+                return true;
+            if (char.IsDigit(c))
+                return true;
+            return false;
+        }
+
+        public enum Validity : byte
+        {
+            Valid,
+            TooShort,
+            TooLong,
+            DoesNotStartWithNumberOrLowercaseLetter,
+            DoesNotEndWithNumberOrLowercaseLetter,
+            DoesNotContainDashesNumbersOrLowercaseChars,
+            HasTwoConsequitiveDashes
+
+        }
+        public static Validity IsValid(string name)
+        {
+            if (null == name)
+                throw new ArgumentNullException("name");
+            var length = name.Length;
+            if (length < 2)
+                return Validity.TooShort;
+            if (length > 48)
+                return Validity.TooLong;
+
+            int lastDash = -1;
+            for (int i = 0; i < length; i++)
+            {
+                var c = name[i];
+                if (i ==0)
+                {
+                    if (!IsAlphanumberic(c))
+                        return Validity.DoesNotStartWithNumberOrLowercaseLetter;
+                }
+                else if (i == (length-1))
+                {
+                    if (!IsAlphanumberic(c))
+                        return Validity.DoesNotEndWithNumberOrLowercaseLetter;
+                }
+                else
+                {
+                    if (c == '-')
+                    {
+                        if (i - 1 == lastDash)
+                            return Validity.HasTwoConsequitiveDashes;
+                        lastDash = i;
+                    }
+                    else
+                    {
+                        if (!IsAlphanumberic(c))
+                            return Validity.DoesNotContainDashesNumbersOrLowercaseChars;
+                    }
+                }
+
+            }
+            return Validity.Valid;
+
+        }
     }
 }
