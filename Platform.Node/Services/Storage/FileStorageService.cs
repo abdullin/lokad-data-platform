@@ -17,7 +17,7 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        FileAppendOnlyStore _store;
+        FileLogManager _store;
 
         readonly string _location;
         
@@ -29,7 +29,9 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _store.Append(message.EventStream, new[] { message.Data });
+            _store
+                .GetOrAddStore(message.EventStream)
+                .Append(message.EventStream, new[] { message.Data });
 
             //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -60,9 +62,7 @@ namespace Platform.Node.Services.Storage
 
 
             var lazy = EnumerateStaging(msg.StagingLocation);
-
-
-            _store.Append(msg.EventStream, lazy.Select(bytes =>
+            _store.GetOrAddStore(msg.EventStream).Append(msg.EventStream, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -92,7 +92,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _store = new FileAppendOnlyStore(_location);
+                _store = new FileLogManager(_location);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)
@@ -106,6 +106,59 @@ namespace Platform.Node.Services.Storage
             _store.Reset();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
+        }
+    }
+
+    public sealed class FileLogManager
+    {
+        readonly string _folder;
+        static readonly ILogger Log = LogManager.GetLoggerFor<FileLogManager>();
+
+        readonly Dictionary<string,FileAppendOnlyStore> _topics = new Dictionary<string, FileAppendOnlyStore>();
+ 
+        public FileLogManager(string folder)
+        {
+            _folder = folder;
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            var directories = Directory.GetDirectories(folder, "topic-*");
+            foreach (var directory in directories)
+            {
+                try
+                {
+                    // dead-simple topic naming for now
+                    string topic = directory.Remove(0, 6);
+
+
+                    _topics.Add(topic, new FileAppendOnlyStore(Path.Combine(folder, directory)));
+                }
+                catch (Exception ex)
+                {
+                    Log.ErrorException(ex, "Failed to mount '{0}'", directory);
+                }
+            }
+        }
+
+        public FileAppendOnlyStore GetOrAddStore(string topic)
+        {
+            FileAppendOnlyStore value;
+            if (!_topics.TryGetValue(topic,out value))
+            {
+                value = new FileAppendOnlyStore(Path.Combine(_folder, "topic-" + topic));
+                _topics.Add(topic, value);
+            }
+
+            return value;
+        }
+        public void Reset()
+        {
+            foreach (var source in _topics.ToArray())
+            {
+                source.Value.Reset();
+                _topics.Remove(source.Key);
+            }
         }
     }
 }
