@@ -18,8 +18,7 @@ namespace Platform
         BitWriter _dataBits;
         FileStream _dataStream;
 
-        BitWriter _checkBits;
-        FileStream _checkStream;
+        FileCheckpoint _checkpoint;
 
         public FileAppendOnlyStore(string directory)
         {
@@ -44,9 +43,8 @@ namespace Platform
                 _dataBits.Write(buffer);
             }
             _dataStream.Flush(true);
-            _checkStream.Seek(0, SeekOrigin.Begin);
-            _checkBits.Write(_dataStream.Position);
-            _checkStream.Flush(true);
+
+            _checkpoint.Check(_dataStream.Position);
         }
 
         public void Reset()
@@ -65,19 +63,11 @@ namespace Platform
 
         void Open()
         {
-            _checkStream = new FileStream(Path.Combine(_path, "stream.chk"), FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                FileShare.Read);
-            if (_checkStream.Length != 8)
-                _checkStream.SetLength(8);
-            _checkBits = new BitWriter(_checkStream);
-
-            var b = new byte[8];
-            _checkStream.Read(b, 0, 8);
-
-            var offset = BitConverter.ToInt64(b, 0);
+            _checkpoint = new FileCheckpoint(Path.Combine(_path, "stream.chk"));
 
             _dataStream = new FileStream(Path.Combine(_path, "stream.dat"), FileMode.OpenOrCreate, FileAccess.Write,
                 FileShare.Read);
+            var offset = _checkpoint.Offset;
             _dataStream.Seek(offset, SeekOrigin.Begin);
             _dataBits = new BitWriter(_dataStream);
         }
@@ -85,7 +75,7 @@ namespace Platform
         void Close()
         {
             _dataStream.Close();
-            _checkStream.Close();
+            _checkpoint.Close();
         }
 
         sealed class BitWriter : BinaryWriter

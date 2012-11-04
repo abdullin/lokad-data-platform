@@ -41,6 +41,7 @@ namespace Platform.Node.Services.Storage
             using (var bit = new BinaryReader(import))
             {
                 var length = import.Length;
+
                 while (import.Position < length)
                 {
                     var len = bit.ReadInt32();
@@ -52,11 +53,16 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.ImportEvents msg)
         {
-            Log.Info("Got import request");
+            Log.Info("Got import request: '{0}'", msg.StagingLocation);
             var watch = Stopwatch.StartNew();
             var count = 0;
             var size = 0;
-            _store.Append(msg.EventStream, EnumerateStaging(msg.StagingLocation).Select(bytes =>
+
+
+            var lazy = EnumerateStaging(msg.StagingLocation);
+
+
+            _store.Append(msg.EventStream, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
