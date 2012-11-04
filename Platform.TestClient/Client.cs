@@ -14,7 +14,7 @@ namespace Platform.TestClient
         public readonly ClientOptions Options;
         readonly CommandProcessorCollection _commands = new CommandProcessorCollection(Log);
         
-        public IInternalStreamClient Streams;
+        public Func<string,IInternalStreamClient> Streams;
         public string ClientHttpBase;
         public ViewClient Views;
 
@@ -24,7 +24,7 @@ namespace Platform.TestClient
             // TODO : pass server options
             ClientHttpBase = string.Format("http://{0}:{1}", options.Ip, options.HttpPort);
             Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
-            Streams = PlatformClient.GetStreamReaderWriter(options.StoreLocation, ClientHttpBase);
+            Streams = s => PlatformClient.GetStreamReaderWriter(options.StoreLocation, s,ClientHttpBase);
 
             RegisterCommands();
         }

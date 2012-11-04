@@ -9,19 +9,23 @@ namespace Platform.StreamClients
     {
 
         readonly string _serverFolder;
+        
+
         readonly string _checkStreamName;
         readonly string _fileStreamName;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<FileStreamClient>();
 
-        public FileStreamClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
+        public FileStreamClient(string serverFolder, TopicName topic, string serverEndpoint = null) : base(serverEndpoint, topic)
         {
             _serverFolder = serverFolder;
             
-            var path = Path.GetFullPath(serverFolder ?? "");
 
-            _checkStreamName = Path.Combine(path,"stream.chk");
-            _fileStreamName = Path.Combine(path,"stream.dat");
+
+            var path = Path.GetFullPath(serverFolder ?? "");
+            
+            _checkStreamName = Path.Combine(path, Topic.Folder, "stream.chk");
+            _fileStreamName = Path.Combine(path, Topic.Folder, "stream.dat");
         }
 
 
@@ -96,7 +100,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(IEnumerable<RecordForStaging> records)
         {
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);
@@ -105,7 +109,7 @@ namespace Platform.StreamClients
             try
             {
                 PrepareStaging(records, location);
-                ImportEventsInternal(streamName, location);
+                ImportEventsInternal(location);
             }
             finally
             {

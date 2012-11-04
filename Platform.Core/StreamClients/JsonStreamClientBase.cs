@@ -7,9 +7,11 @@ namespace Platform.StreamClients
     public abstract class JsonStreamClientBase
     {
         public  JsonServiceClient WriteClient;
+        public readonly TopicName Topic;
 
-        protected JsonStreamClientBase(string uri)
+        protected JsonStreamClientBase(string uri, TopicName topic)
         {
+            Topic = topic;
             if (!string.IsNullOrWhiteSpace(uri))
             {
                 WriteClient = new JsonServiceClient(uri);
@@ -18,7 +20,7 @@ namespace Platform.StreamClients
 
         public const int MessageSizeLimit = 1024 * 1024 * 2;
 
-        protected void ImportEventsInternal(string streamName, string location)
+        protected void ImportEventsInternal(string location)
         {
             ThrowIfClientNotInitialized();
             try
@@ -27,7 +29,7 @@ namespace Platform.StreamClients
                     new ClientDto.WriteBatch
                         {
                             Location = location,
-                            Stream = streamName,
+                            Stream = Topic.Name,
                         });
                 if (!response.Success)
                 {
@@ -41,7 +43,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEvent(string streamName, byte[] data)
+        public void WriteEvent(byte[] data)
         {
             ThrowIfClientNotInitialized();
             try
@@ -50,7 +52,7 @@ namespace Platform.StreamClients
                     new ClientDto.WriteEvent
                         {
                             Data = data,
-                            Stream = streamName
+                            Stream = Topic.Name
                         });
                 if (!response.Success)
                 {

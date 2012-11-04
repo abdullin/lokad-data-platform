@@ -42,10 +42,10 @@ namespace Platform
 
             _reader = new BinaryReader(_stream);
             _writer = new BinaryWriter(_stream);
-            Offset = exists ? ReadFile() : 0;
+            Offset = exists ? ReadCurrent() : 0;
         }
 
-        long ReadFile()
+        long ReadCurrent()
         {
             _stream.Seek(0, SeekOrigin.Begin);
             return _reader.ReadInt64();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Platform;
 using Platform.StreamClients;
 using ServiceStack.Text;
 
@@ -18,7 +19,8 @@ namespace SmartApp.Sample2.Continuous
             {
                 var nextOffcet = data.NextOffset;
                 Thread.Sleep(seconds * 1000);
-                IInternalStreamClient reader = new FileStreamClient(@"C:\LokadData\dp-store");
+                
+                IInternalStreamClient reader = new FileStreamClient(@"C:\LokadData\dp-store", TopicName.FromName("chat"));
 
                 var records = reader.ReadAll(new StorageOffset(nextOffcet));
                 bool emptyData = true;

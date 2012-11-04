@@ -16,7 +16,7 @@ namespace SmartApp.Sample3.Continuous
 
         static void Main(string[] args)
         {
-            var store = PlatformClient.GetStreamReader(PlatformPath);
+            var store = PlatformClient.GetStreamReader(PlatformPath, "sample3");
             var views = PlatformClient.GetViewClient(PlatformPath, Conventions.ViewContainer);
             views.CreateContainer();
             var threads = new List<Task>

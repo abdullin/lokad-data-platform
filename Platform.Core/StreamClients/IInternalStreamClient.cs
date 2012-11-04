@@ -27,8 +27,8 @@ namespace Platform.StreamClients
         IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset = default (StorageOffset),
             int maxRecordCount = int.MaxValue);
 
-        void WriteEvent(string streamName, byte[] data);
-        void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
+        void WriteEvent(byte[] data);
+        void WriteEventsInLargeBatch(IEnumerable<RecordForStaging> records);
     }
 
     public sealed class StreamClient

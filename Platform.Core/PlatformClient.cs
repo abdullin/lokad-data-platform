@@ -15,23 +15,26 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint)
+        public static IInternalStreamClient GetStreamReaderWriter(string storage, string topicName, string serverEndpoint)
         {
+            var topic = TopicName.FromName(topicName);
+
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
             {
-                return new FileStreamClient(storage,serverEndpoint);
+                return new FileStreamClient(storage, topic,serverEndpoint);
             }
-            return new AzureStreamClient(configuration, serverEndpoint);
+            return new AzureStreamClient(configuration,topic, serverEndpoint);
         }
-        public static IInternalStreamClient GetStreamReader(string storage)
+        public static IInternalStreamClient GetStreamReader(string storage, string topicName)
         {
+            var topic = TopicName.FromName(topicName);
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
-                return new FileStreamClient(storage);
+                return new FileStreamClient(storage, topic);
             }
-            return new AzureStreamClient(configuration);
+            return new AzureStreamClient(configuration, topic);
         }
 
         public static ViewClient GetViewClient(string storage, string containerName)
@@ -78,6 +81,4 @@ namespace Platform
             return false;
         }
     }
-
-
 }

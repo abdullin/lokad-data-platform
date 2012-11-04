@@ -11,6 +11,7 @@ using System.IO;
 
 namespace Platform
 {
+
     public sealed class FileAppendOnlyStore : IDisposable
     {
         readonly string _path;

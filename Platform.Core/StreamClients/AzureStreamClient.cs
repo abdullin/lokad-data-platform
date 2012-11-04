@@ -11,8 +11,8 @@ namespace Platform.StreamClients
     {
         readonly CloudPageBlob _blob;
 
-        public AzureStreamClient(AzureStoreConfiguration config, string serverEndpoint = null)
-            : base(serverEndpoint)
+        public AzureStreamClient(AzureStoreConfiguration config, TopicName topicName, string serverEndpoint = null)
+            : base(serverEndpoint, topicName)
         {
             _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, config.Container + "/" + "stream.dat");
         }
@@ -55,7 +55,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(IEnumerable<RecordForStaging> records)
         {
             var container = _blob.Container;
             container.CreateIfNotExist();
@@ -66,7 +66,7 @@ namespace Platform.StreamClients
                 var bytes = PrepareStaging(records, tempBlob);
                 tempBlob.UploadByteArray(bytes);
 
-                ImportEventsInternal(streamName, tempBlob.Uri.ToString());
+                ImportEventsInternal(tempBlob.Uri.ToString());
             }
             finally
             {
