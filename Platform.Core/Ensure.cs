@@ -24,8 +24,24 @@ namespace Platform
         }
     }
 
-    public static class TopicName
+    public sealed class TopicName
     {
+
+        public readonly string Name;
+        public readonly string Folder;
+
+        TopicName(string name)
+        {
+            Name = name;
+            Folder = "topic-" + name;
+        }
+
+        public static TopicName FromName(string name)
+        {
+            ThrowIfInvalid(name);
+            return new TopicName(name);
+        }
+
         static bool IsAlphanumberic(char c)
         {
             if (c >= 'a' && c <= 'z')
@@ -46,6 +62,23 @@ namespace Platform
             HasTwoConsequitiveDashes
 
         }
+
+        public static string ToFolder(string name)
+        {
+            if (null == name)
+                throw new ArgumentNullException("name");
+            if (name.StartsWith("topic-"))
+                throw new ArgumentException("Can't start with 'topic-'", "name");
+            return "topic-" + name;
+        }
+
+        public static void ThrowIfInvalid(string name)
+        {
+            var result = IsValid(name);
+            if (result != Validity.Valid)
+                throw new ArgumentOutOfRangeException("name", name, "Topic name is invalid. Broken rule is: " + result);
+        }
+
         public static Validity IsValid(string name)
         {
             if (null == name)
