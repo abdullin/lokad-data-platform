@@ -18,6 +18,17 @@ namespace Platform
 
             _isReadonly = isReadonly;
             _rootDirectory = rootDirectory;
+
+            if (!Directory.Exists(rootDirectory))
+                Directory.CreateDirectory(rootDirectory);
+
+            foreach (var child in Directory.GetDirectories(rootDirectory))
+            {
+                if (File.Exists(Path.Combine(rootDirectory, child, "stream.dat")))
+                {
+                    _stores.Add(child, new FileAppendOnlyStore(Path.Combine(rootDirectory,child)));
+                }
+            }
         }
 
         public void Reset()
