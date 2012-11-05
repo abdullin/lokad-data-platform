@@ -15,7 +15,8 @@ namespace Platform.Node
         static readonly ManualResetEventSlim ExitWait = new ManualResetEventSlim(false);
         static void Main(string[] args)
         {
-
+            // This is extremely important to enable high throughput 
+            // of individual messages
             ServicePointManager.UseNagleAlgorithm = false;
             ServicePointManager.DefaultConnectionLimit = 48;
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Platform
+namespace Platform.Storage
 {
     public class FileContainerManager : IDisposable
     {

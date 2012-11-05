@@ -2,6 +2,9 @@ using System;
 
 namespace Platform
 {
+    /// <summary>
+    /// Name of Data Platform container. It has to follow strict semantics
+    /// </summary>
     public sealed class ContainerName
     {
         public readonly string Name;

@@ -9,6 +9,8 @@ namespace Platform.TestClient
         static void Main(string[] args)
         {
             Application.Start(Environment.Exit);
+            // This is extremely important to enable high throughput 
+            // of individual messages
             ServicePointManager.UseNagleAlgorithm = false;
             ServicePointManager.DefaultConnectionLimit = 48;
 

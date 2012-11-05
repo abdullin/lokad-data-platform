@@ -1,8 +1,11 @@
 using System;
 using System.IO;
 
-namespace Platform
+namespace Platform.Storage
 {
+    /// <summary>
+    /// Tracks a given location in a single mutable file
+    /// </summary>
     public sealed class FileCheckpoint : IDisposable
     {
         public long Offset { get; private set; }
