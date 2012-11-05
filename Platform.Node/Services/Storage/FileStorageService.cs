@@ -29,7 +29,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _store.Append(message.EventStream, new[] { message.Data });
+            _store.Append(message.StreamKey, new[] { message.Data });
 
             //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -62,7 +62,7 @@ namespace Platform.Node.Services.Storage
             var lazy = EnumerateStaging(msg.StagingLocation);
 
 
-            _store.Append(msg.EventStream, lazy.Select(bytes =>
+            _store.Append(msg.StreamKey, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;

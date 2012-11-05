@@ -27,7 +27,7 @@ namespace Platform.StreamClients
                     new ClientDto.WriteBatch
                         {
                             Location = location,
-                            Stream = streamName,
+                            StreamKey = streamName,
                         });
                 if (!response.Success)
                 {
@@ -50,7 +50,7 @@ namespace Platform.StreamClients
                     new ClientDto.WriteEvent
                         {
                             Data = data,
-                            Stream = streamName
+                            StreamKey = streamName
                         });
                 if (!response.Success)
                 {

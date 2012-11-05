@@ -44,7 +44,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _store.Append(message.EventStream, new[] { message.Data });
+            _store.Append(message.StreamKey, new[] { message.Data });
 
             Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -58,7 +58,7 @@ namespace Platform.Node.Services.Storage
             var size = 0;
             var client = StorageExtensions.GetCloudBlobClient(_config.ConnectionString);
             var blob = client.GetBlockBlobReference(msg.StagingLocation);
-            _store.Append(msg.EventStream, EnumerateStaging(blob).Select(bytes =>
+            _store.Append(msg.StreamKey, EnumerateStaging(blob).Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
