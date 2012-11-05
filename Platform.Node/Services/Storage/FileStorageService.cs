@@ -20,8 +20,6 @@ namespace Platform.Node.Services.Storage
 
 
         FileContainerManager _manager;
-        
-
         readonly string _location;
         
         public FileStorageService(string location, IPublisher publisher)

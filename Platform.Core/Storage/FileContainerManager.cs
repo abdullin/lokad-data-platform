@@ -6,7 +6,76 @@ namespace Platform.Storage
 {
     public class FileContainerManager : IDisposable
     {
-        readonly IDictionary<string,FileAppendOnlyStore> _stores = new Dictionary<string, FileAppendOnlyStore>();
+        public sealed class ContainerWriter : IDisposable
+        {
+            public ContainerName Container;
+            public FileAppendOnlyStore Store;
+            public FileCheckpoint Checkpoint;
+
+            public void Write(string streamKey, IEnumerable<byte[]> data)
+            {
+                var position = Store.Append(streamKey, data);
+                Checkpoint.Check(position);
+            }
+
+            public static ContainerWriter CreateNew(string root, ContainerName container)
+            {
+                var folder = Path.Combine(root, container.Name);
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                // TODO: replace by static create enforcing new
+                var check = new FileCheckpoint(Path.Combine(folder, "stream.chk"));
+                var store = FileAppendOnlyStore.CreateNew(Path.Combine(folder, "stream.dat"));
+                return new ContainerWriter
+                    {
+                        Container = container,
+                        Checkpoint = check,
+                        Store = store
+                    };
+            }
+            public static ContainerWriter OpenExisting(string root, ContainerName container)
+            {
+                var folder = Path.Combine(root, container.Name);
+                var check = new FileCheckpoint(Path.Combine(folder, "stream.chk"));
+                var store = FileAppendOnlyStore.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
+                    check.ReadFile());
+
+                return new ContainerWriter
+                    {
+                        Checkpoint = check,
+                        Container = container,
+                        Store = store
+                    };
+            }
+
+            public void Reset()
+            {
+                Checkpoint.Check(0);
+                Store.Reset();
+            }
+
+            public void Close()
+            {
+                Checkpoint.Close();
+                Store.Close();
+            }
+
+            bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+                using (Checkpoint)
+                using (Store)
+                {
+                    _disposed = true;
+                }
+            }
+        }
+
+        readonly IDictionary<string,ContainerWriter> _stores = new Dictionary<string, ContainerWriter>();
 
         readonly string _rootDirectory;
 
@@ -23,10 +92,12 @@ namespace Platform.Storage
             var info = new DirectoryInfo(rootDirectory);
             foreach (var child in info.GetDirectories())
             {
-                if (File.Exists(Path.Combine(rootDirectory, child.Name, "stream.dat")))
+                var container = ContainerName.Create(child.Name);
+                var streamName = Path.Combine(rootDirectory, child.Name, "stream.dat");
+                if (File.Exists(streamName))
                 {
-                    
-                    _stores.Add(child.Name, new FileAppendOnlyStore(Path.Combine(rootDirectory,child.Name)));
+                    var writer = ContainerWriter.OpenExisting(rootDirectory, container);
+                    _stores.Add(container.Name, writer);
                 }
             }
         }
@@ -41,21 +112,24 @@ namespace Platform.Storage
 
         public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
         {
-            FileAppendOnlyStore value;
+            ContainerWriter value;
             if (!_stores.TryGetValue(container.Name,out value))
             {
-                value = new FileAppendOnlyStore(Path.Combine(_rootDirectory, container.Name));
+                value = ContainerWriter.CreateNew(_rootDirectory, container);
                 _stores.Add(container.Name, value);
             }
-            value.Append(streamKey, data);
+            value.Write(streamKey, data);
         }
 
 
         public void Dispose()
         {
-            foreach (var store in _stores)
+            foreach (var writer in _stores.Values)
             {
-                store.Value.Dispose();
+                using(writer)
+                {
+                    writer.Close();
+                }
             }
         }
     }

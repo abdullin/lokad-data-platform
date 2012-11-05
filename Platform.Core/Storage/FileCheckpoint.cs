@@ -3,6 +3,7 @@ using System.IO;
 
 namespace Platform.Storage
 {
+
     /// <summary>
     /// Tracks a given location in a single mutable file
     /// </summary>
@@ -48,7 +49,7 @@ namespace Platform.Storage
             Offset = exists ? ReadFile() : 0;
         }
 
-        long ReadFile()
+        public long ReadFile()
         {
             _stream.Seek(0, SeekOrigin.Begin);
             return _reader.ReadInt64();
