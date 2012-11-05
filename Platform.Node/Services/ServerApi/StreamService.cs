@@ -18,7 +18,12 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.WriteEvent request)
         {
             var token = new ManualResetEventSlim(false);
-            _publisher.Publish(new ClientMessage.AppendEvents(request.StreamKey,request.Data,s => token.Set()));
+            var name = ContainerName.Create(request.Container);
+
+            _publisher.Publish(new ClientMessage.AppendEvents(
+                name,
+                request.StreamKey,
+                request.Data,s => token.Set()));
 
             return Task.Factory.StartNew(() =>
                 {

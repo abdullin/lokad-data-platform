@@ -26,13 +26,15 @@ namespace Platform.Messages
 
         public class AppendEvents : WriteMessage
         {
+            public readonly ContainerName Container;
             public readonly string StreamKey;
             public readonly byte[] Data;
             
             public readonly Action<AppendEventsCompleted> Envelope;
 
-            public AppendEvents(string streamKey, byte[] data,  Action<AppendEventsCompleted> envelope)
+            public AppendEvents(ContainerName container, string streamKey, byte[] data,  Action<AppendEventsCompleted> envelope)
             {
+                Container = container;
                 StreamKey = streamKey;
                 Data = data;
                 Envelope = envelope;
@@ -41,13 +43,15 @@ namespace Platform.Messages
 
         public class ImportEvents : WriteMessage
         {
+            public readonly ContainerName Container;
             public readonly string StreamKey;
             
             public readonly string StagingLocation;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(string streamKey, string stagingLocation, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(ContainerName container, string streamKey, string stagingLocation, Action<ImportEventsCompleted> envelope)
             {
+                Container = container;
                 StreamKey = streamKey;
                 StagingLocation = stagingLocation;
                 Envelope = envelope;

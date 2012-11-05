@@ -15,23 +15,26 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint)
+        public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = ContainerName.Default)
         {
+            var container = ContainerName.Create(containerName);
+
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
             {
-                return new FileStreamClient(storage,serverEndpoint);
+                return new FileStreamClient(storage,container, serverEndpoint);
             }
-            return new AzureStreamClient(configuration, serverEndpoint);
+            return new AzureStreamClient(configuration, container, serverEndpoint);
         }
-        public static IInternalStreamClient GetStreamReader(string storage)
+        public static IInternalStreamClient GetStreamReader(string storage, string containerName = ContainerName.Default)
         {
+            var container = ContainerName.Create(containerName);
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
-                return new FileStreamClient(storage);
+                return new FileStreamClient(storage, container);
             }
-            return new AzureStreamClient(configuration);
+            return new AzureStreamClient(configuration, container);
         }
 
         public static ViewClient GetViewClient(string storage, string containerName)

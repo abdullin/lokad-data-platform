@@ -7,9 +7,11 @@ namespace Platform.StreamClients
     public abstract class JsonStreamClientBase
     {
         public  JsonServiceClient WriteClient;
+        public readonly ContainerName Container;
 
-        protected JsonStreamClientBase(string uri)
+        protected JsonStreamClientBase(ContainerName container, string uri)
         {
+            Container = container;
             if (!string.IsNullOrWhiteSpace(uri))
             {
                 WriteClient = new JsonServiceClient(uri);
@@ -18,7 +20,7 @@ namespace Platform.StreamClients
 
         public const int MessageSizeLimit = 1024 * 1024 * 2;
 
-        protected void ImportEventsInternal(string streamName, string location)
+        protected void ImportEventsInternal(string streamKey, string location)
         {
             ThrowIfClientNotInitialized();
             try
@@ -26,8 +28,9 @@ namespace Platform.StreamClients
                 var response = WriteClient.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
                     new ClientDto.WriteBatch
                         {
+                            Container = Container.Name,
+                            StreamKey = streamKey,
                             Location = location,
-                            StreamKey = streamName,
                         });
                 if (!response.Success)
                 {
@@ -41,7 +44,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEvent(string streamName, byte[] data)
+        public void WriteEvent(string streamKey, byte[] data)
         {
             ThrowIfClientNotInitialized();
             try
@@ -49,8 +52,9 @@ namespace Platform.StreamClients
                 var response = WriteClient.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
                     new ClientDto.WriteEvent
                         {
+                            Container = Container.Name,
+                            StreamKey = streamKey,
                             Data = data,
-                            StreamKey = streamName
                         });
                 if (!response.Success)
                 {

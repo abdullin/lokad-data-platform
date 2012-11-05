@@ -11,10 +11,11 @@ namespace Platform.StreamClients
     {
         readonly CloudPageBlob _blob;
 
-        public AzureStreamClient(AzureStoreConfiguration config, string serverEndpoint = null)
-            : base(serverEndpoint)
+        public AzureStreamClient(AzureStoreConfiguration config, ContainerName container, string serverEndpoint = null)
+            : base(container, serverEndpoint)
         {
-            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, config.Container + "/" + "stream.dat");
+            var containerName = config.Container + "/" + container.Name + "/stream.dat";
+            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, containerName);
         }
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)

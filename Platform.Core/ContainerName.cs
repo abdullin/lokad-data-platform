@@ -5,13 +5,15 @@ namespace Platform
     public sealed class ContainerName
     {
         public readonly string Name;
-
         ContainerName(string name)
         {
             Name = name;
         }
 
-        public static ContainerName FromName(string name)
+        public const string Default = "default";
+        //public static readonly ContainerName Default = new ContainerName(DefaultName);
+
+        public static ContainerName Create(string name)
         {
             ThrowIfInvalid(name);
             return new ContainerName(name);

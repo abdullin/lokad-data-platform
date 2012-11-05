@@ -18,9 +18,11 @@ namespace Platform.Storage.Azure
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
-        public AzureAppendOnlyStore(AzureStoreConfiguration configuration)
+        public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
         {
-            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
+
+            var containerName = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
+            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, containerName);
             _pageWriter = new PageWriter(512, WriteProc);
             Initialize();
         }
@@ -112,6 +114,42 @@ namespace Platform.Storage.Azure
             {
                 Write7BitEncodedInt(length);
             }
+        }
+    }
+
+    public class AzureContainerManager : IDisposable
+    {
+        readonly AzureStoreConfiguration _config;
+
+        readonly IDictionary<string, AzureAppendOnlyStore> _stores = new Dictionary<string, AzureAppendOnlyStore>();
+ 
+        public AzureContainerManager(AzureStoreConfiguration config)
+        {
+            _config = config;
+        }
+
+        public void Reset()
+        {
+            foreach (var store in _stores.Values)
+            {
+                store.Reset();
+            }
+        }
+
+        public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
+        {
+            AzureAppendOnlyStore store;
+            if (!_stores.TryGetValue(container.Name,out store))
+            {
+                store = new AzureAppendOnlyStore(_config, container);
+                _stores.Add(container.Name,store);
+            }
+            store.Append(streamKey, data);
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

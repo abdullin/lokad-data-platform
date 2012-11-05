@@ -69,7 +69,8 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.WriteBatch request)
         {
             var token = new ManualResetEventSlim(false);
-            _publisher.Publish(new ClientMessage.ImportEvents(request.StreamKey, request.Location, s => token.Set()));
+            var container = ContainerName.Create(request.Container);
+            _publisher.Publish(new ClientMessage.ImportEvents(container, request.StreamKey, request.Location, s => token.Set()));
 
             return Task.Factory.StartNew(() =>
                 {

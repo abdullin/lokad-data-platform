@@ -14,11 +14,16 @@ namespace Platform.StreamClients
 
         static readonly ILogger Log = LogManager.GetLoggerFor<FileStreamClient>();
 
-        public FileStreamClient(string serverFolder, string serverEndpoint = null) : base(serverEndpoint)
+        public FileStreamClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, ContainerName.Create(ContainerName.Default),serverEndpoint)
+        {
+            
+        }
+
+        public FileStreamClient(string serverFolder, ContainerName container, string serverEndpoint = null) : base(container, serverEndpoint)
         {
             _serverFolder = serverFolder;
             
-            var path = Path.GetFullPath(serverFolder ?? "");
+            var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), container.Name);
 
             _checkStreamName = Path.Combine(path,"stream.chk");
             _fileStreamName = Path.Combine(path,"stream.dat");
