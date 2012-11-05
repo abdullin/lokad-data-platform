@@ -32,7 +32,7 @@ namespace Platform.StreamClients
                 yield break;
 
             using (var stream = _blob.OpenRead())
-            using (var reader = new BitReader(stream))
+            using (var reader = new BinaryReader(stream))
             {
                 stream.Seek(startOffset.OffsetInBytes, SeekOrigin.Begin);
 
@@ -40,7 +40,7 @@ namespace Platform.StreamClients
                 while (stream.Position < endOffset && count < maxRecordCount)
                 {
                     var key = reader.ReadString();
-                    var length = reader.Reader7BitInt();
+                    var length = reader.ReadInt32();
 
                     if (stream.Position + length > stream.Length)
                         throw new InvalidOperationException("Data length is out of range.");
@@ -92,16 +92,6 @@ namespace Platform.StreamClients
                 }
                 
                 return stream.ToArray();
-            }
-        }
-
-        sealed class BitReader : BinaryReader
-        {
-            public BitReader(Stream output) : base(output) { }
-
-            public int Reader7BitInt()
-            {
-                return Read7BitEncodedInt();
             }
         }
     }

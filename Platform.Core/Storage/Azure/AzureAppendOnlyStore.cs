@@ -32,7 +32,7 @@ namespace Platform.Storage.Azure
             long writtenBytes = 0;
             using (var stream = new MemoryStream())
             {
-                using (var writer = new BitWriter(stream))
+                using (var writer = new BinaryWriter(stream))
                 {
                     foreach (var record in data)
                     {
@@ -47,7 +47,7 @@ namespace Platform.Storage.Azure
                         }
 
                         writer.Write(streamKey);
-                        writer.Write7BitInt(record.Length);
+                        writer.Write((int)record.Length);
                         writer.Write(record);
                     }
                     writer.Flush();
@@ -65,9 +65,9 @@ namespace Platform.Storage.Azure
         {
             _blob.DeleteIfExists();
 
-            _blob.Container.ListBlobs()
-                .AsParallel()
-                .ForAll(blob => blob.Container.GetBlobReference(blob.Uri.ToString()).DeleteIfExists());
+            //_blob.Container.ListBlobs()
+            //    .AsParallel()
+            //    .ForAll(blob => blob.Container.GetBlobReference(blob.Uri.ToString()).DeleteIfExists());
 
             _pageWriter.Reset();
             Initialize();
@@ -101,19 +101,6 @@ namespace Platform.Storage.Azure
 
             _blobContentSize = _blob.GetCommittedSize();
             _blobSpaceSize = _blob.Properties.Length;
-        }
-
-        sealed class BitWriter : BinaryWriter
-        {
-            public BitWriter(Stream s)
-                : base(s)
-            {
-            }
-
-            public void Write7BitInt(int length)
-            {
-                Write7BitEncodedInt(length);
-            }
         }
     }
 }

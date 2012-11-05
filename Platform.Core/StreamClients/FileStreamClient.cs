@@ -47,7 +47,7 @@ namespace Platform.StreamClients
                 throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
 
             using (var dataStream = new FileStream(_fileStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var dataBits = new BitReader(dataStream))
+            using (var dataBits = new BinaryReader(dataStream))
             {
                 var seekResult = dataStream.Seek(startOffset.OffsetInBytes, SeekOrigin.Begin);
 
@@ -58,7 +58,7 @@ namespace Platform.StreamClients
                 while (true)
                 {
                     var key = dataBits.ReadString();
-                    var length = dataBits.Reader7BitInt();
+                    var length = dataBits.ReadInt32();
                     var data = dataBits.ReadBytes(length);
 
                     var currentOffset = new StorageOffset(dataStream.Position);
@@ -91,15 +91,6 @@ namespace Platform.StreamClients
 
         }
 
-        sealed class BitReader : BinaryReader
-        {
-            public BitReader(Stream output) : base(output) { }
-
-            public int Reader7BitInt()
-            {
-                return Read7BitEncodedInt();
-            }
-        }
 
         public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
         {

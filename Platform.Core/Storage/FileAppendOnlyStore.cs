@@ -17,7 +17,7 @@ namespace Platform
     {
         readonly string _path;
 
-        BitWriter _dataBits;
+        BinaryWriter _dataBits;
         FileStream _dataStream;
 
         FileCheckpoint _checkpoint;
@@ -41,7 +41,7 @@ namespace Platform
             foreach (var buffer in data)
             {
                 _dataBits.Write(key);
-                _dataBits.Write7BitInt(buffer.Length);
+                _dataBits.Write((int)buffer.Length);
                 _dataBits.Write(buffer);
             }
             _dataStream.Flush(true);
@@ -71,23 +71,13 @@ namespace Platform
                 FileShare.Read);
             var offset = _checkpoint.Offset;
             _dataStream.Seek(offset, SeekOrigin.Begin);
-            _dataBits = new BitWriter(_dataStream);
+            _dataBits = new BinaryWriter(_dataStream);
         }
 
         void Close()
         {
             _dataStream.Close();
             _checkpoint.Close();
-        }
-
-        sealed class BitWriter : BinaryWriter
-        {
-            public BitWriter(Stream s) : base(s) {}
-
-            public void Write7BitInt(int length)
-            {
-                Write7BitEncodedInt(length);
-            }
         }
     }
 }
