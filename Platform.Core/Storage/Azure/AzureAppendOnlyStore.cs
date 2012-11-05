@@ -14,27 +14,20 @@ namespace Platform.Storage.Azure
         long _blobContentSize;
         long _blobSpaceSize;
 
-        /// <summary>
-        /// We can't push more than 4MB in one page commit
-        /// </summary>
-        public const int ChunkSize = 1024 * 1024 * 4;
-
-        const int SectorSize = 512;
+        public const long ChunkSize = 1024 * 1024 * 4;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
-        public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
+        public AzureAppendOnlyStore(AzureStoreConfiguration configuration)
         {
-
-            var containerName = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
-            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, containerName);
-            _pageWriter = new PageWriter(SectorSize, WriteProc);
+            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
+            _pageWriter = new PageWriter(512, WriteProc);
             Initialize();
         }
 
         public void Append(string key, IEnumerable<byte[]> data)
         {
-            const int limit = ChunkSize - SectorSize - SectorSize; // mind the 512 boundaries
+            const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
             using (var stream = new MemoryStream())
             {
@@ -46,7 +39,7 @@ namespace Platform.Storage.Azure
                         if (stream.Position + newSizeEstimate >= limit)
                         {
                             writer.Flush();
-                            _pageWriter.Write(stream.ToArray(),0, stream.Position);
+                            _pageWriter.Write(stream.ToArray(), 0, stream.Position);
                             _pageWriter.Flush();
                             writtenBytes += stream.Position;
                             stream.Seek(0, SeekOrigin.Begin);
@@ -83,7 +76,7 @@ namespace Platform.Storage.Azure
         {
             if (!source.CanSeek)
                 throw new InvalidOperationException("Seek must be supported by a stream.");
-            
+
             var length = source.Length;
             if (offset + length > _blobSpaceSize)
             {
@@ -111,7 +104,8 @@ namespace Platform.Storage.Azure
 
         sealed class BitWriter : BinaryWriter
         {
-            public BitWriter(Stream s) : base(s)
+            public BitWriter(Stream s)
+                : base(s)
             {
             }
 
@@ -119,42 +113,6 @@ namespace Platform.Storage.Azure
             {
                 Write7BitEncodedInt(length);
             }
-        }
-    }
-
-    public class AzureContainerManager : IDisposable
-    {
-        readonly AzureStoreConfiguration _config;
-
-        readonly IDictionary<string, AzureAppendOnlyStore> _stores = new Dictionary<string, AzureAppendOnlyStore>();
- 
-        public AzureContainerManager(AzureStoreConfiguration config)
-        {
-            _config = config;
-        }
-
-        public void Reset()
-        {
-            foreach (var store in _stores.Values)
-            {
-                store.Reset();
-            }
-        }
-
-        public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
-        {
-            AzureAppendOnlyStore store;
-            if (!_stores.TryGetValue(container.Name,out store))
-            {
-                store = new AzureAppendOnlyStore(_config, container);
-                _stores.Add(container.Name,store);
-            }
-            store.Append(streamKey, data);
-        }
-
-        public void Dispose()
-        {
-            
         }
     }
 }
