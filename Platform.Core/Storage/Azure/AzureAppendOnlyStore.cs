@@ -14,7 +14,12 @@ namespace Platform.Storage.Azure
         long _blobContentSize;
         long _blobSpaceSize;
 
-        public const long ChunkSize = 1024 * 1024 * 4;
+        /// <summary>
+        /// We can't push more than 4MB in one page commit
+        /// </summary>
+        public const int ChunkSize = 1024 * 1024 * 4;
+
+        const int SectorSize = 512;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
@@ -23,13 +28,13 @@ namespace Platform.Storage.Azure
 
             var containerName = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, containerName);
-            _pageWriter = new PageWriter(512, WriteProc);
+            _pageWriter = new PageWriter(SectorSize, WriteProc);
             Initialize();
         }
 
         public void Append(string key, IEnumerable<byte[]> data)
         {
-            const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
+            const int limit = ChunkSize - SectorSize - SectorSize; // mind the 512 boundaries
             long writtenBytes = 0;
             using (var stream = new MemoryStream())
             {
