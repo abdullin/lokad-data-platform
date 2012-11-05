@@ -18,14 +18,15 @@ namespace Platform.Storage.Azure
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
-        public AzureAppendOnlyStore(AzureStoreConfiguration configuration)
+        public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
         {
-            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, configuration.Container + "/" + "stream.dat");
+            var name = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
+            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, name);
             _pageWriter = new PageWriter(512, WriteProc);
             Initialize();
         }
 
-        public void Append(string key, IEnumerable<byte[]> data)
+        public void Append(string streamKey, IEnumerable<byte[]> data)
         {
             const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
@@ -35,7 +36,7 @@ namespace Platform.Storage.Azure
                 {
                     foreach (var record in data)
                     {
-                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(key) + 4 + record.Length;
+                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(streamKey) + 4 + record.Length;
                         if (stream.Position + newSizeEstimate >= limit)
                         {
                             writer.Flush();
@@ -45,7 +46,7 @@ namespace Platform.Storage.Azure
                             stream.Seek(0, SeekOrigin.Begin);
                         }
 
-                        writer.Write(key);
+                        writer.Write(streamKey);
                         writer.Write7BitInt(record.Length);
                         writer.Write(record);
                     }
