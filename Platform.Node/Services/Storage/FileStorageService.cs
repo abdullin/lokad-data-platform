@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Platform.Messages;
+using Platform.Storage;
 
 namespace Platform.Node.Services.Storage
 {
@@ -93,7 +94,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _manager = new FileContainerManager(_location, false);
+                _manager = new FileContainerManager(_location);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)

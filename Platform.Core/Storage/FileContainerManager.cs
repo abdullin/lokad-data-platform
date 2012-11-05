@@ -10,13 +10,11 @@ namespace Platform.Storage
 
         readonly string _rootDirectory;
 
-        readonly bool _isReadonly;
-        public FileContainerManager(string rootDirectory, bool isReadonly)
+        public FileContainerManager(string rootDirectory)
         {
             if (null == rootDirectory)
                 throw new ArgumentNullException("rootDirectory");
-
-            _isReadonly = isReadonly;
+            
             _rootDirectory = rootDirectory;
 
             if (!Directory.Exists(rootDirectory))
@@ -35,23 +33,14 @@ namespace Platform.Storage
 
         public void Reset()
         {
-            ThrowIfReadonly();
             foreach (var store in _stores)
             {
                 store.Value.Reset();
             }
         }
 
-        void ThrowIfReadonly()
-        {
-            if (_isReadonly)
-                throw new InvalidOperationException("This store is read-only");
-        }
-
         public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
         {
-            ThrowIfReadonly();
-
             FileAppendOnlyStore value;
             if (!_stores.TryGetValue(container.Name,out value))
             {
