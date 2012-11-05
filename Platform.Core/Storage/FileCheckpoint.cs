@@ -34,7 +34,7 @@ namespace Platform
 
             
             var exists = File.Exists(fullName);
-            _stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            _stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
             if (_stream.Length != 8)
             {
                 _stream.SetLength(8);

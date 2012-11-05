@@ -22,11 +22,13 @@ namespace Platform
             if (!Directory.Exists(rootDirectory))
                 Directory.CreateDirectory(rootDirectory);
 
-            foreach (var child in Directory.GetDirectories(rootDirectory))
+            var info = new DirectoryInfo(rootDirectory);
+            foreach (var child in info.GetDirectories())
             {
-                if (File.Exists(Path.Combine(rootDirectory, child, "stream.dat")))
+                if (File.Exists(Path.Combine(rootDirectory, child.Name, "stream.dat")))
                 {
-                    _stores.Add(child, new FileAppendOnlyStore(Path.Combine(rootDirectory,child)));
+                    
+                    _stores.Add(child.Name, new FileAppendOnlyStore(Path.Combine(rootDirectory,child.Name)));
                 }
             }
         }

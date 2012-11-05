@@ -51,16 +51,19 @@ namespace Platform
 
         public void Reset()
         {
-            Close();
-            File.Delete(Path.Combine(_path, "stream.chk"));
-            File.Delete(Path.Combine(_path, "stream.dat"));
+            _checkpoint.Check(0);
+            _dataStream.SetLength(0);
 
-            foreach (var name in Directory.GetFiles(_path))
-            {
-                File.Delete(name);
-            }
+            //Close();
+            //File.Delete(Path.Combine(_path, "stream.chk"));
+            //File.Delete(Path.Combine(_path, "stream.dat"));
 
-            Open();
+            //foreach (var name in Directory.GetFiles(_path))
+            //{
+            //    File.Delete(name);
+            //}
+
+            //Open();
         }
 
         void Open()
