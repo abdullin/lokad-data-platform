@@ -47,6 +47,7 @@
     <Compile Include="queued_handler.cs" />
     <Compile Include="timer_service.cs" />
     <Compile Include="when_format_size_in_bytes.cs" />
+    <Compile Include="when_topic_name_is_valid.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
