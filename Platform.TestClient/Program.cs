@@ -21,7 +21,7 @@ namespace Platform.TestClient
             
             try
             {
-                if (File.Exists("Readme.md"))
+                if (options.Command.Count == 0 && File.Exists("Readme.md"))
                 {
                     Console.WriteLine(File.ReadAllText("Readme.md"));
                 }
