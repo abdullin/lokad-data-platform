@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Storage\FileCheckpoint.cs" />
+    <Compile Include="ContainerName.cs" />
     <Compile Include="ViewClients\BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="CommandLine.cs" />

@@ -22,6 +22,5 @@ namespace Platform
             if (number < 0)
                 throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be non negative.");
         }
-
     }
 }
