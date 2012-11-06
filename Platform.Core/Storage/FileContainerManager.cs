@@ -15,7 +15,7 @@ namespace Platform.Storage
             public void Write(string streamKey, IEnumerable<byte[]> data)
             {
                 var position = Store.Append(streamKey, data);
-                Checkpoint.Check(position);
+                Checkpoint.Write(position);
             }
 
             public static ContainerWriter CreateNew(string root, ContainerName container)
@@ -51,7 +51,7 @@ namespace Platform.Storage
 
             public void Reset()
             {
-                Checkpoint.Check(0);
+                Checkpoint.Write(0);
                 Store.Reset();
             }
 

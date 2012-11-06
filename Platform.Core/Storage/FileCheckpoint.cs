@@ -9,8 +9,6 @@ namespace Platform.Storage
     /// </summary>
     public sealed class FileCheckpoint : IDisposable
     {
-        public long Offset { get; private set; }
-
         readonly FileStream _stream;
         readonly BinaryReader _reader;
         readonly BinaryWriter _writer;
@@ -41,7 +39,6 @@ namespace Platform.Storage
                 _isWriter = true;
                 _writer = new BinaryWriter(_stream);
             }
-            Offset = ReadFile();
         }
 
         public static FileCheckpoint OpenForReadingOrNew(string fullName)
@@ -76,12 +73,11 @@ namespace Platform.Storage
             _stream.Close();
         }
 
-        public void Check(long position)
+        public void Write(long position)
         {
             _stream.Seek(0, SeekOrigin.Begin);
             _writer.Write(position);
             _stream.Flush(true);
-            Offset = position;
         }
     }
 }
