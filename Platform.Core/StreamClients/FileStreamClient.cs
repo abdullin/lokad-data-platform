@@ -84,7 +84,7 @@ namespace Platform.StreamClients
             {
                 using (var fs = FileMessageSet.CreateNew(location))
                 {
-                    fs.Append("staging", records.Select(r =>
+                    fs.Append("", records.Select(r =>
                         {
                             if (r.Data.Length > MessageSizeLimit)
                                 throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
