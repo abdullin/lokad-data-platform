@@ -14,15 +14,20 @@ namespace Platform.Storage
 
     public struct MessageWithOffset
     {
+        // legacy
         public readonly string StreamKey;
+        // legacy
+        public readonly long NextOffset;
+
         public readonly byte[] Message;
         public readonly long Offset;
 
-        public MessageWithOffset(string streamKey, byte[] message, long offset)
+        public MessageWithOffset(string streamKey, long nextOffset, byte[] message, long offset)
         {
             StreamKey = streamKey;
             Message = message;
             Offset = offset;
+            NextOffset = nextOffset;
         }
     }
     public sealed class FileMessageSet : IDisposable
@@ -41,7 +46,10 @@ namespace Platform.Storage
             _isMutable = isMutable;
 
             _stream = stream;
-            _writer = new BinaryWriter(_stream);
+            if (_isMutable)
+            {
+                _writer = new BinaryWriter(_stream);
+            }
             _reader = new BinaryReader(_stream);
         }
 
@@ -61,20 +69,21 @@ namespace Platform.Storage
 
         public static FileMessageSet OpenExistingForWriting(string path, long offset)
         {
-            var stream = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Read);
+            var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
             stream.Seek(offset, SeekOrigin.Begin);
             return new FileMessageSet(stream, true);
         }
 
         public static FileMessageSet CreateNew(string path)
         {
-            var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+            var stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
             return new FileMessageSet(stream, true);
         }
 
-        public static FileMessageSet OpenForReading(string path)
+        public static FileMessageSet OpenForReadingOrNew(string path)
         {
-            var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            // we allow creating new file message set
+            var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
             return new FileMessageSet(stream, false);
         }
 
@@ -109,13 +118,14 @@ namespace Platform.Storage
             int recordCount = 0;
             while (true)
             {
+                var currentOffset = _stream.Position;
                 // TODO: deal with partial reads
                 var key = _reader.ReadString();
                 var length = _reader.ReadInt32();
                 var data = _reader.ReadBytes(length);
 
-                var currentOffset = _stream.Position;
-                yield return new MessageWithOffset(key, data, currentOffset);
+                
+                yield return new MessageWithOffset(key, _stream.Position, data, currentOffset);
 
                 recordCount += 1;
                 if (recordCount >= maxCount)

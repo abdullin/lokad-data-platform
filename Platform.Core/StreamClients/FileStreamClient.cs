@@ -9,8 +9,10 @@ namespace Platform.StreamClients
     {
 
         readonly string _serverFolder;
-        readonly string _checkStreamName;
-        readonly string _fileStreamName;
+        
+
+        readonly FileCheckpoint _checkpoint;
+        readonly FileMessageSet _messageSet;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<FileStreamClient>();
 
@@ -25,69 +27,40 @@ namespace Platform.StreamClients
             
             var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), container.Name);
 
-            _checkStreamName = Path.Combine(path,"stream.chk");
-            _fileStreamName = Path.Combine(path,"stream.dat");
+            var checkpointName = Path.Combine(path, "stream.chk");
+            var fileStreamName = Path.Combine(path, "stream.dat");
+
+            _checkpoint = new FileCheckpoint(checkpointName);
+            _messageSet = FileMessageSet.OpenForReadingOrNew(fileStreamName);
+
         }
 
 
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
         {
-            if (maxRecordCount < 0)
-                throw new ArgumentOutOfRangeException("maxRecordCount");
+            Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
 
-            var maxOffset = GetMaxOffset();
+
+            var maxOffset = _checkpoint.ReadFile();
 
             // nothing to read from here
-            if (startOffset >= maxOffset)
+            if (startOffset >= new StorageOffset(maxOffset))
                 yield break;
 
-
-            if (!File.Exists(_fileStreamName))
-                throw new InvalidOperationException("File stream.chk found but stream.dat file does not exist");
-
-            using (var dataStream = new FileStream(_fileStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var dataBits = new BinaryReader(dataStream))
+            int recordCount = 0;
+            foreach (var msg in _messageSet.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                var seekResult = dataStream.Seek(startOffset.OffsetInBytes, SeekOrigin.Begin);
-
-                if (startOffset.OffsetInBytes != seekResult)
-                    throw new InvalidOperationException("Failed to reach position we seeked for");
-
-                int recordCount = 0;
-                while (true)
-                {
-                    var key = dataBits.ReadString();
-                    var length = dataBits.ReadInt32();
-                    var data = dataBits.ReadBytes(length);
-
-                    var currentOffset = new StorageOffset(dataStream.Position);
-                    yield return new RetrievedDataRecord(key, data, currentOffset);
-
-                    recordCount += 1;
-                    if (recordCount >= maxRecordCount)
-                        yield break;
-
-                    if (currentOffset >= maxOffset)
-                        yield break;
-                }
-
+                yield return new RetrievedDataRecord(msg.StreamKey, msg.Message, new StorageOffset(msg.Offset));
+                if (++recordCount >= maxRecordCount)
+                    yield break;
+                // we don't want to go above the initial water mark
+                if (msg.NextOffset>=maxOffset)
+                    yield break;
+                
             }
         }
 
-        private StorageOffset GetMaxOffset()
-        {
-            if (!File.Exists(_checkStreamName))
-                return StorageOffset.Zero;
-
-            using (var checkStream = new FileStream(_checkStreamName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            {
-                using (var checkBits = new BinaryReader(checkStream))
-                {
-                    return new StorageOffset(checkBits.ReadInt64());
-                }
-            }
-        }
 
 
         public void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records)
