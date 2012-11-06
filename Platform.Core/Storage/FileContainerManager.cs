@@ -9,7 +9,7 @@ namespace Platform.Storage
         public sealed class ContainerWriter : IDisposable
         {
             public ContainerName Container;
-            public FileAppendOnlyStore Store;
+            public FileMessageSet Store;
             public FileCheckpoint Checkpoint;
 
             public void Write(string streamKey, IEnumerable<byte[]> data)
@@ -26,7 +26,7 @@ namespace Platform.Storage
 
                 // TODO: replace by static create enforcing new
                 var check = new FileCheckpoint(Path.Combine(folder, "stream.chk"));
-                var store = FileAppendOnlyStore.CreateNew(Path.Combine(folder, "stream.dat"));
+                var store = FileMessageSet.CreateNew(Path.Combine(folder, "stream.dat"));
                 return new ContainerWriter
                     {
                         Container = container,
@@ -38,7 +38,7 @@ namespace Platform.Storage
             {
                 var folder = Path.Combine(root, container.Name);
                 var check = new FileCheckpoint(Path.Combine(folder, "stream.chk"));
-                var store = FileAppendOnlyStore.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
+                var store = FileMessageSet.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
                     check.ReadFile());
 
                 return new ContainerWriter

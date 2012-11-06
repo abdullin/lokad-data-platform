@@ -77,7 +77,6 @@ namespace Platform.StreamClients
 
         private StorageOffset GetMaxOffset()
         {
-
             if (!File.Exists(_checkStreamName))
                 return StorageOffset.Zero;
 
@@ -88,11 +87,10 @@ namespace Platform.StreamClients
                     return new StorageOffset(checkBits.ReadInt64());
                 }
             }
-
         }
 
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records)
         {
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);
@@ -101,7 +99,7 @@ namespace Platform.StreamClients
             try
             {
                 PrepareStaging(records, location);
-                ImportEventsInternal(streamName, location);
+                ImportEventsInternal(streamKey, location);
             }
             finally
             {

@@ -56,7 +56,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records)
         {
             var container = _blob.Container;
             container.CreateIfNotExist();
@@ -67,7 +67,7 @@ namespace Platform.StreamClients
                 var bytes = PrepareStaging(records, tempBlob);
                 tempBlob.UploadByteArray(bytes);
 
-                ImportEventsInternal(streamName, tempBlob.Uri.ToString());
+                ImportEventsInternal(streamKey, tempBlob.Uri.ToString());
             }
             finally
             {

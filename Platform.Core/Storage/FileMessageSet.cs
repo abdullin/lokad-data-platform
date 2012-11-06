@@ -11,12 +11,12 @@ using System.IO;
 
 namespace Platform.Storage
 {
-    public sealed class FileAppendOnlyStore : IDisposable
+    public sealed class FileMessageSet : IDisposable
     {
         readonly BinaryWriter _dataBits;
         readonly FileStream _dataStream;
 
-        public FileAppendOnlyStore(FileStream stream, BinaryWriter writer)
+        public FileMessageSet(FileStream stream, BinaryWriter writer)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
@@ -41,19 +41,19 @@ namespace Platform.Storage
 
         }
 
-        public static FileAppendOnlyStore OpenExistingForWriting(string path, long offset)
+        public static FileMessageSet OpenExistingForWriting(string path, long offset)
         {
             var dataStream = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Read);
             dataStream.Seek(offset, SeekOrigin.Begin);
             var dataBits = new BinaryWriter(dataStream);
-            return new FileAppendOnlyStore(dataStream, dataBits);
+            return new FileMessageSet(dataStream, dataBits);
         }
 
-        public static FileAppendOnlyStore CreateNew(string path)
+        public static FileMessageSet CreateNew(string path)
         {
             var dataStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
             var dataBits = new BinaryWriter(dataStream);
-            return new FileAppendOnlyStore(dataStream, dataBits);
+            return new FileMessageSet(dataStream, dataBits);
         }
 
         public long Append(string key, IEnumerable<byte[]> data)

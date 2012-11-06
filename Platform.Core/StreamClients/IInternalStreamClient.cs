@@ -28,7 +28,7 @@ namespace Platform.StreamClients
             int maxRecordCount = int.MaxValue);
 
         void WriteEvent(string streamName, byte[] data);
-        void WriteEventsInLargeBatch(string streamName, IEnumerable<RecordForStaging> records);
+        void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records);
     }
 
     public sealed class StreamClient
