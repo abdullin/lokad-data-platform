@@ -13,18 +13,17 @@ namespace Platform.Storage
 {
     public sealed class FileMessageSet : IDisposable
     {
-        readonly BinaryWriter _dataBits;
-        readonly FileStream _dataStream;
+        readonly BinaryWriter _writer;
+        readonly FileStream _stream;
 
-        public FileMessageSet(FileStream stream, BinaryWriter writer)
+
+        public FileMessageSet(FileStream stream)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
-            if (null == writer)
-                throw new ArgumentNullException("writer");
 
-            _dataStream = stream;
-            _dataBits = writer;
+            _stream = stream;
+            _writer = new BinaryWriter(_stream);
         }
 
         bool _disposed;
@@ -33,8 +32,8 @@ namespace Platform.Storage
         {
             if (_disposed)
                 return;
-            using(_dataStream)
-            using (_dataBits)
+            using(_stream)
+            using (_writer)
             {
                 _disposed = true;
             }
@@ -43,39 +42,37 @@ namespace Platform.Storage
 
         public static FileMessageSet OpenExistingForWriting(string path, long offset)
         {
-            var dataStream = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Read);
-            dataStream.Seek(offset, SeekOrigin.Begin);
-            var dataBits = new BinaryWriter(dataStream);
-            return new FileMessageSet(dataStream, dataBits);
+            var stream = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Read);
+            stream.Seek(offset, SeekOrigin.Begin);
+            return new FileMessageSet(stream);
         }
 
         public static FileMessageSet CreateNew(string path)
         {
             var dataStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
-            var dataBits = new BinaryWriter(dataStream);
-            return new FileMessageSet(dataStream, dataBits);
+            return new FileMessageSet(dataStream);
         }
 
         public long Append(string key, IEnumerable<byte[]> data)
         {            
             foreach (var buffer in data)
             {
-                _dataBits.Write(key);
-                _dataBits.Write(buffer.Length);
-                _dataBits.Write(buffer);
+                _writer.Write(key);
+                _writer.Write(buffer.Length);
+                _writer.Write(buffer);
             }
-            _dataStream.Flush(true);
-            return _dataStream.Position;
+            _stream.Flush(true);
+            return _stream.Position;
         }
 
         public void Reset()
         {
-            _dataStream.SetLength(0);
+            _stream.SetLength(0);
         }
         public void Close()
         {
-            _dataStream.Close();
-            _dataBits.Close();
+            _stream.Close();
+            _writer.Close();
         }
     }
 }
