@@ -18,7 +18,6 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-
         FileContainerManager _manager;
         readonly string _location;
         
