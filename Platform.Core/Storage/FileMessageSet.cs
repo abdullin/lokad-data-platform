@@ -11,19 +11,38 @@ using System.IO;
 
 namespace Platform.Storage
 {
+
+    public struct MessageWithOffset
+    {
+        public readonly string StreamKey;
+        public readonly byte[] Message;
+        public readonly long Offset;
+
+        public MessageWithOffset(string streamKey, byte[] message, long offset)
+        {
+            StreamKey = streamKey;
+            Message = message;
+            Offset = offset;
+        }
+    }
     public sealed class FileMessageSet : IDisposable
     {
         readonly BinaryWriter _writer;
         readonly FileStream _stream;
+        readonly BinaryReader _reader;
 
+        readonly bool _isMutable;
 
-        public FileMessageSet(FileStream stream)
+        FileMessageSet(FileStream stream, bool isMutable)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
 
+            _isMutable = isMutable;
+
             _stream = stream;
             _writer = new BinaryWriter(_stream);
+            _reader = new BinaryReader(_stream);
         }
 
         bool _disposed;
@@ -44,14 +63,22 @@ namespace Platform.Storage
         {
             var stream = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Read);
             stream.Seek(offset, SeekOrigin.Begin);
-            return new FileMessageSet(stream);
+            return new FileMessageSet(stream, true);
         }
 
         public static FileMessageSet CreateNew(string path)
         {
-            var dataStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
-            return new FileMessageSet(dataStream);
+            var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+            return new FileMessageSet(stream, true);
         }
+
+        public static FileMessageSet OpenForReading(string path)
+        {
+            var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return new FileMessageSet(stream, false);
+        }
+
+
 
         public long Append(string key, IEnumerable<byte[]> data)
         {            
@@ -64,6 +91,40 @@ namespace Platform.Storage
             _stream.Flush(true);
             return _stream.Position;
         }
+
+        public IEnumerable<MessageWithOffset> ReadAll(long starting, int maxCount)
+        {
+            Ensure.Nonnegative(starting, "starting");
+            Ensure.Nonnegative(maxCount, "maxCount");
+
+            var maxOffset = _stream.Length;
+            if (maxOffset <= starting)
+                yield break;
+
+            var seekResult = _stream.Seek(starting, SeekOrigin.Begin);
+
+            if (starting != seekResult)
+                throw new InvalidOperationException("Failed to reach position we seeked for");
+
+            int recordCount = 0;
+            while (true)
+            {
+                // TODO: deal with partial reads
+                var key = _reader.ReadString();
+                var length = _reader.ReadInt32();
+                var data = _reader.ReadBytes(length);
+
+                var currentOffset = _stream.Position;
+                yield return new MessageWithOffset(key, data, currentOffset);
+
+                recordCount += 1;
+                if (recordCount >= maxCount)
+                    yield break;
+
+                if (currentOffset >= maxOffset)
+                    yield break;
+            }
+        } 
 
         public void Reset()
         {
