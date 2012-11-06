@@ -15,6 +15,9 @@ namespace Platform.Storage
         readonly BinaryReader _reader;
         readonly BinaryWriter _writer;
         bool _disposed;
+
+        readonly bool _isWriter;
+
         public void Dispose()
         {
             if (_disposed)
@@ -29,24 +32,35 @@ namespace Platform.Storage
             }
         }
 
-
-        public FileCheckpoint(string fullName)
+        FileCheckpoint(FileStream stream, bool isWriter)
         {
-            var path = Path.GetDirectoryName(fullName) ?? "";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            
-            var exists = File.Exists(fullName);
-            _stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            if (_stream.Length != 8)
-            {
-                _stream.SetLength(8);
-            }
-
+            _stream = stream;
             _reader = new BinaryReader(_stream);
-            _writer = new BinaryWriter(_stream);
-            Offset = exists ? ReadFile() : 0;
+            if (isWriter)
+            {
+                _isWriter = true;
+                _writer = new BinaryWriter(_stream);
+            }
+            Offset = ReadFile();
+        }
+
+        public static FileCheckpoint OpenForReadingOrNew(string fullName)
+        {
+            var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
+            if (stream.Length == 0)
+                stream.SetLength(8);
+            return new FileCheckpoint(stream, false);
+        }
+        public static FileCheckpoint CreateNew(string fullName)
+        {
+            var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            stream.SetLength(8);
+            return new FileCheckpoint(stream, true);
+        }
+        public static FileCheckpoint OpenExistingforWriting(string fullName)
+        {
+            var stream = new FileStream(fullName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+            return new FileCheckpoint(stream, true);
         }
 
         public long ReadFile()

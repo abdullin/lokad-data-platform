@@ -28,11 +28,8 @@ namespace Platform.StreamClients
             
             var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), container.Name);
 
-            var checkpointName = Path.Combine(path, "stream.chk");
-            var fileStreamName = Path.Combine(path, "stream.dat");
-
-            _checkpoint = new FileCheckpoint(checkpointName);
-            _messageSet = FileMessageSet.OpenForReadingOrNew(fileStreamName);
+            _checkpoint = FileCheckpoint.OpenForReadingOrNew(Path.Combine(path, "stream.chk"));
+            _messageSet = FileMessageSet.OpenForReadingOrNew(Path.Combine(path, "stream.dat"));
 
         }
 
