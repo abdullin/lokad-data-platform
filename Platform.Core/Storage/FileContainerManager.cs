@@ -39,7 +39,7 @@ namespace Platform.Storage
                 var folder = Path.Combine(root, container.Name);
                 var check = FileCheckpoint.OpenExistingforWriting(Path.Combine(folder, "stream.chk"));
                 var store = FileMessageSet.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
-                    check.ReadFile());
+                    check.Read());
 
                 return new ContainerWriter
                     {

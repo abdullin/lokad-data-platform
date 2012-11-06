@@ -40,7 +40,7 @@ namespace Platform.StreamClients
             Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
 
 
-            var maxOffset = _checkpoint.ReadFile();
+            var maxOffset = _checkpoint.Read();
 
             // nothing to read from here
             if (startOffset >= new StorageOffset(maxOffset))

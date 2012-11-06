@@ -3,11 +3,17 @@ using System.IO;
 
 namespace Platform.Storage
 {
+    public interface ICheckpoint : IDisposable
+    {
+        long Read();
+        void Close();
+        void Write(long position);
+    }
 
     /// <summary>
     /// Tracks a given location in a single mutable file
     /// </summary>
-    public sealed class FileCheckpoint : IDisposable
+    public sealed class FileCheckpoint : ICheckpoint
     {
         readonly FileStream _stream;
         readonly BinaryReader _reader;
@@ -60,7 +66,7 @@ namespace Platform.Storage
             return new FileCheckpoint(stream, true);
         }
 
-        public long ReadFile()
+        public long Read()
         {
             _stream.Seek(0, SeekOrigin.Begin);
             return _reader.ReadInt64();
