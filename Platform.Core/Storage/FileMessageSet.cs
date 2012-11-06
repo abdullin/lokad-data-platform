@@ -86,6 +86,11 @@ namespace Platform.Storage
             var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
             return new FileMessageSet(stream, false);
         }
+        public static FileMessageSet OpenForReading(string path)
+        {
+            var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return new FileMessageSet(stream, false);
+        }
 
 
 
@@ -118,20 +123,21 @@ namespace Platform.Storage
             int recordCount = 0;
             while (true)
             {
-                var currentOffset = _stream.Position;
+                var recordOffset = _stream.Position;
                 // TODO: deal with partial reads
                 var key = _reader.ReadString();
                 var length = _reader.ReadInt32();
                 var data = _reader.ReadBytes(length);
 
-                
-                yield return new MessageWithOffset(key, _stream.Position, data, currentOffset);
+
+                var nextOffset = _stream.Position;
+                yield return new MessageWithOffset(key, nextOffset, data, recordOffset);
 
                 recordCount += 1;
                 if (recordCount >= maxCount)
                     yield break;
 
-                if (currentOffset >= maxOffset)
+                if (nextOffset >= maxOffset)
                     yield break;
             }
         } 

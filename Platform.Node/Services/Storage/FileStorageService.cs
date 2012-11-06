@@ -38,16 +38,11 @@ namespace Platform.Node.Services.Storage
 
         static IEnumerable<byte[]> EnumerateStaging(string location)
         {
-            using (var import = File.OpenRead(location))
-            using (var bit = new BinaryReader(import))
+            using (var fs = FileMessageSet.OpenForReading(location))
             {
-                var length = import.Length;
-
-                while (import.Position < length)
+                foreach (var msg in fs.ReadAll(0,int.MaxValue))
                 {
-                    var len = bit.ReadInt32();
-                    var data = bit.ReadBytes(len);
-                    yield return data;
+                    yield return msg.Message;
                 }
             }
         }

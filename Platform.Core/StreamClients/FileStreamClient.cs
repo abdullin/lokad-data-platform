@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Platform.Storage;
+using System.Linq;
 
 namespace Platform.StreamClients
 {
@@ -82,17 +83,25 @@ namespace Platform.StreamClients
 
         static void PrepareStaging(IEnumerable<RecordForStaging> records, string location)
         {
-            using (var fs = File.OpenWrite(location))
-            using (var bin = new BinaryWriter(fs))
+            try
             {
-                foreach (var record in records)
+                using (var fs = FileMessageSet.CreateNew(location))
                 {
-                    if (record.Data.Length > MessageSizeLimit)
-                        throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
-
-                    bin.Write(record.Data.Length);
-                    bin.Write(record.Data);
+                    fs.Append("staging", records.Select(r =>
+                        {
+                            if (r.Data.Length > MessageSizeLimit)
+                                throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
+                                    MessageSizeLimit));
+                            
+                            return r.Data;
+                        }));
+                    fs.Close();
                 }
+            }
+            catch(Exception)
+            {
+                File.Delete(location);
+                throw;
             }
         }
     }
