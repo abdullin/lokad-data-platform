@@ -26,8 +26,7 @@ namespace Platform.StreamClients
             if (!_blob.Exists())
                 yield break;
 
-
-            var endOffset = AzureMetadataCheckpoint.OpenForReadingOrNew(_blob).Read();
+            var endOffset = _blob.GetCommittedSize();
 
             if (startOffset >= new StorageOffset(endOffset))
                 yield break;

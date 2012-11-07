@@ -8,7 +8,19 @@ namespace Platform.Storage.Azure
 {
     public static class StorageExtensions
     {
-        
+        const string CommittedSizeName = "committedsize";
+
+        public static long GetCommittedSize(this CloudBlob blob)
+        {
+            blob.FetchAttributes();
+            return Int64.Parse(blob.Metadata[CommittedSizeName] ?? "0");
+        }
+
+        public static void SetCommittedSize(this CloudBlob blob, long size)
+        {
+            blob.Metadata[CommittedSizeName] = size.ToString(CultureInfo.InvariantCulture);
+            blob.SetMetadata();
+        }
 
         public static CloudPageBlob GetPageBlobReference(string connectionString, string blobAddress)
         {
