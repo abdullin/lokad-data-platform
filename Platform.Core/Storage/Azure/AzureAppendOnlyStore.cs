@@ -80,7 +80,10 @@ namespace Platform.Storage.Azure
         public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
         {
             var name = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
+            
+
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, name);
+            
             _pageWriter = new PageWriter(512, WriteProc);
             Initialize();
         }

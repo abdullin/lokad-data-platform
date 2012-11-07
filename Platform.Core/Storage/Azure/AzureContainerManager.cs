@@ -19,6 +19,7 @@ namespace Platform.Storage.Azure
             var client = account.CreateCloudBlobClient();
 
             var container = client.GetContainerReference(config.Container);
+            container.CreateIfNotExist();
             var blobs = container.ListBlobs();
 
             foreach (var blob in blobs)
