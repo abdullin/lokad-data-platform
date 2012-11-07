@@ -26,7 +26,10 @@ namespace Platform.Storage.Azure
         {
             try
             {
-                blob.Create(512);
+                blob.Create(512, new BlobRequestOptions()
+                    {
+                        AccessCondition = AccessCondition.IfNoneMatch("*")
+                    });
 
             }
             catch(Exception ex)
