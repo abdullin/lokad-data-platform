@@ -1,11 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Platform.Storage.Azure
 {
+
+    public class AzureMetadataCheckpoint : ICheckpoint
+    {
+        public static AzureMetadataCheckpoint CreateNew(CloudPageBlob blob)
+        {
+            blob.Create(512);
+            blob.Metadata["CommittedSizeName"] = "0";
+            blob.SetMetadata();
+            return new AzureMetadataCheckpoint(blob);
+        }
+        public static AzureMetadataCheckpoint OpenForWriting(CloudPageBlob blob)
+        {
+            return new AzureMetadataCheckpoint(blob);
+        }
+
+        public static AzureMetadataCheckpoint OpenForReadingOrNew(CloudPageBlob blob)
+        {
+            try
+            {
+                blob.Create(512);
+
+            }
+            catch(Exception ex)
+            {
+                
+            }
+            return new AzureMetadataCheckpoint(blob);
+
+        }
+
+        readonly CloudPageBlob _blob;
+        public AzureMetadataCheckpoint(CloudPageBlob blob)
+        {
+            _blob = blob;
+        }
+
+        public void Dispose()
+        {
+            
+        }
+
+        public long Read()
+        {
+            _blob.FetchAttributes();
+            return Int64.Parse(_blob.Metadata["CommittedSizeName"] ?? "0");
+        }
+
+        public void Close()
+        {
+        }
+
+        public void Write(long position)
+        {
+            _blob.Metadata["CommittedSizeName"] = position.ToString(CultureInfo.InvariantCulture);
+            _blob.SetMetadata();
+        }
+    }
     public class AzureAppendOnlyStore
     {
         readonly CloudPageBlob _blob;
@@ -14,6 +72,8 @@ namespace Platform.Storage.Azure
         long _blobSpaceSize;
 
         public const long ChunkSize = 1024 * 1024 * 4;
+
+        ICheckpoint _checkpoint;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
@@ -56,7 +116,7 @@ namespace Platform.Storage.Azure
                 }
             }
             _blobContentSize += writtenBytes;
-            _blob.SetCommittedSize(_blobContentSize);
+            _checkpoint.Write(_blobSpaceSize);
         }
 
 
@@ -95,10 +155,12 @@ namespace Platform.Storage.Azure
             if (!_blob.Exists())
             {
                 _blob.Create(ChunkSize);
-                _blob.SetCommittedSize(0);
+                _checkpoint = AzureMetadataCheckpoint.CreateNew(_blob);
             }
 
-            _blobContentSize = _blob.GetCommittedSize();
+            
+
+            _blobContentSize = _checkpoint.Read();
             _blobSpaceSize = _blob.Properties.Length;
         }
     }
