@@ -160,6 +160,10 @@ namespace Platform.Storage.Azure
                 _blob.Create(ChunkSize);
                 _checkpoint = AzureMetadataCheckpoint.CreateNew(_blob);
             }
+            else
+            {
+                _checkpoint = AzureMetadataCheckpoint.OpenForWriting(_blob);
+            }
 
             
 
