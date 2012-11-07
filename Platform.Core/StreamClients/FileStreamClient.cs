@@ -24,9 +24,14 @@ namespace Platform.StreamClients
 
         public FileStreamClient(string serverFolder, ContainerName container, string serverEndpoint = null) : base(container, serverEndpoint)
         {
+
+            // open for reading or new
             _serverFolder = serverFolder;
             
             var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), container.Name);
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
 
             _checkpoint = FileCheckpoint.OpenForReadingOrNew(Path.Combine(path, "stream.chk"));
             _messageSet = FileMessageSet.OpenForReadingOrNew(Path.Combine(path, "stream.dat"));
