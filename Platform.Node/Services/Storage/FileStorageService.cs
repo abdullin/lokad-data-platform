@@ -91,6 +91,7 @@ namespace Platform.Node.Services.Storage
             }
             catch (Exception ex)
             {
+                Log.FatalException(ex, "Failed to initialize store: " + ex.Message);
                 Application.Exit(ExitCode.Error, "Failed to initialize store: " + ex.Message);
             }
         }
