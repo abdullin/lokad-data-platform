@@ -1,11 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.WindowsAzure.StorageClient;
 
 namespace Platform.Storage.Azure
 {
+
+    public class AzureMetadataCheckpoint
+    {
+        readonly CloudPageBlob _blob;
+
+        AzureMetadataCheckpoint(CloudPageBlob blob)
+        {
+            _blob = blob;
+        }
+
+        public void Write(long checkpoint)
+        {
+            _blob.Metadata["committedsize"] = checkpoint.ToString(CultureInfo.InvariantCulture);
+            _blob.SetMetadata();
+        }
+
+        public long Read()
+        {
+            _blob.FetchAttributes();
+            return Int64.Parse(_blob.Metadata["committedsize"] ?? "0");
+        }
+
+        public static AzureMetadataCheckpoint Attach(CloudPageBlob blob)
+        {
+            if (!blob.Exists())
+                throw new InvalidOperationException("Blob should exist");
+            return new AzureMetadataCheckpoint(blob);
+        }
+    }
     public class AzureAppendOnlyStore
     {
         readonly CloudPageBlob _blob;
@@ -16,6 +46,8 @@ namespace Platform.Storage.Azure
         public const long ChunkSize = 1024 * 1024 * 4;
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
+
+        AzureMetadataCheckpoint _checkpoint;
 
         public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
         {
@@ -56,7 +88,8 @@ namespace Platform.Storage.Azure
                 }
             }
             _blobContentSize += writtenBytes;
-            _blob.SetCommittedSize(_blobContentSize);
+
+            _checkpoint.Write(_blobContentSize);
         }
 
 
@@ -95,10 +128,10 @@ namespace Platform.Storage.Azure
             if (!_blob.Exists())
             {
                 _blob.Create(ChunkSize);
-                _blob.SetCommittedSize(0);
             }
+            _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
 
-            _blobContentSize = _blob.GetCommittedSize();
+            _blobContentSize = _checkpoint.Read();
             _blobSpaceSize = _blob.Properties.Length;
         }
     }
