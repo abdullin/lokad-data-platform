@@ -10,12 +10,14 @@ namespace Platform.StreamClients
     public class AzureStreamClient : JsonStreamClientBase, IInternalStreamClient
     {
         readonly CloudPageBlob _blob;
-
         public AzureStreamClient(AzureStoreConfiguration config, ContainerName container, string serverEndpoint = null)
             : base(container, serverEndpoint)
         {
-            var containerName = config.Container + "/" + container.Name + "/stream.dat";
-            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, containerName);
+            var path = config.Container + "/" + container.Name;
+
+            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, path + "/stream.dat");
+
+            _blob.Container.CreateIfNotExist();
         }
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
