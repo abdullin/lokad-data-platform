@@ -17,7 +17,7 @@ namespace Platform.Core.Tests
         [Test, ExpectedException(typeof(NotSupportedException))]
         public void readonly_checkpoint_throws()
         {
-            var check = FileCheckpoint.OpenOrCreateWriteable(FileName);
+            var check = FileCheckpoint.OpenOrCreateReadable(FileName);
             check.Write(long.MaxValue);
         }
     }
@@ -27,7 +27,7 @@ namespace Platform.Core.Tests
         [Test]
         public void fresh_writeable_checkpoint_returns_zero()
         {
-            var check = FileCheckpoint.OpenOrCreateReadable(FileName);
+            var check = FileCheckpoint.OpenOrCreateWriteable(FileName);
             Assert.AreEqual(0, check.Read());
         }
 
