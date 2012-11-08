@@ -71,7 +71,14 @@ namespace Platform.Storage.Azure
             var name = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, name);
             _pageWriter = new PageWriter(512, WriteProc);
-            Initialize();
+            _blob.Container.CreateIfNotExist();
+            if (!_blob.Exists())
+            {
+                _blob.Create(ChunkSize);
+            }
+            _checkpoint = AzureMetadataCheckpoint.OpenOrCreateWriteable(_blob);
+            _blobContentSize = _checkpoint.Read();
+            _blobSpaceSize = _blob.Properties.Length;
         }
 
         public void Append(string streamKey, IEnumerable<byte[]> data)
@@ -112,10 +119,9 @@ namespace Platform.Storage.Azure
 
         public void Reset()
         {
-            _blob.DeleteIfExists();
-
+            _checkpoint.Write(0);
             _pageWriter.Reset();
-            Initialize();
+            _blobContentSize = 0;
         }
 
         void WriteProc(int offset, Stream source)
@@ -133,18 +139,6 @@ namespace Platform.Storage.Azure
             }
 
             _blob.WritePages(source, offset);
-        }
-
-        void Initialize()
-        {
-            _blob.Container.CreateIfNotExist();
-            if (!_blob.Exists())
-            {
-                _blob.Create(ChunkSize);
-            }
-            _checkpoint = AzureMetadataCheckpoint.OpenOrCreateWriteable(_blob);
-            _blobContentSize = _checkpoint.Read();
-            _blobSpaceSize = _blob.Properties.Length;
         }
     }
 }
