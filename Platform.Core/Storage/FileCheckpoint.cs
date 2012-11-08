@@ -47,23 +47,12 @@ namespace Platform.Storage
             }
         }
 
-        public static FileCheckpoint OpenForReadingOrNew(string fullName)
-        {
-            var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
-            if (stream.Length == 0)
-                stream.SetLength(8);
-            return new FileCheckpoint(stream, false);
-        }
-        public static FileCheckpoint CreateNew(string fullName)
+        public static FileCheckpoint OpenOrCreate(string fullName, bool writeable)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            stream.SetLength(8);
-            return new FileCheckpoint(stream, true);
-        }
-        public static FileCheckpoint OpenExistingforWriting(string fullName)
-        {
-            var stream = new FileStream(fullName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-            return new FileCheckpoint(stream, true);
+            if (stream.Length == 0)
+                stream.SetLength(8);
+            return new FileCheckpoint(stream, writeable);
         }
 
         public long Read()
@@ -81,6 +70,8 @@ namespace Platform.Storage
 
         public void Write(long position)
         {
+            if (!_isWriter)
+                throw new NotSupportedException("This checkpoint is read-only");
             _stream.Seek(0, SeekOrigin.Begin);
             _writer.Write(position);
             _stream.Flush(true);

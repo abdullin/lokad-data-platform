@@ -25,7 +25,7 @@ namespace Platform.Storage
                     Directory.CreateDirectory(folder);
 
                 // TODO: replace by static create enforcing new
-                var check = FileCheckpoint.CreateNew((Path.Combine(folder, "stream.chk")));
+                var check = FileCheckpoint.OpenOrCreate((Path.Combine(folder, "stream.chk")), true);
                 var store = FileMessageSet.CreateNew(Path.Combine(folder, "stream.dat"));
                 return new ContainerWriter
                     {
@@ -37,7 +37,7 @@ namespace Platform.Storage
             public static ContainerWriter OpenExisting(string root, ContainerName container)
             {
                 var folder = Path.Combine(root, container.Name);
-                var check = FileCheckpoint.OpenExistingforWriting(Path.Combine(folder, "stream.chk"));
+                var check = FileCheckpoint.OpenOrCreate(Path.Combine(folder, "stream.chk"), true);
                 var store = FileMessageSet.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
                     check.Read());
 

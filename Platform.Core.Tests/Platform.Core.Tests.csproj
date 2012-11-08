@@ -45,9 +45,11 @@
   <ItemGroup>
     <Compile Include="in_memory_bus.cs" />
     <Compile Include="queued_handler.cs" />
+    <Compile Include="SpecificationWithFile.cs" />
     <Compile Include="timer_service.cs" />
     <Compile Include="when_format_size_in_bytes.cs" />
     <Compile Include="when_topic_name_is_valid.cs" />
+    <Compile Include="when_writing_file_checkpoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
