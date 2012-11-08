@@ -47,12 +47,20 @@ namespace Platform.Storage
             }
         }
 
-        public static FileCheckpoint OpenOrCreate(string fullName, bool writeable)
+        public static FileCheckpoint OpenOrCreateReadable(string fullName)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             if (stream.Length == 0)
                 stream.SetLength(8);
-            return new FileCheckpoint(stream, writeable);
+            return new FileCheckpoint(stream, false);
+            
+        }
+        public static FileCheckpoint OpenOrCreateWriteable(string fullName)
+        {
+            var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            if (stream.Length == 0)
+                stream.SetLength(8);
+            return new FileCheckpoint(stream, true);
         }
 
         public long Read()

@@ -33,7 +33,7 @@ namespace Platform.StreamClients
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            _checkpoint = FileCheckpoint.OpenOrCreate(Path.Combine(path, "stream.chk"), false);
+            _checkpoint = FileCheckpoint.OpenOrCreateReadable(Path.Combine(path, "stream.chk"));
             _messageSet = FileMessageSet.OpenForReadingOrNew(Path.Combine(path, "stream.dat"));
 
         }
