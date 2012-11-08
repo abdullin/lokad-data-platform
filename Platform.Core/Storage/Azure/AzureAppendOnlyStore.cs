@@ -11,7 +11,7 @@ namespace Platform.Storage.Azure
     public class AzureMetadataCheckpoint
     {
         readonly CloudPageBlob _blob;
-        readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataCheckpoint>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataCheckpoint>();
 
         AzureMetadataCheckpoint(CloudPageBlob blob)
         {
@@ -132,6 +132,10 @@ namespace Platform.Storage.Azure
                 _blob.Create(ChunkSize);
                 _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
                 _checkpoint.Write(0);
+            }
+            else
+            {
+                _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
             }
 
             _blobContentSize = _checkpoint.Read();
