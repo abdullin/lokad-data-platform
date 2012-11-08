@@ -12,15 +12,19 @@ namespace Platform.Storage.Azure
     {
         readonly CloudPageBlob _blob;
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataCheckpoint>();
+        readonly bool _readOnly;
 
-        AzureMetadataCheckpoint(CloudPageBlob blob)
+        AzureMetadataCheckpoint(CloudPageBlob blob, bool readOnly)
         {
+            _readOnly = readOnly;
             _blob = blob;
             Log.Debug("Checkpoint created");
         }
 
         public void Write(long checkpoint)
         {
+            if (_readOnly)
+                throw new NotSupportedException("This checkpoint is not writeable.");
             Log.Debug("Set checkpoint to {0}", checkpoint);
             _blob.Metadata["committedsize"] = checkpoint.ToString(CultureInfo.InvariantCulture);
             _blob.SetMetadata();
@@ -35,11 +39,18 @@ namespace Platform.Storage.Azure
             return read;
         }
 
-        public static AzureMetadataCheckpoint Attach(CloudPageBlob blob)
+        public static AzureMetadataCheckpoint OpenOrCreateWriteable(CloudPageBlob blob)
         {
             if (!blob.Exists())
                 throw new InvalidOperationException("Blob should exist");
-            return new AzureMetadataCheckpoint(blob);
+            return new AzureMetadataCheckpoint(blob, readOnly:false);
+        }
+
+        public static AzureMetadataCheckpoint OpenOrCreateReadable(CloudPageBlob blob)
+        {
+            if (!blob.Exists())
+                throw new InvalidOperationException("Blob should exist");
+            return new AzureMetadataCheckpoint(blob, readOnly:true);
         }
     }
     public class AzureAppendOnlyStore
@@ -130,14 +141,8 @@ namespace Platform.Storage.Azure
             if (!_blob.Exists())
             {
                 _blob.Create(ChunkSize);
-                _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
-                _checkpoint.Write(0);
             }
-            else
-            {
-                _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
-            }
-
+            _checkpoint = AzureMetadataCheckpoint.OpenOrCreateWriteable(_blob);
             _blobContentSize = _checkpoint.Read();
             _blobSpaceSize = _blob.Properties.Length;
         }
