@@ -11,14 +11,17 @@ namespace Platform.Storage.Azure
     public class AzureMetadataCheckpoint
     {
         readonly CloudPageBlob _blob;
+        readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataCheckpoint>();
 
         AzureMetadataCheckpoint(CloudPageBlob blob)
         {
             _blob = blob;
+            Log.Debug("Checkpoint created");
         }
 
         public void Write(long checkpoint)
         {
+            Log.Debug("Set checkpoint to {0}", checkpoint);
             _blob.Metadata["committedsize"] = checkpoint.ToString(CultureInfo.InvariantCulture);
             _blob.SetMetadata();
         }
@@ -26,7 +29,10 @@ namespace Platform.Storage.Azure
         public long Read()
         {
             _blob.FetchAttributes();
-            return Int64.Parse(_blob.Metadata["committedsize"] ?? "0");
+            var s = _blob.Metadata["committedsize"];
+            Log.Debug("Checkpoint were '{0}'", s ?? "N/A");
+            var read = Int64.Parse(s ?? "0");
+            return read;
         }
 
         public static AzureMetadataCheckpoint Attach(CloudPageBlob blob)
@@ -97,10 +103,6 @@ namespace Platform.Storage.Azure
         {
             _blob.DeleteIfExists();
 
-            //_blob.Container.ListBlobs()
-            //    .AsParallel()
-            //    .ForAll(blob => blob.Container.GetBlobReference(blob.Uri.ToString()).DeleteIfExists());
-
             _pageWriter.Reset();
             Initialize();
         }
@@ -128,8 +130,9 @@ namespace Platform.Storage.Azure
             if (!_blob.Exists())
             {
                 _blob.Create(ChunkSize);
+                _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
+                _checkpoint.Write(0);
             }
-            _checkpoint = AzureMetadataCheckpoint.Attach(_blob);
 
             _blobContentSize = _checkpoint.Read();
             _blobSpaceSize = _blob.Properties.Length;
