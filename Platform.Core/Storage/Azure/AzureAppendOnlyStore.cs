@@ -64,7 +64,7 @@ namespace Platform.Storage.Azure
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
 
-        AzureMetadataCheckpoint _checkpoint;
+        readonly AzureMetadataCheckpoint _checkpoint;
 
         public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
         {
