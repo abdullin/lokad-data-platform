@@ -77,7 +77,7 @@
     <Compile Include="Messages\ClientDto.cs" />
     <Compile Include="PlatformClient.cs" />
     <Compile Include="StreamClients\AzureStreamClient.cs" />
-    <Compile Include="Storage\Azure\AzureAppendOnlyStore.cs" />
+    <Compile Include="Storage\Azure\AzureMessageSet.cs" />
     <Compile Include="AzureStoreConfiguration.cs" />
     <Compile Include="Storage\Azure\PageWriter.cs" />
     <Compile Include="Storage\FileMessageSet.cs" />

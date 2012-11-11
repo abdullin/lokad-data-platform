@@ -53,7 +53,7 @@ namespace Platform.Storage.Azure
             return new AzureMetadataCheckpoint(blob, readOnly:true);
         }
     }
-    public class AzureAppendOnlyStore
+    public class AzureMessageSet 
     {
         readonly CloudPageBlob _blob;
         readonly PageWriter _pageWriter;
@@ -62,11 +62,11 @@ namespace Platform.Storage.Azure
 
         public const long ChunkSize = 1024 * 1024 * 4;
 
-        static readonly ILogger Log = LogManager.GetLoggerFor<AzureAppendOnlyStore>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureMessageSet>();
 
         readonly AzureMetadataCheckpoint _checkpoint;
 
-        public AzureAppendOnlyStore(AzureStoreConfiguration configuration, ContainerName container)
+        public AzureMessageSet(AzureStoreConfiguration configuration, ContainerName container)
         {
             var name = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
             _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, name);

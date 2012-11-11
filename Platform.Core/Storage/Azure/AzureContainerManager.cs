@@ -9,7 +9,7 @@ namespace Platform.Storage.Azure
     {
         readonly AzureStoreConfiguration _config;
         readonly ILogger Log = LogManager.GetLoggerFor<AzureContainerManager>();
-        readonly IDictionary<string, AzureAppendOnlyStore> _stores = new Dictionary<string, AzureAppendOnlyStore>();
+        readonly IDictionary<string, AzureMessageSet> _stores = new Dictionary<string, AzureMessageSet>();
 
         public AzureContainerManager(AzureStoreConfiguration config)
         {
@@ -33,7 +33,7 @@ namespace Platform.Storage.Azure
                         var topic = reference.Name.Replace("/stream.dat", "");
                         Log.Debug("Found stream {0}", topic);
                         //var topic =  dir. container.Name.Remove(0, prefix.Length);
-                        _stores.Add(topic, new AzureAppendOnlyStore(config, ContainerName.Create(topic)));
+                        _stores.Add(topic, new AzureMessageSet(config, ContainerName.Create(topic)));
                     }
                 }
             }
@@ -49,10 +49,10 @@ namespace Platform.Storage.Azure
 
         public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
         {
-            AzureAppendOnlyStore store;
+            AzureMessageSet store;
             if (!_stores.TryGetValue(container.Name, out store))
             {
-                store = new AzureAppendOnlyStore(_config, container);
+                store = new AzureMessageSet(_config, container);
                 _stores.Add(container.Name, store);
             }
             store.Append(streamKey, data);
