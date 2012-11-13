@@ -6,7 +6,6 @@ namespace Platform.Storage
     public interface ICheckpoint : IDisposable
     {
         long Read();
-        void Close();
         void Write(long position);
     }
 
@@ -32,7 +31,11 @@ namespace Platform.Storage
             using(_writer)
             {
                 _disposed = true;
-                Close();
+                _reader.Close();
+
+                if (_isWriter)
+                    _writer.Close();
+                _stream.Close();
             }
         }
 
@@ -47,7 +50,7 @@ namespace Platform.Storage
             }
         }
 
-        public static FileCheckpoint OpenOrCreateReadable(string fullName)
+        public static FileCheckpoint OpenOrCreateForReading(string fullName)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             if (stream.Length == 0)
@@ -55,7 +58,7 @@ namespace Platform.Storage
             return new FileCheckpoint(stream, false);
             
         }
-        public static FileCheckpoint OpenOrCreateWriteable(string fullName)
+        public static FileCheckpoint OpenOrCreateForWriting(string fullName)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             if (stream.Length == 0)
@@ -69,12 +72,6 @@ namespace Platform.Storage
             return _reader.ReadInt64();
         }
 
-        public void Close()
-        {
-            _reader.Close();
-            _writer.Close();
-            _stream.Close();
-        }
 
         public void Write(long position)
         {

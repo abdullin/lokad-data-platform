@@ -18,7 +18,7 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        FileContainerManager _manager;
+        FileContainerManager _managerForServer;
         readonly string _location;
         
         public FileStorageService(string location, IPublisher publisher)
@@ -29,7 +29,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _manager.Append(message.Container, message.StreamKey, new[] { message.Data });
+            _managerForServer.Append(message.Container, message.StreamKey, new[] { message.Data });
 
             //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -56,7 +56,7 @@ namespace Platform.Node.Services.Storage
 
             var lazy = EnumerateStaging(msg.StagingLocation);
 
-            _manager.Append(msg.Container,msg.StreamKey, lazy.Select(bytes =>
+            _managerForServer.Append(msg.Container,msg.StreamKey, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -86,7 +86,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _manager = new FileContainerManager(_location);
+                _managerForServer = new FileContainerManager(_location);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)
@@ -98,7 +98,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.RequestStoreReset message)
         {
-            _manager.Reset();
+            _managerForServer.Reset();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }

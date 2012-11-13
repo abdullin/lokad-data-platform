@@ -10,12 +10,6 @@ namespace Platform.StreamClients
     {
 
         readonly string _serverFolder;
-        
-
-        readonly FileCheckpoint _checkpoint;
-        readonly FileMessageSet _messageSet;
-
-        static readonly ILogger Log = LogManager.GetLoggerFor<FileStreamClient>();
 
         public FileStreamClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, ContainerName.Create(ContainerName.Default),serverEndpoint)
         {
@@ -32,35 +26,21 @@ namespace Platform.StreamClients
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-
-            _checkpoint = FileCheckpoint.OpenOrCreateReadable(Path.Combine(path, "stream.chk"));
-            _messageSet = FileMessageSet.OpenForReadingOrNew(Path.Combine(path, "stream.dat"));
-
         }
 
 
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
         {
-            Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
-
-
-            var maxOffset = _checkpoint.Read();
-
-            // nothing to read from here
-            if (startOffset >= new StorageOffset(maxOffset))
+            if (!FileContainer.ExistsValid(_serverFolder, Container))
                 yield break;
 
-            int recordCount = 0;
-            foreach (var msg in _messageSet.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
+            using (var container = FileContainer.OpenForReading(_serverFolder, Container))
             {
-                yield return new RetrievedDataRecord(msg.StreamKey, msg.Message, new StorageOffset(msg.Offset));
-                if (++recordCount >= maxRecordCount)
-                    yield break;
-                // we don't want to go above the initial water mark
-                if (msg.NextOffset>=maxOffset)
-                    yield break;
-                
+                foreach (var record in container.ReadAll(startOffset, maxRecordCount))
+                {
+                    yield return record;
+                }
             }
         }
 
@@ -97,7 +77,6 @@ namespace Platform.StreamClients
                             
                             return r.Data;
                         }));
-                    fs.Close();
                 }
             }
             catch(Exception)

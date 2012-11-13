@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Platform.Storage;
 using Platform.StreamClients;
 
 namespace Platform.TestClient.Commands
@@ -63,13 +64,11 @@ namespace Platform.TestClient.Commands
             var round = Math.Round(watch.Elapsed.TotalSeconds, 2);
             context.Log.Debug("Flooded {0}x{1} in {2}s", threadCount, floodSize, round);
 
-            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId);
-
             int index = 0;
             int batchMessageCount = batchCount * batchSize;
             int floodMessagesCount = threadCount * floodSize;
 
-            foreach (var record in records)
+            foreach (var record in context.Client.Streams.ReadAll().Where(x => x.Key == streamId))
             {
                 string receivedMessage = Encoding.UTF8.GetString(record.Data);
                 if (index < batchMessageCount && !batchMessages.Remove(receivedMessage))

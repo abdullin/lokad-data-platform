@@ -61,8 +61,17 @@ namespace Platform.Storage
                 return;
             using(_stream)
             using (_writer)
+            using (_reader)
+            {
+                
+            }
             {
                 _disposed = true;
+                _stream.Close();
+                if (_isMutable)
+                _writer.Close();
+                _reader.Close();
+                
             }
 
         }
@@ -80,12 +89,6 @@ namespace Platform.Storage
             return new FileMessageSet(stream, true);
         }
 
-        public static FileMessageSet OpenForReadingOrNew(string path)
-        {
-            // we allow creating new file message set
-            var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
-            return new FileMessageSet(stream, false);
-        }
         public static FileMessageSet OpenForReading(string path)
         {
             var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -144,12 +147,9 @@ namespace Platform.Storage
 
         public void Reset()
         {
+            if (!_isMutable)
+                throw new NotSupportedException("This message set is read-only");
             _stream.SetLength(0);
-        }
-        public void Close()
-        {
-            _stream.Close();
-            _writer.Close();
         }
     }
 }
