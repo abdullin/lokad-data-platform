@@ -15,7 +15,7 @@ namespace Platform.StreamClients
         {
             var path = config.Container + "/" + container.Name;
 
-            _blob = StorageExtensions.GetPageBlobReference(config.ConnectionString, path + "/stream.dat");
+            _blob = config.GetPageBlobReference(path + "/stream.dat");
 
             _blob.Container.CreateIfNotExist();
         }

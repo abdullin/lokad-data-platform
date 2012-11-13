@@ -8,9 +8,10 @@ namespace Platform.Storage.Azure
 {
     public static class StorageExtensions
     {
-        public static CloudPageBlob GetPageBlobReference(string connectionString, string blobAddress)
+        public static CloudPageBlob GetPageBlobReference(this AzureStoreConfiguration config, string blobAddress)
         {
-            var client = GetCloudBlobClient(connectionString);
+
+            var client = GetCloudBlobClient(config.ConnectionString);
             return client.GetPageBlobReference(blobAddress);
         }
 

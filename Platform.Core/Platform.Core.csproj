@@ -63,6 +63,7 @@
     <Compile Include="Storage\Azure\AzureContainerManager.cs" />
     <Compile Include="Storage\FileCheckpoint.cs" />
     <Compile Include="ContainerName.cs" />
+    <Compile Include="Storage\FileContainer.cs" />
     <Compile Include="Storage\FileContainerManager.cs" />
     <Compile Include="ViewClients\BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />

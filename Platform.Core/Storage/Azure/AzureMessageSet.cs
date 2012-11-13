@@ -66,10 +66,10 @@ namespace Platform.Storage.Azure
 
         readonly AzureMetadataCheckpoint _checkpoint;
 
-        public AzureMessageSet(AzureStoreConfiguration configuration, ContainerName container)
+        public AzureMessageSet(AzureStoreConfiguration config, ContainerName container)
         {
-            var name = string.Format("{0}/{1}/stream.dat", configuration.Container, container.Name);
-            _blob = StorageExtensions.GetPageBlobReference(configuration.ConnectionString, name);
+            var name = string.Format("{0}/{1}/stream.dat", config.Container, container.Name);
+            _blob = config.GetPageBlobReference(name);
             _pageWriter = new PageWriter(512, WriteProc);
             _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
