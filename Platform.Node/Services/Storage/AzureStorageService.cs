@@ -91,6 +91,7 @@ namespace Platform.Node.Services.Storage
 
         static IEnumerable<byte[]> EnumerateStaging(CloudBlob blob)
         {
+            Log.Debug("Read staging {0}", blob.Uri);
             using (var stream = blob.OpenRead())
             using (var reader = new BinaryReader(stream))
             {

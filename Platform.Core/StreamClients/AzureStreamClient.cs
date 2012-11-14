@@ -11,6 +11,9 @@ namespace Platform.StreamClients
     {
         public AzureStoreConfiguration Config { get; set; }
         readonly CloudPageBlob _blob;
+
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureStreamClient>();
+
         public AzureStreamClient(AzureStoreConfiguration config, ContainerName container, string serverEndpoint = null)
             : base(container, serverEndpoint)
         {
@@ -66,7 +69,8 @@ namespace Platform.StreamClients
             var tempBlob = container.GetBlockBlobReference(Guid.NewGuid().ToString());
             try
             {
-                var bytes = PrepareStaging(records, tempBlob);
+                var bytes = PrepareStaging(records);
+                Log.Debug("Uploading staging to {0}", tempBlob.Uri);
                 tempBlob.UploadByteArray(bytes);
 
                 ImportEventsInternal(streamKey, tempBlob.Uri.ToString());
@@ -77,7 +81,7 @@ namespace Platform.StreamClients
             }
         }
 
-        static byte[] PrepareStaging(IEnumerable<RecordForStaging> records, CloudBlob blob)
+        static byte[] PrepareStaging(IEnumerable<RecordForStaging> records)
         {
             using (var stream = new MemoryStream(1024 * 1024))
             {

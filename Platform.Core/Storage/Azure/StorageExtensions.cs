@@ -1,4 +1,3 @@
-using System;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
