@@ -1,25 +1,25 @@
 using System;
-using System.Globalization;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
-using Microsoft.WindowsAzure.StorageClient.Protocol;
 
 namespace Platform.Storage.Azure
 {
     public static class StorageExtensions
     {
-        public static CloudPageBlob GetPageBlobReference(this AzureStoreConfiguration config, string blobAddress)
+        public static CloudPageBlob GetPageBlob(this AzureStoreConfiguration config, string blobAddress)
         {
-
-            var client = GetCloudBlobClient(config.ConnectionString);
-            return client.GetPageBlobReference(blobAddress);
+            var account = CloudStorageAccount.Parse(config.ConnectionString);
+            var client = account.CreateCloudBlobClient();
+            var path = config.Container + "/" + blobAddress.TrimStart('/');
+            return client.GetPageBlobReference(path);
         }
 
-        public static CloudBlobClient GetCloudBlobClient(string connectionString)
+        public static CloudBlockBlob GetBlockBlob(this AzureStoreConfiguration config, string blobAddress)
         {
-            var account = CloudStorageAccount.Parse(connectionString);
+            var account = CloudStorageAccount.Parse(config.ConnectionString);
             var client = account.CreateCloudBlobClient();
-            return client;
+            var path = config.Container + "/" + blobAddress.TrimStart('/');
+            return client.GetBlockBlobReference(path);
         }
 
         public static bool Exists(this CloudBlob blob)
@@ -36,38 +36,6 @@ namespace Platform.Storage.Azure
 
                 throw;
             }
-        }
-
-        public static bool Exists(this CloudBlobContainer blob)
-        {
-            try
-            {
-                blob.FetchAttributes();
-                return true;
-            }
-            catch (StorageClientException e)
-            {
-                if (e.ErrorCode == StorageErrorCode.ResourceNotFound)
-                    return false;
-
-                throw;
-            }
-        }
-
-        public static void SetLength(this CloudPageBlob blob, long newLength, int timeout = 10000)
-        {
-            var credentials = blob.ServiceClient.Credentials;
-
-            var requestUri = blob.Uri;
-            if (credentials.NeedsTransformUri)
-                requestUri = new Uri(credentials.TransformUri(requestUri.ToString()));
-
-            var request = BlobRequest.SetProperties(requestUri, timeout, blob.Properties, null, newLength);
-            request.Timeout = timeout;
-
-            credentials.SignRequest(request);
-
-            using (request.GetResponse()) { }
         }
     }
 }

@@ -57,8 +57,7 @@ namespace Platform.Node.Services.Storage
             var watch = Stopwatch.StartNew();
             var count = 0;
             var size = 0;
-            var client = StorageExtensions.GetCloudBlobClient(_config.ConnectionString);
-            var blob = client.GetBlockBlobReference(msg.StagingLocation);
+            var blob = _config.GetBlockBlob(msg.StagingLocation);
             _manager.Append(msg.Container, msg.StreamKey, EnumerateStaging(blob).Select(bytes =>
                 {
                     count += 1;

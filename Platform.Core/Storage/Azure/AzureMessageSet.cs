@@ -1,58 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.WindowsAzure.StorageClient;
+using Microsoft.WindowsAzure.StorageClient.Protocol;
 
 namespace Platform.Storage.Azure
 {
-
-    public class AzureMetadataCheckpoint
-    {
-        readonly CloudPageBlob _blob;
-        static readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataCheckpoint>();
-        readonly bool _readOnly;
-
-        AzureMetadataCheckpoint(CloudPageBlob blob, bool readOnly)
-        {
-            _readOnly = readOnly;
-            _blob = blob;
-            Log.Debug("Checkpoint created");
-        }
-
-        public void Write(long checkpoint)
-        {
-            if (_readOnly)
-                throw new NotSupportedException("This checkpoint is not writeable.");
-            Log.Debug("Set checkpoint to {0}", checkpoint);
-            _blob.Metadata["committedsize"] = checkpoint.ToString(CultureInfo.InvariantCulture);
-            _blob.SetMetadata();
-        }
-
-        public long Read()
-        {
-            _blob.FetchAttributes();
-            var s = _blob.Metadata["committedsize"];
-            Log.Debug("Checkpoint were '{0}'", s ?? "N/A");
-            var read = Int64.Parse(s ?? "0");
-            return read;
-        }
-
-        public static AzureMetadataCheckpoint OpenOrCreateWriteable(CloudPageBlob blob)
-        {
-            if (!blob.Exists())
-                throw new InvalidOperationException("Blob should exist");
-            return new AzureMetadataCheckpoint(blob, readOnly:false);
-        }
-
-        public static AzureMetadataCheckpoint OpenOrCreateReadable(CloudPageBlob blob)
-        {
-            if (!blob.Exists())
-                throw new InvalidOperationException("Blob should exist");
-            return new AzureMetadataCheckpoint(blob, readOnly:true);
-        }
-    }
     public class AzureMessageSet 
     {
         readonly CloudPageBlob _blob;
@@ -68,8 +22,7 @@ namespace Platform.Storage.Azure
 
         public AzureMessageSet(AzureStoreConfiguration config, ContainerName container)
         {
-            var name = string.Format("{0}/{1}/stream.dat", config.Container, container.Name);
-            _blob = config.GetPageBlobReference(name);
+            _blob = config.GetPageBlob(container.Name + "/stream.dat");
             _pageWriter = new PageWriter(512, WriteProc);
             _blob.Container.CreateIfNotExist();
             if (!_blob.Exists())
@@ -134,11 +87,28 @@ namespace Platform.Storage.Azure
             {
                 var newSize = _blobSpaceSize + ChunkSize;
                 Log.Debug("Increasing chunk size to {0}", newSize);
-                _blob.SetLength(newSize);
+                SetLength(_blob, newSize);
                 _blobSpaceSize = newSize;
             }
 
             _blob.WritePages(source, offset);
         }
+
+        public static void SetLength(CloudPageBlob blob, long newLength, int timeout = 10000)
+        {
+            var credentials = blob.ServiceClient.Credentials;
+
+            var requestUri = blob.Uri;
+            if (credentials.NeedsTransformUri)
+                requestUri = new Uri(credentials.TransformUri(requestUri.ToString()));
+
+            var request = BlobRequest.SetProperties(requestUri, timeout, blob.Properties, null, newLength);
+            request.Timeout = timeout;
+
+            credentials.SignRequest(request);
+
+            using (request.GetResponse()) { }
+        }
+
     }
 }
