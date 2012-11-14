@@ -9,7 +9,7 @@ namespace Platform.Storage.Azure
     {
         readonly AzureStoreConfiguration _config;
         readonly ILogger Log = LogManager.GetLoggerFor<AzureContainerManager>();
-        readonly IDictionary<string, AzureMessageSet> _stores = new Dictionary<string, AzureMessageSet>();
+        readonly IDictionary<string, AzureContainer> _stores = new Dictionary<string, AzureContainer>();
 
         public AzureContainerManager(AzureStoreConfiguration config)
         {
@@ -33,7 +33,8 @@ namespace Platform.Storage.Azure
                         var topic = reference.Name.Replace("/stream.dat", "");
                         Log.Debug("Found stream {0}", topic);
                         //var topic =  dir. container.Name.Remove(0, prefix.Length);
-                        _stores.Add(topic, new AzureMessageSet(config, ContainerName.Create(topic)));
+                        var containerName = ContainerName.Create(topic);
+                        _stores.Add(topic, new AzureContainer(containerName, new AzureMessageSet(config, containerName)));
                     }
                 }
             }
@@ -49,18 +50,43 @@ namespace Platform.Storage.Azure
 
         public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
         {
-            AzureMessageSet store;
+            AzureContainer store;
             if (!_stores.TryGetValue(container.Name, out store))
             {
-                store = new AzureMessageSet(_config, container);
+                store = new AzureContainer(container, new AzureMessageSet(_config, container));
                 _stores.Add(container.Name, store);
             }
-            store.Append(streamKey, data);
+            store.Write(streamKey, data);
         }
 
         public void Dispose()
         {
 
         }
+    }
+
+    public sealed class AzureContainer
+    {
+        public readonly ContainerName Container;
+        public readonly AzureMessageSet Store;
+
+        public AzureContainer(ContainerName container, AzureMessageSet store)
+        {
+            Container = container;
+            Store = store;
+        }
+
+        public void Reset()
+        {
+            Store.Reset();
+            
+        }
+
+        public void Write(string streamKey, IEnumerable<byte[]> data)
+        {
+            Store.Append(streamKey, data);
+            //Checkpoint.Write(position);
+        }
+
     }
 }
