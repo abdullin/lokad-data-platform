@@ -30,7 +30,7 @@ namespace Platform.Storage.Azure
         public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset, long length)
         {
             Ensure.Positive(length,"length");
-            Ensure.Positive(offset, "offset");
+            Ensure.Nonnegative(offset, "offset");
             return new AzureMessageSet(blob, offset, length);
         }
 
