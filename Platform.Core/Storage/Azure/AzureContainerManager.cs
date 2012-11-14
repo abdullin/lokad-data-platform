@@ -25,17 +25,19 @@ namespace Platform.Storage.Azure
             {
                 var dir = blob as CloudBlobDirectory;
 
-                if (dir != null)
+                if (dir == null) continue;
+
+                var topic = dir.Uri.ToString().Remove(0, dir.Container.Uri.ToString().Length).Trim('/'); 
+                var containerName = ContainerName.Create(topic);
+
+                if (AzureContainer.ExistsValid(_config, containerName))
                 {
-                    var reference = dir.GetBlobReference("stream.dat");
-                    if (reference.Exists())
-                    {
-                        var topic = reference.Name.Replace("/stream.dat", "");
-                        Log.Debug("Found stream {0}", topic);
-                        //var topic =  dir. container.Name.Remove(0, prefix.Length);
-                        var containerName = ContainerName.Create(topic);
-                        _stores.Add(topic, new AzureContainer(containerName, new AzureMessageSet(config, containerName)));
-                    }
+                    var value = new AzureContainer(containerName, new AzureMessageSet(config, containerName));
+                    _stores.Add(topic, value);
+                }
+                else
+                {
+                    Log.Error("Skipping invalid folder {0}", topic);
                 }
             }
         }
@@ -76,10 +78,17 @@ namespace Platform.Storage.Azure
             Store = store;
         }
 
+        public static bool ExistsValid(AzureStoreConfiguration config, ContainerName container)
+        {
+            // this is metadata checkpoint
+            // var check = config.GetPageBlob(container.Name + "/stream.chk");
+            var store = config.GetPageBlob(container.Name + "/stream.dat");
+            return store.Exists();
+        }
+
         public void Reset()
         {
             Store.Reset();
-            
         }
 
         public void Write(string streamKey, IEnumerable<byte[]> data)
