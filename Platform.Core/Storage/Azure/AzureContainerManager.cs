@@ -30,7 +30,7 @@ namespace Platform.Storage.Azure
 
                 if (AzureContainer.TryGetContainerName(_config, dir, out container))
                 {
-                    var value = new AzureContainer(container, new AzureMessageSet(config, container));
+                    var value = AzureContainer.OpenExistingForWriting(config, container);
                     _stores.Add(container.Name, value);
                 }
                 else
@@ -53,7 +53,7 @@ namespace Platform.Storage.Azure
             AzureContainer store;
             if (!_stores.TryGetValue(container.Name, out store))
             {
-                store = new AzureContainer(container, new AzureMessageSet(_config, container));
+                store = AzureContainer.CreateNewForWriting(_config, container);
                 _stores.Add(container.Name, store);
             }
             store.Write(streamKey, data);
@@ -68,12 +68,12 @@ namespace Platform.Storage.Azure
     public sealed class AzureContainer
     {
         public readonly ContainerName Container;
-        public readonly AzureMessageSet Store;
+        readonly AzureMessageSet _store;
 
         public AzureContainer(ContainerName container, AzureMessageSet store)
         {
             Container = container;
-            Store = store;
+            _store = store;
         }
 
         public static bool TryGetContainerName
@@ -96,14 +96,23 @@ namespace Platform.Storage.Azure
             return store.Exists();
         }
 
+        public static AzureContainer OpenExistingForWriting(AzureStoreConfiguration config, ContainerName container)
+        {
+            return new AzureContainer(container, new AzureMessageSet(config, container));
+        }
+        public static AzureContainer CreateNewForWriting(AzureStoreConfiguration config, ContainerName container)
+        {
+            return new AzureContainer(container, new AzureMessageSet(config, container));
+        }
+
         public void Reset()
         {
-            Store.Reset();
+            _store.Reset();
         }
 
         public void Write(string streamKey, IEnumerable<byte[]> data)
         {
-            Store.Append(streamKey, data);
+            _store.Append(streamKey, data);
             //Checkpoint.Write(position);
         }
 
