@@ -14,7 +14,6 @@ namespace Platform.Storage.Azure
         {
             _readOnly = readOnly;
             _blob = blob;
-            Log.Debug("Checkpoint created");
         }
 
         public void Write(long checkpoint)

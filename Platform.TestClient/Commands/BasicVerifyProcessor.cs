@@ -106,8 +106,10 @@ namespace Platform.TestClient.Commands
             context.Log.Info("Add {0} flood messages", floodCount);
             context.Log.Info("Add {0} batch", batchCount);
 
-            var readErrors = ReadAddMessages(context, streamId, batchMsg, floodMsg, batchCount * batchSize, floodCount);
-            errors.PushRange(readErrors.ToArray());
+            var readErrors = ReadAddMessages(context, streamId, batchMsg, floodMsg, batchCount * batchSize, floodCount).ToArray();
+
+            if (readErrors.Any())
+                errors.PushRange(readErrors);
 
             foreach (var err in errors.ToArray())
                 context.Log.Error(err);
