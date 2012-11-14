@@ -8,7 +8,7 @@ using Platform.StreamClients;
 
 namespace Platform.Storage.Azure
 {
-    public class AzureMessageSet 
+    public class AzureMessageSet : IDisposable
     {
         readonly CloudPageBlob _blob;
         readonly PageWriter _pageWriter;
@@ -144,5 +144,9 @@ namespace Platform.Storage.Azure
             }
         }
 
+        public void Dispose()
+        {
+            
+        }
     }
 }

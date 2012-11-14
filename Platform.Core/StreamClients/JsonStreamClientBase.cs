@@ -20,7 +20,7 @@ namespace Platform.StreamClients
 
         public const int MessageSizeLimit = 1024 * 1024 * 2;
 
-        protected void ImportEventsInternal(string streamKey, string location)
+        protected void ImportEventsInternal(string streamKey, string location, long length)
         {
             ThrowIfClientNotInitialized();
             try

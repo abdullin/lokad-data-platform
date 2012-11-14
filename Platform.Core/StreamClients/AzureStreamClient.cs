@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
 using Platform.Storage;
 using Platform.Storage.Azure;
@@ -45,14 +46,13 @@ namespace Platform.StreamClients
             var container = _blob.Container;
             container.CreateIfNotExist();
 
-            var uri = string.Format("yyyy-MM-dd-{0}.stage",Guid.NewGuid().ToString().ToLowerInvariant());
-            var tempBlob = container.GetBlockBlobReference(uri);
+            var uri = string.Format("{0:yyyy-MM-dd}-{1}.stage",DateTime.UtcNow, Guid.NewGuid().ToString().ToLowerInvariant());
+            var tempBlob = container.GetPageBlobReference(uri);
             try
             {
-                var bytes = PrepareStaging(records);
                 Log.Debug("Uploading staging to {0}", tempBlob.Uri);
-                tempBlob.UploadByteArray(bytes);
-                ImportEventsInternal(streamKey, uri);
+                var size = PrepareStaging(records, tempBlob);
+                ImportEventsInternal(streamKey, uri, size);
             }
             finally
             {
@@ -60,23 +60,19 @@ namespace Platform.StreamClients
             }
         }
 
-        static byte[] PrepareStaging(IEnumerable<RecordForStaging> records)
+        static long PrepareStaging(IEnumerable<RecordForStaging> records, CloudPageBlob blob)
         {
-            using (var stream = new MemoryStream(1024 * 1024))
+            using (var fs = AzureMessageSet.CreateNewForWriting(blob))
             {
-                using (var writer = new BinaryWriter(stream))
+                return fs.Append("", records.Select(r =>
                 {
-                    foreach (var record in records)
-                    {
-                        if (record.Data.Length > MessageSizeLimit)
-                            throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
+                    if (r.Data.Length > MessageSizeLimit)
+                        throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
+                            MessageSizeLimit));
 
-                        writer.Write(record.Data.Length);
-                        writer.Write(record.Data);
-                    }
-                }
-                
-                return stream.ToArray();
+                    return r.Data;
+                }));
+
             }
         }
     }

@@ -57,8 +57,8 @@ namespace Platform.Node.Services.Storage
             var watch = Stopwatch.StartNew();
             var count = 0;
             var size = 0;
-            var blob = _config.GetBlockBlob(msg.StagingLocation);
-            _manager.Append(msg.Container, msg.StreamKey, EnumerateStaging(blob).Select(bytes =>
+            var blob = _config.GetPageBlob(msg.StagingLocation);
+            _manager.Append(msg.Container, msg.StreamKey, EnumerateStaging(blob,msg.Size).Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -89,19 +89,13 @@ namespace Platform.Node.Services.Storage
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }
 
-        static IEnumerable<byte[]> EnumerateStaging(CloudBlob blob)
+        static IEnumerable<byte[]> EnumerateStaging(CloudPageBlob location, long size)
         {
-            Log.Debug("Read staging {0}", blob.Uri);
-            using (var stream = blob.OpenRead())
-            using (var reader = new BinaryReader(stream))
+            using (var fs = AzureMessageSet.OpenExistingForReading(location))
             {
-                blob.FetchAttributes();
-                var length = blob.Properties.Length;
-                while (stream.Position < length)
+                foreach (var msg in fs.ReadAll(0,size, int.MaxValue))
                 {
-                    var len = reader.ReadInt32();
-                    var data = reader.ReadBytes(len);
-                    yield return data;
+                    yield return msg.Data;
                 }
             }
         }

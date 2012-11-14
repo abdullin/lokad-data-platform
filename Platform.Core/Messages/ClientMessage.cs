@@ -47,14 +47,16 @@ namespace Platform.Messages
             public readonly string StreamKey;
             
             public readonly string StagingLocation;
+            public readonly long Size;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(ContainerName container, string streamKey, string stagingLocation, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(ContainerName container, string streamKey, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
             {
                 Container = container;
                 StreamKey = streamKey;
                 StagingLocation = stagingLocation;
                 Envelope = envelope;
+                Size = size;
             }
         }
 

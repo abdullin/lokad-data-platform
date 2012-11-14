@@ -54,8 +54,8 @@ namespace Platform.StreamClients
             var location = Path.Combine(_serverFolder, Guid.NewGuid().ToString());
             try
             {
-                PrepareStaging(records, location);
-                ImportEventsInternal(streamKey, location);
+                var result = PrepareStaging(records, location);
+                ImportEventsInternal(streamKey, location, result);
             }
             finally
             {
@@ -63,13 +63,13 @@ namespace Platform.StreamClients
             }
         }
 
-        static void PrepareStaging(IEnumerable<RecordForStaging> records, string location)
+        static long PrepareStaging(IEnumerable<RecordForStaging> records, string location)
         {
             try
             {
                 using (var fs = FileMessageSet.CreateNew(location))
                 {
-                    fs.Append("", records.Select(r =>
+                    return fs.Append("", records.Select(r =>
                         {
                             if (r.Data.Length > MessageSizeLimit)
                                 throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",

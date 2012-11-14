@@ -70,7 +70,7 @@ namespace Platform.Node.Services.ServerApi
         {
             var token = new ManualResetEventSlim(false);
             var container = ContainerName.Create(request.Container);
-            _publisher.Publish(new ClientMessage.ImportEvents(container, request.StreamKey, request.Location, s => token.Set()));
+            _publisher.Publish(new ClientMessage.ImportEvents(container, request.StreamKey, request.Location, request.Length, s => token.Set()));
 
             return Task.Factory.StartNew(() =>
                 {

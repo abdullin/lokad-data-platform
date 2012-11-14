@@ -23,6 +23,7 @@ namespace Platform.Messages
             public string Container { get; set; }
             public string StreamKey { get; set; }
             public string Location { get; set; }
+            public long Length { get; set; }
         }
 
         public class WriteBatchResponse
