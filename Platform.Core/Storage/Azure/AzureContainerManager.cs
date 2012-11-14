@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
+using Platform.StreamClients;
 
 namespace Platform.Storage.Azure
 {
@@ -65,15 +66,17 @@ namespace Platform.Storage.Azure
         }
     }
 
-    public sealed class AzureContainer
+    public sealed class AzureContainer : IDisposable
     {
         public readonly ContainerName Container;
         readonly AzureMessageSet _store;
+        readonly AzureMetadataCheckpoint _checkpoint;
 
-        public AzureContainer(ContainerName container, AzureMessageSet store)
+        public AzureContainer(ContainerName container, AzureMessageSet store, AzureMetadataCheckpoint checkpoint)
         {
             Container = container;
             _store = store;
+            _checkpoint = checkpoint;
         }
 
         public static bool TryGetContainerName
@@ -82,39 +85,87 @@ namespace Platform.Storage.Azure
             CloudBlobDirectory dir,
             out ContainerName container)
         {
-
-            // this is metadata checkpoint
-            // var check = config.GetPageBlob(container.Name + "/stream.chk");
-
             var topic = dir.Uri.ToString().Remove(0, dir.Container.Uri.ToString().Length).Trim('/');
 
             container = null;
             if (ContainerName.IsValid(topic)!= ContainerName.Rule.Valid)
                 return false;
             container = ContainerName.Create(topic);
+            return IsValid(config, container);
+        }
+
+        public static bool IsValid(AzureStoreConfiguration config, ContainerName container)
+        {
             var store = config.GetPageBlob(container.Name + "/stream.dat");
             return store.Exists();
         }
 
         public static AzureContainer OpenExistingForWriting(AzureStoreConfiguration config, ContainerName container)
         {
-            return new AzureContainer(container, new AzureMessageSet(config, container));
+            var blob = config.GetPageBlob(container.Name + "/stream.dat");
+            var check = AzureMetadataCheckpoint.OpenWriteable(blob);
+            var offset = check.Read();
+            var store = AzureMessageSet.OpenExistingForWriting(blob, offset);
+            return new AzureContainer(container, store, check);
         }
         public static AzureContainer CreateNewForWriting(AzureStoreConfiguration config, ContainerName container)
         {
-            return new AzureContainer(container, new AzureMessageSet(config, container));
+            var blob = config.GetPageBlob(container.Name + "/stream.dat");
+            blob.Container.CreateIfNotExist();
+
+            var store = AzureMessageSet.CreateNewForWriting(blob);
+            var check = AzureMetadataCheckpoint.OpenWriteable(blob);
+
+            return new AzureContainer(container, store, check);
+        }
+
+        public static AzureContainer OpenExistingForReading(AzureStoreConfiguration config, ContainerName container)
+        {
+            var blob = config.GetPageBlob(container.Name + "/stream.dat");
+            var store = AzureMessageSet.OpenExistingForReading(blob);
+            var check = AzureMetadataCheckpoint.OpenReadable(blob);
+            return new AzureContainer(container, store, check);
         }
 
         public void Reset()
         {
             _store.Reset();
+            _checkpoint.Write(0);
+        }
+
+        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
+        {
+            Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
+
+
+            var maxOffset = _checkpoint.Read();
+
+            // nothing to read from here
+            if (startOffset >= new StorageOffset(maxOffset))
+                yield break;
+
+            int recordCount = 0;
+            foreach (var msg in _store.ReadAll(startOffset.OffsetInBytes, maxOffset, maxRecordCount))
+            {
+                yield return new RetrievedDataRecord(msg.Key, msg.Data, msg.Next);
+                if (++recordCount >= maxRecordCount)
+                    yield break;
+                // we don't want to go above the initial water mark
+                if (msg.Next.OffsetInBytes >= maxOffset)
+                    yield break;
+
+            }
         }
 
         public void Write(string streamKey, IEnumerable<byte[]> data)
         {
-            _store.Append(streamKey, data);
-            //Checkpoint.Write(position);
+            var result = _store.Append(streamKey, data);
+            _checkpoint.Write(result);
         }
 
+        public void Dispose()
+        {
+            
+        }
     }
 }

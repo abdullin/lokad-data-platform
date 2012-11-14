@@ -27,36 +27,15 @@ namespace Platform.StreamClients
             if (maxRecordCount < 0)
                 throw new ArgumentOutOfRangeException("maxRecordCount");
 
-            if (!_blob.Exists())
+            if (!AzureContainer.IsValid(Config, Container))
                 yield break;
 
-            var checkpoint = AzureMetadataCheckpoint.OpenOrCreateReadable(_blob);
-            var endOffset = checkpoint.Read();
-
-            if (startOffset >= new StorageOffset(endOffset))
-                yield break;
-
-            using (var stream = _blob.OpenRead())
-            using (var reader = new BinaryReader(stream))
+            // CHECK existence
+            using (var cont = AzureContainer.OpenExistingForReading(Config, Container))
             {
-                stream.Seek(startOffset.OffsetInBytes, SeekOrigin.Begin);
-
-                var count = 0;
-                while (stream.Position < endOffset && count < maxRecordCount)
+                foreach (var record in cont.ReadAll(startOffset, maxRecordCount))
                 {
-                    var key = reader.ReadString();
-                    var length = reader.ReadInt32();
-
-                    if (stream.Position + length > stream.Length)
-                        throw new InvalidOperationException("Data length is out of range.");
-
-                    var data = reader.ReadBytes(length);
-                    yield return new RetrievedDataRecord(key, data, new StorageOffset(stream.Position));
-
-                    if (count == maxRecordCount)
-                        break;
-
-                    count++;
+                    yield return record;
                 }
             }
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Microsoft.WindowsAzure.StorageClient;
 using Microsoft.WindowsAzure.StorageClient.Protocol;
+using Platform.StreamClients;
 
 namespace Platform.Storage.Azure
 {
@@ -18,23 +19,30 @@ namespace Platform.Storage.Azure
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureMessageSet>();
 
-        readonly AzureMetadataCheckpoint _checkpoint;
-
-        public AzureMessageSet(AzureStoreConfiguration config, ContainerName container)
+        AzureMessageSet(CloudPageBlob blob, long offset)
         {
-            _blob = config.GetPageBlob(container.Name + "/stream.dat");
+            _blob = blob;
             _pageWriter = new PageWriter(512, WriteProc);
-            _blob.Container.CreateIfNotExist();
-            if (!_blob.Exists())
-            {
-                _blob.Create(ChunkSize);
-            }
-            _checkpoint = AzureMetadataCheckpoint.OpenOrCreateWriteable(_blob);
-            _blobContentSize = _checkpoint.Read();
+            _blobContentSize = offset;
             _blobSpaceSize = _blob.Properties.Length;
         }
 
-        public void Append(string streamKey, IEnumerable<byte[]> data)
+        public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset)
+        {
+            return new AzureMessageSet(blob, offset);
+        }
+
+        public static AzureMessageSet CreateNewForWriting(CloudPageBlob blob)
+        {
+            blob.Create(ChunkSize);
+            return new AzureMessageSet(blob, 0);
+        }
+        public static AzureMessageSet OpenExistingForReading(CloudPageBlob blob)
+        {
+            return new AzureMessageSet(blob, -1);
+        }
+
+        public long Append(string streamKey, IEnumerable<byte[]> data)
         {
             const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
@@ -66,13 +74,12 @@ namespace Platform.Storage.Azure
             }
             _blobContentSize += writtenBytes;
 
-            _checkpoint.Write(_blobContentSize);
+            return _blobContentSize;
         }
 
 
         public void Reset()
         {
-            _checkpoint.Write(0);
             _pageWriter.Reset();
             _blobContentSize = 0;
         }
@@ -108,6 +115,33 @@ namespace Platform.Storage.Azure
             credentials.SignRequest(request);
 
             using (request.GetResponse()) { }
+        }
+
+        public IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, long endOffset, int maxRecordCount)
+        {
+            using (var stream = _blob.OpenRead())
+            using (var reader = new BinaryReader(stream))
+            {
+                stream.Seek(startOffset, SeekOrigin.Begin);
+
+                var count = 0;
+                while (stream.Position < endOffset && count < maxRecordCount)
+                {
+                    var key = reader.ReadString();
+                    var length = reader.ReadInt32();
+
+                    if (stream.Position + length > stream.Length)
+                        throw new InvalidOperationException("Data length is out of range.");
+
+                    var data = reader.ReadBytes(length);
+                    yield return new RetrievedDataRecord(key, data, new StorageOffset(stream.Position));
+
+                    if (count == maxRecordCount)
+                        break;
+
+                    count++;
+                }
+            }
         }
 
     }

@@ -35,14 +35,14 @@ namespace Platform.Storage.Azure
             return read;
         }
 
-        public static AzureMetadataCheckpoint OpenOrCreateWriteable(CloudPageBlob blob)
+        public static AzureMetadataCheckpoint OpenWriteable(CloudPageBlob blob)
         {
             if (!blob.Exists())
                 throw new InvalidOperationException("Blob should exist");
             return new AzureMetadataCheckpoint(blob, readOnly:false);
         }
 
-        public static AzureMetadataCheckpoint OpenOrCreateReadable(CloudPageBlob blob)
+        public static AzureMetadataCheckpoint OpenReadable(CloudPageBlob blob)
         {
             if (!blob.Exists())
                 throw new InvalidOperationException("Blob should exist");
