@@ -66,14 +66,14 @@ namespace Platform.StreamClients
             var container = _blob.Container;
             container.CreateIfNotExist();
 
-            var tempBlob = container.GetBlockBlobReference(Guid.NewGuid().ToString());
+            var uri = string.Format("yyyy-MM-dd-{0}.stage",Guid.NewGuid().ToString().ToLowerInvariant());
+            var tempBlob = container.GetBlockBlobReference(uri);
             try
             {
                 var bytes = PrepareStaging(records);
                 Log.Debug("Uploading staging to {0}", tempBlob.Uri);
                 tempBlob.UploadByteArray(bytes);
-
-                ImportEventsInternal(streamKey, tempBlob.Uri.ToString());
+                ImportEventsInternal(streamKey, uri);
             }
             finally
             {
