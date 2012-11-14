@@ -42,11 +42,11 @@ namespace Platform.Storage
             var check = FileCheckpoint.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
             var store = FileMessageSet.CreateNew(Path.Combine(folder, "stream.dat"));
             return new FileContainer
-                {
-                    Container = container,
-                    Checkpoint = check,
-                    Store = store
-                };
+            {
+                Container = container,
+                Checkpoint = check,
+                Store = store
+            };
         }
         public static FileContainer OpenExistingForWriting(string root, ContainerName container)
         {
@@ -56,11 +56,11 @@ namespace Platform.Storage
                 check.Read());
 
             return new FileContainer
-                {
-                    Checkpoint = check,
-                    Container = container,
-                    Store = store
-                };
+            {
+                Checkpoint = check,
+                Container = container,
+                Store = store
+            };
         }
 
 
@@ -71,12 +71,12 @@ namespace Platform.Storage
             var store = FileMessageSet.OpenForReading(Path.Combine(folder, "stream.dat"));
 
             return new FileContainer
-                {
-                    Checkpoint = check,
-                    Container = container,
-                    Store = store
-                };
-            
+            {
+                Checkpoint = check,
+                Container = container,
+                Store = store
+            };
+
         }
 
         public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
@@ -110,7 +110,7 @@ namespace Platform.Storage
             Store.Reset();
         }
 
-        
+
 
         bool _disposed;
 
@@ -125,4 +125,5 @@ namespace Platform.Storage
             }
         }
     }
+
 }

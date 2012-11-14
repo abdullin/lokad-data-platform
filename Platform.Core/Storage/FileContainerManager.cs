@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Platform.StreamClients;
 
 namespace Platform.Storage
 {
     public class FileContainerManager : IDisposable
     {
-        readonly IDictionary<string,FileContainer> _stores = new Dictionary<string, FileContainer>();
+        readonly IDictionary<string, FileContainer> _stores = new Dictionary<string, FileContainer>();
 
         readonly string _rootDirectory;
 
@@ -16,7 +17,7 @@ namespace Platform.Storage
         {
             if (null == rootDirectory)
                 throw new ArgumentNullException("rootDirectory");
-            
+
             _rootDirectory = rootDirectory;
 
             if (!Directory.Exists(rootDirectory))
@@ -25,7 +26,7 @@ namespace Platform.Storage
             var info = new DirectoryInfo(rootDirectory);
             foreach (var child in info.GetDirectories())
             {
-                
+
                 var container = ContainerName.Create(child.Name);
                 if (FileContainer.ExistsValid(rootDirectory, container))
                 {
@@ -50,7 +51,7 @@ namespace Platform.Storage
         public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
         {
             FileContainer value;
-            if (!_stores.TryGetValue(container.Name,out value))
+            if (!_stores.TryGetValue(container.Name, out value))
             {
                 value = FileContainer.CreateNew(_rootDirectory, container);
                 _stores.Add(container.Name, value);
@@ -63,7 +64,7 @@ namespace Platform.Storage
         {
             foreach (var writer in _stores.Values)
             {
-                using(writer)
+                using (writer)
                 {
                     writer.Dispose();
                 }
