@@ -63,13 +63,12 @@ namespace Platform.Storage
             using (_writer)
             using (_reader)
             {
-                
-            }
-            {
                 _disposed = true;
                 _stream.Close();
                 if (_isMutable)
-                _writer.Close();
+                {
+                    _writer.Close();
+                }
                 _reader.Close();
                 
             }
