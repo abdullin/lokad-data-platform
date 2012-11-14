@@ -145,6 +145,7 @@ namespace Platform.Storage.Azure
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
             var check = AzureMetadataCheckpoint.OpenReadable(blob);
+            blob.FetchAttributes();
             var store = AzureMessageSet.OpenExistingForReading(blob, blob.Properties.Length);
             return new AzureContainer(container, store, check);
         }
