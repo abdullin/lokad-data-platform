@@ -18,26 +18,24 @@ namespace Platform.Storage.Azure
             var account = CloudStorageAccount.Parse(config.ConnectionString);
             var client = account.CreateCloudBlobClient();
 
-            var container = client.GetContainerReference(config.Container);
-            var blobs = container.ListBlobs();
+            var rootAzureContainer = client.GetContainerReference(config.Container);
 
-            foreach (var blob in blobs)
+            foreach (var blob in rootAzureContainer.ListBlobs())
             {
                 var dir = blob as CloudBlobDirectory;
 
                 if (dir == null) continue;
 
-                var topic = dir.Uri.ToString().Remove(0, dir.Container.Uri.ToString().Length).Trim('/'); 
-                var containerName = ContainerName.Create(topic);
+                ContainerName container;
 
-                if (AzureContainer.ExistsValid(_config, containerName))
+                if (AzureContainer.TryGetContainerName(_config, dir, out container))
                 {
-                    var value = new AzureContainer(containerName, new AzureMessageSet(config, containerName));
-                    _stores.Add(topic, value);
+                    var value = new AzureContainer(container, new AzureMessageSet(config, container));
+                    _stores.Add(container.Name, value);
                 }
                 else
                 {
-                    Log.Error("Skipping invalid folder {0}", topic);
+                    Log.Error("Skipping invalid folder {0}", rootAzureContainer.Uri.MakeRelativeUri(dir.Uri));
                 }
             }
         }
@@ -78,10 +76,22 @@ namespace Platform.Storage.Azure
             Store = store;
         }
 
-        public static bool ExistsValid(AzureStoreConfiguration config, ContainerName container)
+        public static bool TryGetContainerName
+        (
+            AzureStoreConfiguration config, 
+            CloudBlobDirectory dir,
+            out ContainerName container)
         {
+
             // this is metadata checkpoint
             // var check = config.GetPageBlob(container.Name + "/stream.chk");
+
+            var topic = dir.Uri.ToString().Remove(0, dir.Container.Uri.ToString().Length).Trim('/');
+
+            container = null;
+            if (ContainerName.IsValid(topic)!= ContainerName.Rule.Valid)
+                return false;
+            container = ContainerName.Create(topic);
             var store = config.GetPageBlob(container.Name + "/stream.dat");
             return store.Exists();
         }
