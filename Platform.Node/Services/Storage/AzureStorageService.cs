@@ -53,7 +53,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.ImportEvents msg)
         {
-            Log.Info("Got import request");
+            Log.Info("Got import request for {0} bytes", msg.Size);
             var watch = Stopwatch.StartNew();
             var count = 0;
             var size = 0;
@@ -91,7 +91,7 @@ namespace Platform.Node.Services.Storage
 
         static IEnumerable<byte[]> EnumerateStaging(CloudPageBlob location, long size)
         {
-            using (var fs = AzureMessageSet.OpenExistingForReading(location))
+            using (var fs = AzureMessageSet.OpenExistingForReading(location, size))
             {
                 foreach (var msg in fs.ReadAll(0,size, int.MaxValue))
                 {

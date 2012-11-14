@@ -64,6 +64,7 @@ namespace Platform.Storage.Azure
         {
 
         }
+
     }
 
     public sealed class AzureContainer : IDisposable
@@ -97,15 +98,36 @@ namespace Platform.Storage.Azure
         public static bool IsValid(AzureStoreConfiguration config, ContainerName container)
         {
             var store = config.GetPageBlob(container.Name + "/stream.dat");
-            return store.Exists();
+            return Exists(store);
         }
+
+        static bool Exists(CloudBlob blob)
+        {
+            try
+            {
+                blob.FetchAttributes();
+                return true;
+            }
+            catch (StorageClientException e)
+            {
+                switch (e.ErrorCode)
+                {
+                        case StorageErrorCode.ContainerNotFound:
+                        case StorageErrorCode.ResourceNotFound:
+                        return false;
+                }
+                throw;
+            }
+        }
+
 
         public static AzureContainer OpenExistingForWriting(AzureStoreConfiguration config, ContainerName container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
             var check = AzureMetadataCheckpoint.OpenWriteable(blob);
             var offset = check.Read();
-            var store = AzureMessageSet.OpenExistingForWriting(blob, offset);
+            var length = blob.Properties.Length;
+            var store = AzureMessageSet.OpenExistingForWriting(blob, offset, length);
             return new AzureContainer(container, store, check);
         }
         public static AzureContainer CreateNewForWriting(AzureStoreConfiguration config, ContainerName container)
@@ -122,8 +144,8 @@ namespace Platform.Storage.Azure
         public static AzureContainer OpenExistingForReading(AzureStoreConfiguration config, ContainerName container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
-            var store = AzureMessageSet.OpenExistingForReading(blob);
             var check = AzureMetadataCheckpoint.OpenReadable(blob);
+            var store = AzureMessageSet.OpenExistingForReading(blob, blob.Properties.Length);
             return new AzureContainer(container, store, check);
         }
 

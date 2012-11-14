@@ -31,6 +31,7 @@ namespace Platform.StreamClients
                             Container = Container.Name,
                             StreamKey = streamKey,
                             Location = location,
+                            Length = length
                         });
                 if (!response.Success)
                 {

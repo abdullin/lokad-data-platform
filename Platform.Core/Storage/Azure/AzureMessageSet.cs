@@ -19,27 +19,30 @@ namespace Platform.Storage.Azure
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureMessageSet>();
 
-        AzureMessageSet(CloudPageBlob blob, long offset)
+        AzureMessageSet(CloudPageBlob blob, long offset, long size)
         {
             _blob = blob;
             _pageWriter = new PageWriter(512, WriteProc);
             _blobContentSize = offset;
-            _blobSpaceSize = _blob.Properties.Length;
+            _blobSpaceSize = size;
         }
 
-        public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset)
+        public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset, long length)
         {
-            return new AzureMessageSet(blob, offset);
+            Ensure.Positive(length,"length");
+            Ensure.Positive(offset, "offset");
+            return new AzureMessageSet(blob, offset, length);
         }
 
         public static AzureMessageSet CreateNewForWriting(CloudPageBlob blob)
         {
             blob.Create(ChunkSize);
-            return new AzureMessageSet(blob, 0);
+            return new AzureMessageSet(blob, 0, ChunkSize);
         }
-        public static AzureMessageSet OpenExistingForReading(CloudPageBlob blob)
+        public static AzureMessageSet OpenExistingForReading(CloudPageBlob blob, long length)
         {
-            return new AzureMessageSet(blob, -1);
+            Ensure.Positive(length, "length");
+            return new AzureMessageSet(blob, -1, length);
         }
 
         public long Append(string streamKey, IEnumerable<byte[]> data)
@@ -101,7 +104,7 @@ namespace Platform.Storage.Azure
             _blob.WritePages(source, offset);
         }
 
-        public static void SetLength(CloudPageBlob blob, long newLength, int timeout = 10000)
+        static void SetLength(CloudPageBlob blob, long newLength, int timeout = 10000)
         {
             var credentials = blob.ServiceClient.Credentials;
 

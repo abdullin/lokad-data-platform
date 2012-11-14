@@ -50,7 +50,7 @@ namespace Platform.StreamClients
             var tempBlob = container.GetPageBlobReference(uri);
             try
             {
-                Log.Debug("Uploading staging to {0}", tempBlob.Uri);
+                Log.Debug("Uploading staging to {0}", uri);
                 var size = PrepareStaging(records, tempBlob);
                 ImportEventsInternal(streamKey, uri, size);
             }
