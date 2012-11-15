@@ -84,24 +84,24 @@ namespace SmartApp.Sample3.Contracts
             }
         }
 
-        public static Comment FromBinary(byte[] data)
+        public static Comment TryGetFromBinary(byte[] data)
         {
             using (var mem = new MemoryStream(data))
             using (var bin = new BinaryReader(mem))
             {
                 var retrieved = bin.ReadInt32();
                 if (retrieved != Signature)
-                    throw new InvalidOperationException("Signature mismatch");
+                    return null;
 
                 return new Comment()
-                           {
-                               Id = bin.ReadInt64(),
-                               PostId = bin.ReadInt64(),
-                               UserId = bin.ReadInt64(),
-                               CreationDate = DateTime.FromBinary(bin.ReadInt64()),
-                               Text = bin.ReadString(),
-                               Score = bin.ReadInt32()
-                           };
+                    {
+                        Id = bin.ReadInt64(),
+                        PostId = bin.ReadInt64(),
+                        UserId = bin.ReadInt64(),
+                        CreationDate = DateTime.FromBinary(bin.ReadInt64()),
+                        Text = bin.ReadString(),
+                        Score = bin.ReadInt32()
+                    };
             }
         }
     }
@@ -125,7 +125,7 @@ namespace SmartApp.Sample3.Contracts
             Tags = new string[0];
         }
 
-        private const int Signature = 4344;
+        public const int Signature = 4344;
 
         public byte[] ToBinary()
         {
@@ -157,14 +157,13 @@ namespace SmartApp.Sample3.Contracts
             }
         }
 
-        public static Post FromBinary(byte[] data)
+        public static Post TryGetFromBinary(byte[] data)
         {
             using (var mem = new MemoryStream(data))
             using (var bin = new BinaryReader(mem))
             {
-                var retrieved = bin.ReadInt32();
-                if (retrieved != Signature)
-                    throw new InvalidOperationException("Signature mismatch");
+                if (bin.ReadInt32() != Signature)
+                    return null;
 
                 var post = new Post
                 {
@@ -217,14 +216,13 @@ namespace SmartApp.Sample3.Contracts
             }
         }
 
-        public static User FromBinary(byte[] data)
+        public static User TryGetFromBinary(byte[] data)
         {
             using (var m = new MemoryStream(data))
             using (var bin = new BinaryReader(m))
             {
-                var retrived = bin.ReadInt32();
-                if (retrived != Signature)
-                    throw new InvalidOperationException("Signature mismatch");
+                if (bin.ReadInt32() != Signature)
+                    return null;
 
                 return new User
                 {

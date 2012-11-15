@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SmartApp.Sample3.Contracts;
 
@@ -24,7 +20,7 @@ namespace SmartApp.Sample3.Tests
                 };
 
             var bin = source.ToBinary();
-            var restored = Comment.FromBinary(bin);
+            var restored = Comment.TryGetFromBinary(bin);
 
             ShouldBeEqual(source, restored);
         }
@@ -35,7 +31,7 @@ namespace SmartApp.Sample3.Tests
             var source = new Comment();
 
             var bin = source.ToBinary();
-            var restored = Comment.FromBinary(bin);
+            var restored = Comment.TryGetFromBinary(bin);
 
 
             ShouldBeEqual(source, restored);

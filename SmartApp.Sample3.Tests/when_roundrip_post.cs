@@ -26,7 +26,7 @@ namespace SmartApp.Sample3.Tests
                 };
 
             var bin = source.ToBinary();
-            var restored = Post.FromBinary(bin);
+            var restored = Post.TryGetFromBinary(bin);
 
             ShouldBeEqual(source, restored);
         }
@@ -37,7 +37,7 @@ namespace SmartApp.Sample3.Tests
             var source = new Post();
 
             var bin = source.ToBinary();
-            var restored = Post.FromBinary(bin);
+            var restored = Post.TryGetFromBinary(bin);
 
             ShouldBeEqual(source, restored);
         }

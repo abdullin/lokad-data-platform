@@ -18,7 +18,7 @@ namespace SmartApp.Sample3.Dump
         public static string RawDataPath;
         public static string StorePath;
         public static string StoreConnection;
-        static void Main(string[] args)
+        static void Main()
         {
             RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
             StorePath = ConfigurationManager.AppSettings["StorePath"];
@@ -87,7 +87,7 @@ namespace SmartApp.Sample3.Dump
                 
                 if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
+                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
                     buffer.Clear();
 
                     var speed = total / sw.Elapsed.TotalSeconds;
@@ -96,7 +96,7 @@ namespace SmartApp.Sample3.Dump
                 
                 
             }
-            _reader.WriteEventsInLargeBatch("s3:comment", buffer.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
             Console.WriteLine("Comments import complete");
         }
 
@@ -147,7 +147,7 @@ namespace SmartApp.Sample3.Dump
 
                 if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
+                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
                     buffer.Clear();
                     var speed = total / sw.Elapsed.TotalSeconds;
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", speed, total);
@@ -225,11 +225,11 @@ namespace SmartApp.Sample3.Dump
             {
                 long defaultLong;
                 var user = new User
-                           {
-                               Id = long.TryParse(Get(line, "Id"), out  defaultLong) ? defaultLong : -1,
-                               Name = HttpUtility.HtmlDecode(Get(line, "DisplayName")),
-                               Reputation = long.TryParse(Get(line, "Reputation"), out defaultLong) ? defaultLong : -1
-                           };
+                    {
+                        Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
+                        Name = HttpUtility.HtmlDecode(Get(line, "DisplayName")),
+                        Reputation = long.TryParse(Get(line, "Reputation"), out defaultLong) ? defaultLong : -1
+                    };
 
                 return user;
             }

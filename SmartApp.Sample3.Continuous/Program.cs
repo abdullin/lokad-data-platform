@@ -48,10 +48,10 @@ namespace SmartApp.Sample3.Continuous
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
-                    if (dataRecord.Key != "s3:post")
+                    var post = Post.TryGetFromBinary(dataRecord.Data);
+                    if (post == null)
                         continue;
 
-                    var post = Post.FromBinary(dataRecord.Data);
 
                     foreach (var tag in post.Tags)
                     {
@@ -102,28 +102,27 @@ namespace SmartApp.Sample3.Continuous
                 foreach (var dataRecord in records)
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
+                    processingInfo.EventsProcessed += 1;
 
-                    if (dataRecord.Key == "s3:user")
+                    var user = User.TryGetFromBinary(dataRecord.Data);
+                    if (user != null)
                     {
-                        var user = User.FromBinary(dataRecord.Data);
                         data.Users[user.Id] = user;
                         emptyData = false;
                         continue;
                     }
+                    var comment = Comment.TryGetFromBinary(dataRecord.Data);
 
-                    if (dataRecord.Key != "s3:comment")
-                        continue;
+                    if (comment != null)
+                    {
 
-                    var comment = Comment.FromBinary(dataRecord.Data);
+                        if (data.Distribution.ContainsKey(comment.UserId))
+                            data.Distribution[comment.UserId] += 1;
+                        else
+                            data.Distribution[comment.UserId] = 1;
+                        emptyData = false;
+                    }
 
-                    if (data.Distribution.ContainsKey(comment.UserId))
-                        data.Distribution[comment.UserId] += 1;
-                    else
-                        data.Distribution[comment.UserId] = 1;
-
-                    processingInfo.EventsProcessed += 1;
-
-                    emptyData = false;
                 }
 
                 views.WriteAsJson(processingInfo, CommentDistributionView.FileName + ".info");
@@ -163,29 +162,30 @@ namespace SmartApp.Sample3.Continuous
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
-                    if (dataRecord.Key == "s3:user")
+                    var user = User.TryGetFromBinary(dataRecord.Data);
+                    if (user != null)
                     {
-                        var user = User.FromBinary(dataRecord.Data);
                         data.Users[user.Id] = user;
                         emptyData = false;
                         continue;
                     }
 
-                    if (dataRecord.Key != "s3:comment") continue;
-
-                    var comment = Comment.FromBinary(dataRecord.Data);
-
-                    if (!data.Distribution.ContainsKey(comment.UserId))
+                    var comment = Comment.TryGetFromBinary(dataRecord.Data);
+                    if (comment != null)
                     {
-                        data.Distribution.Add(comment.UserId, new long[7]);
+
+                        if (!data.Distribution.ContainsKey(comment.UserId))
+                        {
+                            data.Distribution.Add(comment.UserId, new long[7]);
+                        }
+
+                        var dayOfWeek = (int) comment.CreationDate.Date.DayOfWeek;
+                        data.Distribution[comment.UserId][dayOfWeek]++;
+
+                        processingInfo.EventsProcessed += 1;
+
+                        emptyData = false;
                     }
-
-                    var dayOfWeek = (int)comment.CreationDate.Date.DayOfWeek;
-                    data.Distribution[comment.UserId][dayOfWeek]++;
-
-                    processingInfo.EventsProcessed += 1;
-
-                    emptyData = false;
                 }
 
                 views.WriteAsJson(processingInfo, UserCommentsDistributionView.FileName + ".info");
