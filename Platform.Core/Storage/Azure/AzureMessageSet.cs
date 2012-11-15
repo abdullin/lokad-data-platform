@@ -25,6 +25,23 @@ namespace Platform.Storage.Azure
             _pageWriter = new PageWriter(512, WriteProc);
             _blobContentSize = offset;
             _blobSpaceSize = size;
+
+            if (offset > 0)
+            {
+                _pageWriter.CacheLastPageIfNeeded(offset, BufferTip);
+            }
+        }
+
+        byte[] BufferTip(long position, int count)
+        {
+            var buffer = new byte[count];
+            using (var s = _blob.OpenRead())
+            {
+                s.ReadAheadSize = count;
+                s.Seek(position, SeekOrigin.Begin);
+                s.Read(buffer, 0, count);
+                return buffer;
+            }
         }
 
         public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset, long length)

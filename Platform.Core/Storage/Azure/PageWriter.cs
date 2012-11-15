@@ -16,6 +16,8 @@ namespace Platform.Storage.Azure
         /// <param name="source">The source.</param>
         public delegate void AppendWriterDelegate(int offset, Stream source);
 
+        public delegate byte[] TailLoaderDelegate(long position, int count);
+
         readonly int _pageSizeInBytes;
         readonly AppendWriterDelegate _writer;
         MemoryStream _pending;
@@ -27,8 +29,29 @@ namespace Platform.Storage.Azure
         public PageWriter(int pageSizeInBytes, AppendWriterDelegate writer)
         {
             _writer = writer;
+            
             _pageSizeInBytes = pageSizeInBytes;
             _pending = new MemoryStream();
+        }
+
+        public void CacheLastPageIfNeeded(long position, TailLoaderDelegate loader)
+        {
+            Ensure.Nonnegative(position, "position");
+            Ensure.NotNull(loader, "loader");
+
+            if (position == 0) return;
+            var total = (int)(position / _pageSizeInBytes);
+            var remainder = (int)(position % _pageSizeInBytes);
+
+            _fullPagesFlushed = (int)total;
+            if (remainder != 0)
+            {
+                // we need to preload data
+                _bytesPending = remainder;
+                var tip = loader(position - remainder, remainder);
+                _pending.Write(tip, 0, remainder);
+            }
+            
         }
 
         public void Write(byte[] buffer)
