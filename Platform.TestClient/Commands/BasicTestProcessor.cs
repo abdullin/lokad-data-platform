@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Platform.Storage;
 using Platform.StreamClients;
 
 namespace Platform.TestClient.Commands
@@ -68,9 +67,16 @@ namespace Platform.TestClient.Commands
             int batchMessageCount = batchCount * batchSize;
             int floodMessagesCount = threadCount * floodSize;
 
-            foreach (var record in context.Client.Streams.ReadAll().Where(x => x.Key == streamId))
+            foreach (var record in context.Client.Streams.ReadAll())
             {
-                string receivedMessage = Encoding.UTF8.GetString(record.Data);
+                var receivedMessage = Encoding.UTF8.GetString(record.Data);
+
+                if (!receivedMessage.StartsWith(streamId))
+                    continue;
+
+                receivedMessage = receivedMessage.Remove(0, streamId.Length);
+
+
                 if (index < batchMessageCount && !batchMessages.Remove(receivedMessage))
                 {
                     context.Log.Error("batch message('{0}') appears more than once", receivedMessage);
@@ -127,8 +133,8 @@ namespace Platform.TestClient.Commands
                             for (int i = 0; i < floodSize; i++)
                             {
                                 if (token.IsCancellationRequested) return;
-                                var currentMessage = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                                context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(currentMessage));
+                                var currentMessage = streamId + string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
+                                context.Client.Streams.WriteEvent("", Encoding.UTF8.GetBytes(currentMessage));
 
                                 result.Add(currentMessage);
                             }
@@ -163,13 +169,13 @@ namespace Platform.TestClient.Commands
             for (int i = 0; i < batchCount; i++)
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
-                context.Client.Streams.WriteEventsInLargeBatch(streamId,
+                context.Client.Streams.WriteEventsInLargeBatch("",
                     Enumerable.Range(0, batchSize).Select(
                         x =>
                         {
                             try
                             {
-                                var bytes = Encoding.UTF8.GetBytes(string.Format(message, x));
+                                var bytes = Encoding.UTF8.GetBytes(streamId + string.Format(message, x));
                                 totalBytes += bytes.Length;
                                 return new RecordForStaging(bytes);
                             }
