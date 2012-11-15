@@ -133,10 +133,9 @@ namespace Platform.TestClient.Commands
                             for (int i = 0; i < floodSize; i++)
                             {
                                 if (token.IsCancellationRequested) return;
-                                var currentMessage = streamId + string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                                context.Client.Streams.WriteEvent("", Encoding.UTF8.GetBytes(currentMessage));
-
-                                result.Add(currentMessage);
+                                var format = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
+                                context.Client.Streams.WriteEvent("", Encoding.UTF8.GetBytes(streamId + format));
+                                result.Add(format);
                             }
                         }
                         catch (Exception ex)
