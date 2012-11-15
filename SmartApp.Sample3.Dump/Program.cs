@@ -29,8 +29,6 @@ namespace SmartApp.Sample3.Dump
             Console.WriteLine("  RawDataPath (put stack overflow dump here): {0}", RawDataPath);
             Console.WriteLine("  StoreDataPath: {0}", StorePath);
             Console.WriteLine("  StoreConnection: {0}", StoreConnection);
-
-
             
             _reader =  PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
             Thread.Sleep(2000); //waiting for server initialization
@@ -109,14 +107,17 @@ namespace SmartApp.Sample3.Dump
                 DateTime defaultDate;
 
                 var comment = new Comment
-                               {
-                                   Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
-                                   PostId = long.TryParse(Get(line, "PostId"), out defaultLong) ? defaultLong : -1,
-                                   CreationDate = DateTime.TryParse(Get(line, "CreationDate"), out defaultDate) ? defaultDate : DateTime.MinValue,
-                                   Text = HttpUtility.HtmlDecode(Get(line, "Text")),
-                                   UserId = long.TryParse(Get(line, "UserId"), out defaultLong) ? defaultLong : -1,
-                                   Score = int.TryParse(Get(line, "Score"), out defaultInt) ? defaultInt : -1,
-                               };
+                    {
+                        Id = long.TryParse(Get(line, "Id"), out defaultLong) ? defaultLong : -1,
+                        PostId = long.TryParse(Get(line, "PostId"), out defaultLong) ? defaultLong : -1,
+                        CreationDate =
+                            DateTime.TryParse(Get(line, "CreationDate"), out defaultDate)
+                                ? defaultDate
+                                : DateTime.MinValue,
+                        Text = HttpUtility.HtmlDecode(Get(line, "Text")),
+                        UserId = long.TryParse(Get(line, "UserId"), out defaultLong) ? defaultLong : -1,
+                        Score = int.TryParse(Get(line, "Score"), out defaultInt) ? defaultInt : -1,
+                    };
 
                 return comment;
             }
@@ -251,6 +252,4 @@ namespace SmartApp.Sample3.Dump
             return line.Substring(startOffset, end - startOffset);
         }
     }
-
-
 }
