@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -15,18 +16,23 @@ namespace SmartApp.Sample1.Chat
     {
         private static IInternalStreamClient _client;
         static ViewClient _view;
-        public static string RawDataPath;
         public static string StorePath;
         public static string StoreConnection;
         static string _userName;
         static string _userMessage;
         static void Main()
         {
-            RawDataPath = ConfigurationManager.AppSettings["RawDataPath"];
+            
             StorePath = ConfigurationManager.AppSettings["StorePath"];
-            StoreConnection = ConfigurationManager.AppSettings["StoreConnection"];
 
-            _client = PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
+            if (string.IsNullOrWhiteSpace(StorePath))
+                StorePath = 
+
+            StoreConnection = ConfigurationManager.AppSettings["StoreConnection"];
+            if (string.IsNullOrWhiteSpace(StoreConnection))
+                StoreConnection = "http://localhost:8080";
+
+            _client = PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection, "sample1");
             _view = PlatformClient.GetViewClient(StorePath, "sample1");
             _view.CreateContainer();
 
@@ -34,7 +40,7 @@ namespace SmartApp.Sample1.Chat
             _userName = Console.ReadLine();
             Console.WriteLine("Chat starting...");
 
-            _client.WriteEvent("chat", Encoding.UTF8.GetBytes("|join a new user " + _userName));
+            _client.WriteEvent("", Encoding.UTF8.GetBytes("|join a new user " + _userName));
             Task.Factory.StartNew(ScanChat,
                 TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
 
@@ -50,7 +56,7 @@ namespace SmartApp.Sample1.Chat
                     _userMessage += keyInfo.KeyChar;
                 else
                 {
-                    _client.WriteEvent("chat", Encoding.UTF8.GetBytes(string.Format("{0}|{1}", _userName, _userMessage)));
+                    _client.WriteEvent("", Encoding.UTF8.GetBytes(string.Format("{0}|{1}", _userName, _userMessage)));
                     Console.WriteLine();
                     WriteColorText(_userName + ">", ConsoleColor.Green);
                     _userMessage = "";
@@ -64,10 +70,9 @@ namespace SmartApp.Sample1.Chat
             var nextOffset = lastMessage == null ? new StorageOffset(0) : new StorageOffset(lastMessage.LastOffset);
             while (true)
             {
-                StorageOffset last = StorageOffset.Zero;
-                bool existMessages = false;
-                var messages = _client.ReadAll(nextOffset).Where(x => x.Key == "chat");
-                foreach (RetrievedDataRecord message in messages)
+                var last = StorageOffset.Zero;
+                var existMessages = false;
+                foreach (var message in _client.ReadAll(nextOffset))
                 {
                     last = message.Next;
                     existMessages = true;
