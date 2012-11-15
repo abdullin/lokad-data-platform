@@ -26,7 +26,7 @@ namespace SmartApp.Sample1.Chat
             StorePath = ConfigurationManager.AppSettings["StorePath"];
 
             if (string.IsNullOrWhiteSpace(StorePath))
-                StorePath = 
+                StorePath = @"C:\LokadData\dp-store";
 
             StoreConnection = ConfigurationManager.AppSettings["StoreConnection"];
             if (string.IsNullOrWhiteSpace(StoreConnection))

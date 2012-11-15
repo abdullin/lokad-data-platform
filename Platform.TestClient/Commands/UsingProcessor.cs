@@ -14,7 +14,17 @@ namespace Platform.TestClient.Commands
                 context.Log.Error("Container name expected");
                 return false;
             }
+
+            var isValid = ContainerName.IsValid(args[0]);
+            if (isValid != ContainerName.Rule.Valid)
+            {
+                context.Log.Error("Container name is invalid: {0}", isValid);
+                return false;
+            }
+
+            context.Log.Info("Switching to container '{0}'", args[0]);
             context.Client.UseStreamContainer(args[0]);
+            
             return true;
         }
     }

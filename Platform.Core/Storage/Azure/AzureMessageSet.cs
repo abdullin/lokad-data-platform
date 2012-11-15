@@ -132,10 +132,7 @@ namespace Platform.Storage.Azure
                 {
                     var key = reader.ReadString();
                     var length = reader.ReadInt32();
-
-                    if (stream.Position + length > stream.Length)
-                        throw new InvalidOperationException("Data length is out of range.");
-
+                   
                     var data = reader.ReadBytes(length);
                     yield return new RetrievedDataRecord(key, data, new StorageOffset(stream.Position));
 

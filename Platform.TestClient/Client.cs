@@ -32,7 +32,7 @@ namespace Platform.TestClient
 
         public void UseStreamContainer(string containerName = "default")
         {
-            Streams = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase);
+            Streams = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase, containerName);
         }
 
         void RegisterCommands()
