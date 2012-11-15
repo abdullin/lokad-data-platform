@@ -24,9 +24,15 @@ namespace Platform.TestClient
             // TODO : pass server options
             ClientHttpBase = string.Format("http://{0}:{1}", options.Ip, options.HttpPort);
             Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
-            Streams = PlatformClient.GetStreamReaderWriter(options.StoreLocation, ClientHttpBase);
+            
+            UseStreamContainer("default");
 
             RegisterCommands();
+        }
+
+        public void UseStreamContainer(string containerName = "default")
+        {
+            Streams = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase);
         }
 
         void RegisterCommands()
@@ -51,6 +57,7 @@ namespace Platform.TestClient
             _commands.Register(new ReadProcessor());
 
             _commands.Register(new ViewReadWriteFloodProcessor());
+            _commands.Register(new UsingProcessor());
         }
 
          
