@@ -29,7 +29,7 @@ namespace Platform.Storage.Azure
         {
             _blob.FetchAttributes();
             var s = _blob.Metadata["committedsize"];
-            Log.Debug("Checkpoint were '{0}'", s ?? "N/A");
+            //Log.Debug("Checkpoint were '{0}'", s ?? "N/A");
             var read = Int64.Parse(s ?? "0");
             return read;
         }
