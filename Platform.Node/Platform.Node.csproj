@@ -56,9 +56,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Topshelf">
-      <HintPath>..\Library\Topshelf\Topshelf.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NodeController.cs" />
@@ -71,7 +68,6 @@
     <Compile Include="Services\Storage\AzureStorageService.cs" />
     <Compile Include="Services\Storage\FileStorageService.cs" />
     <Compile Include="Services\Timer\TimerService.cs" />
-    <Compile Include="ServerNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config">
