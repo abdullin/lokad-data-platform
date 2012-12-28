@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartApp.Sample3.Tests", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Core.Tests", "Platform.Core.Tests\Platform.Core.Tests.csproj", "{042AF43A-07DD-45C6-8720-90987D238A33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platform.Node.Service", "Platform.Node.Service\Platform.Node.Service.csproj", "{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042AF43A-07DD-45C6-8720-90987D238A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9B95971F-9DC9-4981-A7CB-8F6576EA39BB}</ProjectGuid>
+    <ProjectGuid>{D29B526C-A3B4-4BC9-91D1-2F0C9C154108}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Platform.Node</RootNamespace>
-    <AssemblyName>Platform.Node</AssemblyName>
+    <RootNamespace>Platform.Node.Service</RootNamespace>
+    <AssemblyName>Platform.Node.Service</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -27,63 +26,40 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\server\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Library\Azure\Microsoft.WindowsAzure.StorageClient.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\Library\ServiceStack\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\Library\ServiceStack\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Plugins.Tasks">
-      <HintPath>..\Library\ServiceStack\ServiceStack.Plugins.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.ServiceInterface">
-      <HintPath>..\Library\ServiceStack\ServiceStack.ServiceInterface.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf">
+      <HintPath>..\Library\Topshelf\Topshelf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NodeController.cs" />
-    <Compile Include="NodeOptions.cs" />
-    <Compile Include="ServerService.cs" />
-    <Compile Include="Services\ServerApi\ImportService.cs" />
-    <Compile Include="Services\ServerApi\PlatformServerApiService.cs" />
-    <Compile Include="Services\ServerApi\ServerApiService.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Services\ServerApi\StreamService.cs" />
-    <Compile Include="Services\Storage\AzureStorageService.cs" />
-    <Compile Include="Services\Storage\FileStorageService.cs" />
-    <Compile Include="Services\Timer\TimerService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Readme.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
-      <Project>{39f04669-caa7-4f30-8be2-6cf79f49f2e6}</Project>
+      <Project>{39F04669-CAA7-4F30-8BE2-6CF79F49F2E6}</Project>
       <Name>Platform.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
+      <Project>{9b95971f-9dc9-4981-a7cb-8f6576ea39bb}</Project>
+      <Name>Platform.Node</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

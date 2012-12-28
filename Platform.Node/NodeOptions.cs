@@ -5,7 +5,7 @@ namespace Platform.Node
     /// <summary>
     /// Command line options for the server
     /// </summary>
-    class NodeOptions : CommandLineOptionsBase
+    public class NodeOptions : CommandLineOptionsBase
     {
         [Option("k", "killswitch", DefaultValue = -1, HelpText = "Kill server in seconds")]
         public int KillSwitch { get; set; }
