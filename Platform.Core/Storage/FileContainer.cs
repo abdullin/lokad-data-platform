@@ -92,7 +92,7 @@ namespace Platform.Storage
             int recordCount = 0;
             foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                yield return new RetrievedDataRecord(msg.StreamKey, msg.Message, new StorageOffset(msg.Offset));
+                yield return new RetrievedDataRecord(msg.StreamKey, msg.Message, new StorageOffset(msg.NextOffset));
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark
