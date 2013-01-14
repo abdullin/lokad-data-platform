@@ -26,7 +26,11 @@ namespace Platform.Storage
             var info = new DirectoryInfo(rootDirectory);
             foreach (var child in info.GetDirectories())
             {
-
+                if (ContainerName.IsValid(child.Name) != ContainerName.Rule.Valid)
+                {
+                    Log.Error("Skipping invalid folder {0}", child.Name);
+                    continue;
+                }
                 var container = ContainerName.Create(child.Name);
                 if (FileContainer.ExistsValid(rootDirectory, container))
                 {

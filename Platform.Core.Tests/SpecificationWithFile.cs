@@ -12,7 +12,7 @@ namespace Platform.Core.Tests
         {
             FileName = Path.GetTempFileName();
         }
-
+        [TearDown]
         public void TearDown()
         {
             File.Delete(FileName);
