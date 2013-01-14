@@ -43,13 +43,21 @@ namespace Platform
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
                 var container = new FileViewContainer(new DirectoryInfo(storage));
-                return new ViewClient(container.GetContainer(containerName), FileActionPolicy);
-            }
-            var account = CloudStorageAccount.Parse(configuration.ConnectionString);
-            var client = account.CreateCloudBlobClient();
-            var viewContainer = new BlobViewRoot(client).GetContainer(configuration.Container);
 
-            return new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
+                var viewClient = new ViewClient(container.GetContainer(containerName), FileActionPolicy);
+                viewClient.CreateContainer();
+                return viewClient;
+            }
+            else
+            {
+                var account = CloudStorageAccount.Parse(configuration.ConnectionString);
+                var client = account.CreateCloudBlobClient();
+                var viewContainer = new BlobViewRoot(client).GetContainer(configuration.Container);
+
+                var viewClient = new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
+                viewClient.CreateContainer();
+                return viewClient;
+            }
         }
 
         static bool FileActionPolicy(Queue<Exception> exceptions)

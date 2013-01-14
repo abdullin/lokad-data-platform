@@ -30,8 +30,8 @@ namespace SmartApp.Sample1.Chat
             if (string.IsNullOrWhiteSpace(StoreConnection))
                 StoreConnection = "http://localhost:8080";
 
-            _client = PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection, "sample1");
-            _view = PlatformClient.GetViewClient(StorePath, "sample1");
+            _client = PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
+            _view = PlatformClient.GetViewClient(StorePath, "sample1-views");
             _view.CreateContainer();
 
             Console.WriteLine("You name:");

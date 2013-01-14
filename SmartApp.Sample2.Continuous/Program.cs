@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
+using Platform;
 using Platform.StreamClients;
-using ServiceStack.Text;
+using Platform.ViewClients;
 
 namespace SmartApp.Sample2.Continuous
 {
     // See Readme.md in this project for the description of the sample
     class Program
     {
+        const string ViewName = "sample2.dat";
+
         static void Main(string[] args)
         {
             // configure the system
-            var client = new FileStreamClient(@"C:\LokadData\dp-store");
+            var store = @"C:\LokadData\dp-store";
 
+            var reader = PlatformClient.GetStreamReader(store);
+            var views = PlatformClient.GetViewClient(store, "sample2-views");
 
             // Load view, in case this console continues previous work
-            var data = LoadProjectedView();
+            var data = views.ReadAsJsonOrGetNew<Sample2Data>(ViewName);
             // print it for debug purposes
             PrintDataToConsole(data, true);
 
@@ -27,7 +31,7 @@ namespace SmartApp.Sample2.Continuous
                 try
                 {
                     
-                    ProcessNextIncrementOfEventsOrSleep(data, client);
+                    ProcessNextIncrementOfEventsOrSleep(data, reader, views);
                 }
                 catch (Exception ex)
                 {
@@ -38,11 +42,9 @@ namespace SmartApp.Sample2.Continuous
             }
         }
 
-        static void ProcessNextIncrementOfEventsOrSleep(Sample2Data data, IInternalStreamClient reader)
+        static void ProcessNextIncrementOfEventsOrSleep(Sample2Data data, IInternalStreamClient reader, ViewClient views)
         {
             var nextOffset = data.NextOffset;
-
-            
             
             // try to read next events from the platform,
             // starting from the specified offset
@@ -66,7 +68,7 @@ namespace SmartApp.Sample2.Continuous
                 // we had some events incoming, so save projection
                 // at least to update offset record
                 PrintDataToConsole(data, false);
-                SaveData(data.ToJson());
+                views.WriteAsJson(data,ViewName);
             }
             else
             {
@@ -88,30 +90,16 @@ namespace SmartApp.Sample2.Continuous
                 Console.WriteLine("[{0}]: {1}", pair.Key, pair.Value);
             }
         }
-
-        static Sample2Data LoadProjectedView()
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample2.dat");
-
-            if (!File.Exists(path))
-                return new Sample2Data { NextOffset = 0, Distribution = new Dictionary<int, int>() };
-
-            return File.ReadAllText(path).FromJson<Sample2Data>();
-        }
-
-        static void SaveData(string jsonData)
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "sample2.dat");
-            using (var sw = new StreamWriter(path, false))
-            {
-                sw.Write(jsonData);
-            }
-        }
     }
 
     public class Sample2Data
     {
         public long NextOffset { get; set; }
         public Dictionary<int, int> Distribution { get; set; }
+
+        public Sample2Data()
+        {
+            Distribution = new Dictionary<int, int>();
+        }
     }
 }
