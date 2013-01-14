@@ -93,7 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Record\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />
