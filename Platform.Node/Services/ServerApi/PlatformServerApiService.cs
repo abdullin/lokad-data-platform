@@ -3,6 +3,9 @@ using Platform.Node.Messages;
 
 namespace Platform.Node.Services.ServerApi
 {
+    /// <summary>
+    /// Plugs all components together into messaging infrastructure
+    /// </summary>
     public class PlatformServerApiService : IHandle<SystemMessage.Init>, IHandle<SystemMessage.StartShutdown>
     {
         readonly IPublisher _publisher;

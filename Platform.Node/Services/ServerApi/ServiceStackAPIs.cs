@@ -1,10 +1,39 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Platform.Node.Messages;
+using ServiceStack.Plugins.Tasks;
 using ServiceStack.ServiceInterface;
+using ServiceStack.WebHost.Endpoints;
 
 namespace Platform.Node.Services.ServerApi
 {
+    /// <summary>
+    /// This host wires together all implementations of REST services 
+    /// which are based on ServiceStack lib
+    /// </summary>
+    public class ServiceStackHost : AppHostHttpListenerBase
+    {
+        readonly IPublisher _publisher;
+
+        public ServiceStackHost(IPublisher publisher)
+            : base("Lokad DataPlatform API (raw)", typeof(StreamService).Assembly)
+        {
+            _publisher = publisher;
+        }
+
+        public override void Configure(Funq.Container container)
+        {
+            LoadPlugin(new TaskSupport());
+            Routes
+                .Add<ClientDto.WriteEvent>(ClientDto.WriteEvent.Url, "POST")
+                .Add<ClientDto.WriteBatch>(ClientDto.WriteBatch.Url, "POST")
+                .Add<ClientDto.ResetStore>(ClientDto.ResetStore.Url, "POST")
+                .Add<ClientDto.ShutdownServer>(ClientDto.ShutdownServer.Url, "GET");
+
+            container.Register(_publisher);
+        }
+    }
+
 
     public class SystemService : ServiceBase<ClientDto.ShutdownServer>
     {
@@ -90,4 +119,44 @@ namespace Platform.Node.Services.ServerApi
                 });
         }
     }
+
+    public class StreamService : ServiceBase<ClientDto.WriteEvent>
+    {
+        readonly IPublisher _publisher;
+
+        public StreamService(IPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+
+        protected override object Run(ClientDto.WriteEvent request)
+        {
+            var token = new ManualResetEventSlim(false);
+            var name = ContainerName.Create(request.Container);
+
+            _publisher.Publish(new ClientMessage.AppendEvents(
+                name,
+                request.StreamKey,
+                request.Data, s => token.Set()));
+
+            return Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    token.Wait();
+                    return new ClientDto.WriteEventResponse()
+                    {
+                        Result = "Completed",
+                        Success = true
+                    };
+                }
+                finally
+                {
+                    token.Dispose();
+                }
+            });
+        }
+    }
+
 }

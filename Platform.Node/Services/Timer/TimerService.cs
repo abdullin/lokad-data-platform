@@ -6,6 +6,10 @@ using System.Threading;
 
 namespace Platform.Node.Services.Timer
 {
+    /// <summary>
+    /// In-memory message scheduler used for delayed message delivery.
+    /// For instance, it can be used for timeouts
+    /// </summary>
     public sealed class TimerService :
        IHandle<TimerMessage.Schedule>, IDisposable
     {
