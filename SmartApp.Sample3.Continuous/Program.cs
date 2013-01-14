@@ -9,6 +9,7 @@ using SmartApp.Sample3.Contracts;
 
 namespace SmartApp.Sample3.Continuous
 {
+    // See Readme.md in this project for the description of the sample
     class Program
     {
         const string PlatformPath = @"C:\LokadData\dp-store";

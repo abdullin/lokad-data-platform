@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Platform;
-using Platform.Storage;
 using Platform.StreamClients;
 using Platform.ViewClients;
 
 namespace SmartApp.Sample1.Chat
 {
+    // See Readme.md in this project for the description of the sample
     class Program
     {
         private static IInternalStreamClient _client;

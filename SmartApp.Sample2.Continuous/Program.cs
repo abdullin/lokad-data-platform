@@ -7,40 +7,76 @@ using ServiceStack.Text;
 
 namespace SmartApp.Sample2.Continuous
 {
+    // See Readme.md in this project for the description of the sample
     class Program
     {
         static void Main(string[] args)
         {
-            const int seconds = 1;
-            var data = LoadData();
-            ShowData(data, true);
+            // configure the system
+            var client = new FileStreamClient(@"C:\LokadData\dp-store");
+
+
+            // Load view, in case this console continues previous work
+            var data = LoadProjectedView();
+            // print it for debug purposes
+            PrintDataToConsole(data, true);
+
+            // this process runs incrementally until stopped
             while (true)
             {
-                var nextOffcet = data.NextOffset;
-                Thread.Sleep(seconds * 1000);
-                IInternalStreamClient reader = new FileStreamClient(@"C:\LokadData\dp-store");
-
-                var records = reader.ReadAll(new StorageOffset(nextOffcet));
-                bool emptyData = true;
-                foreach (var dataRecord in records)
+                try
                 {
-                    data.NextOffset = dataRecord.Next.OffsetInBytes;
-                    if (data.Distribution.ContainsKey(dataRecord.Data.Length))
-                        data.Distribution[dataRecord.Data.Length]++;
-                    else
-                        data.Distribution[dataRecord.Data.Length] = 1;
-                    emptyData = false;
+                    
+                    ProcessNextIncrementOfEventsOrSleep(data, client);
                 }
-
-                if (!emptyData)
+                catch (Exception ex)
                 {
-                    ShowData(data, false);
-                    SaveData(data.ToJson());
+                    // print and sleep on error
+                    Console.WriteLine(ex);
+                    Thread.Sleep(1000);
                 }
             }
         }
 
-        private static void ShowData(Sample2Data data, bool dumpData)
+        static void ProcessNextIncrementOfEventsOrSleep(Sample2Data data, IInternalStreamClient reader)
+        {
+            var nextOffset = data.NextOffset;
+
+            
+            
+            // try to read next events from the platform,
+            // starting from the specified offset
+            var nextEvents = reader.ReadAll(new StorageOffset(nextOffset), int.MaxValue);
+            var emptyData = true;
+
+            foreach (var dataRecord in nextEvents)
+            {
+                // update next offset
+                data.NextOffset = dataRecord.Next.OffsetInBytes;
+                // update distribution
+                if (data.Distribution.ContainsKey(dataRecord.Data.Length))
+                    data.Distribution[dataRecord.Data.Length]++;
+                else
+                    data.Distribution[dataRecord.Data.Length] = 1;
+                emptyData = false;
+            }
+
+            if (!emptyData)
+            {
+                // we had some events incoming, so save projection
+                // at least to update offset record
+                PrintDataToConsole(data, false);
+                SaveData(data.ToJson());
+            }
+            else
+            {
+                // we didn't have any new data, so sleep
+                const int seconds = 1;
+                Thread.Sleep(seconds * 1000);
+            }
+        }
+
+        private static void PrintDataToConsole(Sample2Data data, bool dumpData)
         {
             Console.Clear();
             if (dumpData)
@@ -53,7 +89,7 @@ namespace SmartApp.Sample2.Continuous
             }
         }
 
-        static Sample2Data LoadData()
+        static Sample2Data LoadProjectedView()
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "sample2.dat");
 
@@ -76,7 +112,6 @@ namespace SmartApp.Sample2.Continuous
     public class Sample2Data
     {
         public long NextOffset { get; set; }
-
         public Dictionary<int, int> Distribution { get; set; }
     }
 }
