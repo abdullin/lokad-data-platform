@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Text;
 using Platform.CommandLine;
 using Topshelf;
@@ -17,7 +16,7 @@ namespace Platform.Node.Service
                     x.SetDescription("Lokad-DataPlatform");
                     x.SetDisplayName("Lokad-DataPlatform");
                     x.SetServiceName("Lokad-DataPlatform");
-
+                    x.StartAutomatically();
                     x.Service(settings => new ServerNode());
                 });
         }
