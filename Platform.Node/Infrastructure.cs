@@ -7,7 +7,8 @@ using System.Threading;
 
 namespace Platform
 {
-    
+    // this file contains classes of a simple in-memory
+    // messaging infrastructure
 
     /// <summary>
     /// Base class for messages
