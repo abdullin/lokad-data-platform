@@ -80,6 +80,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Readme.md" />
+    <None Include="Services\Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
