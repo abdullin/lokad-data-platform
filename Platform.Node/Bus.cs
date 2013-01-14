@@ -7,6 +7,8 @@ using System.Threading;
 
 namespace Platform
 {
+    
+
     /// <summary>
     /// Base class for messages
     /// </summary>

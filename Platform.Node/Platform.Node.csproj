@@ -58,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bus.cs" />
+    <Compile Include="Fsm.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
     <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="NodeController.cs" />
