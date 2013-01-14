@@ -1,11 +1,9 @@
 ﻿Lokad Data Plaform Sample #3
 ========
 
-Application demonstrate projections work. Now it contains 
-
-1. TagProjection - Post aggregation by tags
-2. CommentProjection - Comments aggregation by user
-3. UserCommentsPerDayDistributionProjection - User comments detstribution by day of week
+Sample demonstrating common SmartApps concepts. It uploads StackOverflow dumps
+into the data-platform, while processing it and displaying results in WebUI
+in parallel
 
 Preparing
 ---------
@@ -65,3 +63,11 @@ To view Results run web application SmartApp.Sample3.WebUI and open site.
 Sample 3 UI
 --------
 ![Sample 3 Demo] (https://raw.github.com/Lokad/lokad-data-platform/master/SmartApp.Sample3.WebUI/Content/img/sample3.demo.png)
+
+Projections
+-----------
+
+
+1. TagProjection - Post aggregation by tags
+2. CommentProjection - Comments aggregation by user
+3. UserCommentsPerDayDistributionProjection - User comments detstribution by day of week
