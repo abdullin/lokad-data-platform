@@ -18,8 +18,8 @@ namespace SmartApp.Sample2.Continuous
         {
             // configure the system
             var store = @"C:\LokadData\dp-store";
-
-            var reader = PlatformClient.GetStreamReader(store);
+            // scan "default" event container
+            var reader = PlatformClient.GetStreamReader(store, containerName:"default");
             var views = PlatformClient.GetViewClient(store, "sample2-views");
 
             // Load view, in case this console continues previous work
@@ -47,11 +47,11 @@ namespace SmartApp.Sample2.Continuous
         {
             var nextOffset = data.NextOffset;
             
-            // try to read next 500 events from the platform,
+            // try to read next 10000 events from the platform,
             // starting from the recorded offset.
             // This is more efficient, than reading one event by one, since it
             // reduces cost of reading/writing data by batching
-            const int maxRecordCount = 500;
+            const int maxRecordCount = 10000;
             var nextEvents = reader.ReadAll(new StorageOffset(nextOffset), maxRecordCount);
             var emptyData = true;
             // process
