@@ -1,7 +1,8 @@
-Lokad Data Platform Sample
-==========================
+# Lokad Data Platform Sample
 
-This is Data Platform sample from Lokad - showing principles of storing and processing large (GBytes and TBytes) data streams in the cloud. It is based on concepts from Lokad.CQRS, Lokad.Cloud and EventStore.
+This is Data Platform sample from Lokad - showing principles of storing and 
+processing large (GBytes and TBytes) data streams in the cloud. It is based 
+on concepts from Lokad.CQRS, Lokad.Cloud and EventStore.
 
 Some introductory information:
 
@@ -10,8 +11,7 @@ Some introductory information:
 
 More documentation will be available, once we push through first production deployments internally.
 
-Credits
--------
+## Credits
 
 Thanks to the authors and maintainers of these projects for letting us stand on the shoulders of giants:
 
@@ -20,7 +20,6 @@ Thanks to the authors and maintainers of these projects for letting us stand on 
 * [NLog](http://nlog-project.org/)
 * [NUnit](http://www.nunit.org/)
 
-Samples
--------
+## Samples
 
 See SamplesReadme.md in this folder for more details
