@@ -7,6 +7,8 @@ using Platform.ViewClients;
 
 namespace SmartApp.Sample2.Continuous
 {
+    // Incremental Projection calculating sizes of event messages
+    // available
     // See Readme.md in this project for the description of the sample
     class Program
     {

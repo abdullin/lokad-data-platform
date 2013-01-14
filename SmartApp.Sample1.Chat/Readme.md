@@ -1,13 +1,14 @@
 ﻿Lokad Data Plaform Sample #1
 ========
 
-This sample is a chat application implemented on top of Data Platform
+Simple chat application using DataPlatform store for communication
+and message exchange between multiple clients
 
-Preparing
----------
+Running sample
+-------------
 
-0. Build solution
-1. Run Platform.Node.exe with administrative credentials from `..\bin\server` folder.
+1. Build solution
+2. Start DataPlatform server by running `..\bin\server\Platform.Node.exe` as administrator.
 
          Example output of Platform.Node
             [09528,01,07:51:06.535] KillSwitch : -1
@@ -20,8 +21,6 @@ Preparing
             [09528,10,07:51:06.914] Starting
             [09528,10,07:51:06.914] We are the master
 
-Running sample
---------------
 
-0. Run `..\bin\sample1\sample1.exe`, enter your name and start typing messages.
-1. Launch multiple chat windows and see how messages are delivered to other windows
+3. Run `..\bin\sample1\sample1.exe` to launch one chat window, enter your name and start typing messages.
+4. Launch multiple chat windows and see how messages are delivered to other windows

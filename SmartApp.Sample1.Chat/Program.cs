@@ -9,6 +9,8 @@ using Platform.ViewClients;
 
 namespace SmartApp.Sample1.Chat
 {
+    // Simple chat application using DataPlatform store for communication
+    // and message exchange between multiple clients
     // See Readme.md in this project for the description of the sample
     class Program
     {

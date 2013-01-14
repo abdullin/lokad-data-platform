@@ -4,30 +4,27 @@
 This smart app calculates distribution of events in events stream by length, 
 showing it to the console. As more data comes in - calculations will be updated.
 
-Preparing
+Running the sample
 ---------
+1. Build solution
+2. Start DataPlatform server by running `..\bin\server\Platform.Node.exe` as administrator.
 
-0. Run `bin\server folder\Platform.Node.exe` as administrator:
-
-        Example output of Platform.Node
-            [08448,01,03:20:32.083] KillSwitch : -1
+         Example output of Platform.Node
+            [09528,01,07:51:06.535] KillSwitch : -1
             HttpPort : 8080
             StoreLocation : C:\LokadData\dp-store
             Starting everything. Press enter to initiate shutdown
-            [08448,10,03:20:32.163] Initializing
-            [08448,10,03:20:32.530] Storage starting
-            [08448,10,03:20:32.530] Storage ready
-            [08448,10,03:20:32.530] Starting
-            [08448,10,03:20:32.530] We are the master
+            [09528,10,07:51:06.636] Initializing
+            [09528,10,07:51:06.914] Storage starting
+            [09528,10,07:51:06.914] Storage ready
+            [09528,10,07:51:06.914] Starting
+            [09528,10,07:51:06.914] We are the master
 
-1. Launch one or more chat windows from Sample one (`..\bin\sample1\sample1.exe`) 
+
+3. Launch one or more chat windows from Sample one (`..\bin\sample1\sample1.exe`) 
 and start sending some messages.
 
-
-Running the sample
-------
-
-Run `..bin\sample2\sample2.exe` and watch it update event size distribution, as more events are
+4. Run `..bin\sample2\sample2.exe` and watch it update event size distribution, as more events are
 pushed to data platform.
 
         Example output:
@@ -37,4 +34,4 @@ pushed to data platform.
             [65]: 3222
             [293]: 1433
 
-Restart the application to see how it picks up at the end of the stream (no reprocessing of the entire stream).
+5. Restart the application to see how it picks up at the end of the stream (no reprocessing of the entire stream).
