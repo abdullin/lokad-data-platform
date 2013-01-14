@@ -80,6 +80,7 @@
     <None Include="Readme.md" />
     <None Include="Services\Readme.md" />
     <None Include="Services\ServerApi\Readme.md" />
+    <None Include="Services\Storage\Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

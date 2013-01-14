@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.WindowsAzure.StorageClient;
@@ -10,6 +9,9 @@ using Platform.StreamStorage.Azure;
 
 namespace Platform.Node.Services.Storage
 {
+    /// <summary>
+    /// Wires Azure append-only storage to server messaging infrastructure
+    /// </summary>
     public sealed class AzureStorageService :
         IHandle<ClientMessage.AppendEvents>,
         IHandle<SystemMessage.Init>,

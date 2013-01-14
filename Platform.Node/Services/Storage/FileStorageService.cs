@@ -9,6 +9,9 @@ using Platform.StreamStorage.File;
 
 namespace Platform.Node.Services.Storage
 {
+    /// <summary>
+    /// Wires file-based append-only storage to server messaging infrastructure
+    /// </summary>
     public sealed class FileStorageService :
         IHandle<ClientMessage.AppendEvents>,
         IHandle<SystemMessage.Init>,
