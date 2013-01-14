@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Platform.Storage;
 using Platform.StreamClients;
+using Platform.StreamStorage;
 
 namespace Platform.TestClient.Commands.Bench
 {

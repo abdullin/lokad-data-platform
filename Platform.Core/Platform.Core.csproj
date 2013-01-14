@@ -62,12 +62,13 @@
     <Compile Include="Application.cs" />
     <Compile Include="StreamStorage\Azure\AzureContainerManager.cs" />
     <Compile Include="StreamStorage\Azure\AzureMetadataCheckpoint.cs" />
-    <Compile Include="StreamStorage\FileCheckpoint.cs" />
+    <Compile Include="StreamStorage\File\FileCheckpoint.cs" />
     <Compile Include="ContainerName.cs" />
-    <Compile Include="StreamStorage\FileContainer.cs" />
-    <Compile Include="StreamStorage\FileContainerManager.cs" />
+    <Compile Include="StreamStorage\File\FileContainer.cs" />
+    <Compile Include="StreamStorage\File\FileContainerManager.cs" />
     <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
+    <Compile Include="StreamStorage\MessageWithOffset.cs" />
     <Compile Include="ViewClients\AzureViewContainer.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="CommandLine.cs" />
@@ -83,7 +84,7 @@
     <Compile Include="StreamStorage\Azure\AzureMessageSet.cs" />
     <Compile Include="AzureStoreConfiguration.cs" />
     <Compile Include="StreamStorage\Azure\PageWriter.cs" />
-    <Compile Include="StreamStorage\FileMessageSet.cs" />
+    <Compile Include="StreamStorage\File\FileMessageSet.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="StreamStorage\RetrievedDataRecord.cs" />
     <Compile Include="StreamClients\IRawStreamClient.cs" />

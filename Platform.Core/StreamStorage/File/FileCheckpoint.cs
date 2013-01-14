@@ -1,18 +1,12 @@
 using System;
 using System.IO;
 
-namespace Platform.Storage
+namespace Platform.StreamStorage.File
 {
-    public interface ICheckpoint : IDisposable
-    {
-        long Read();
-        void Write(long position);
-    }
-
     /// <summary>
     /// Tracks a given location in a single mutable file
     /// </summary>
-    public sealed class FileCheckpoint : ICheckpoint
+    public sealed class FileCheckpoint : IDisposable
     {
         readonly FileStream _stream;
         readonly BinaryReader _reader;

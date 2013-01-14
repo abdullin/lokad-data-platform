@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.WindowsAzure.StorageClient;
-using Platform.Storage;
-using Platform.Storage.Azure;
+using Platform.StreamStorage;
+using Platform.StreamStorage.Azure;
 
 namespace Platform.StreamClients
 {

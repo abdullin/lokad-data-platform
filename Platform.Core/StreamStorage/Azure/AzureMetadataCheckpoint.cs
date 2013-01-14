@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Platform.Storage.Azure
+namespace Platform.StreamStorage.Azure
 {
     public class AzureMetadataCheckpoint
     {
@@ -42,6 +42,11 @@ namespace Platform.Storage.Azure
         public static AzureMetadataCheckpoint OpenReadable(CloudPageBlob blob)
         {
             return new AzureMetadataCheckpoint(blob, readOnly:true);
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

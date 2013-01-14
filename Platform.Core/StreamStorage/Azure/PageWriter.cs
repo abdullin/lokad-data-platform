@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Platform.Storage.Azure
+namespace Platform.StreamStorage.Azure
 {
     /// <summary>
     /// Helps to write data to the underlying store, which accepts only

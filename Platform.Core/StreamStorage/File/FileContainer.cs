@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Platform.StreamClients;
 
-namespace Platform.Storage
+namespace Platform.StreamStorage.File
 {
     /// <summary>
     /// Checkpointed stream stored in file system with some 
@@ -29,7 +29,7 @@ namespace Platform.Storage
 
             var check = Path.Combine(folder, "stream.chk");
             var store = Path.Combine(folder, "stream.dat");
-            return (File.Exists(check) && File.Exists(store));
+            return (System.IO.File.Exists(check) && System.IO.File.Exists(store));
         }
 
         public static FileContainer CreateNew(string root, ContainerName container)

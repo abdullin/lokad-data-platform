@@ -1,7 +1,7 @@
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
-namespace Platform.Storage.Azure
+namespace Platform.StreamStorage.Azure
 {
     public static class StorageExtensions
     {

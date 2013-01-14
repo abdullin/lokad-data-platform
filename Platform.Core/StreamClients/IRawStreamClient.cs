@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Runtime.InteropServices;
-using Platform.Storage;
+using Platform.StreamStorage;
 
 namespace Platform.StreamClients
 {

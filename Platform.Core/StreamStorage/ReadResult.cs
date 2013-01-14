@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Platform.Storage
+namespace Platform.StreamStorage
 {
     public struct ReadResult
     {

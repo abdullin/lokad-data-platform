@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Platform.Storage;
 using System.Linq;
+using Platform.StreamStorage;
+using Platform.StreamStorage.File;
 
 namespace Platform.StreamClients
 {

@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Platform.StreamClients;
 
-namespace Platform.Storage
+namespace Platform.StreamStorage
 {
     public struct RetrievedDataRecord
     {

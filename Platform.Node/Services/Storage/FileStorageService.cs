@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Platform.Messages;
-using Platform.Storage;
+using Platform.StreamStorage.File;
 
 namespace Platform.Node.Services.Storage
 {

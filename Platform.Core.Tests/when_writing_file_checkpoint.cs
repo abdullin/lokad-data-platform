@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
-using Platform.Storage;
+using Platform.StreamStorage.File;
+
 // ReSharper disable InconsistentNaming
 
 namespace Platform.Core.Tests

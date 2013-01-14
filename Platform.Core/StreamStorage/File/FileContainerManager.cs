@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Platform.StreamClients;
 
-namespace Platform.Storage
+namespace Platform.StreamStorage.File
 {
     public class FileContainerManager : IDisposable
     {

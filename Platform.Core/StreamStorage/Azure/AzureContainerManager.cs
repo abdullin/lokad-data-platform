@@ -4,7 +4,7 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using Platform.StreamClients;
 
-namespace Platform.Storage.Azure
+namespace Platform.StreamStorage.Azure
 {
     public class AzureContainerManager : IDisposable
     {

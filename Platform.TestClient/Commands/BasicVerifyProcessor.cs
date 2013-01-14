@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Platform.Storage;
 using Platform.StreamClients;
+using Platform.StreamStorage;
 
 namespace Platform.TestClient.Commands
 {

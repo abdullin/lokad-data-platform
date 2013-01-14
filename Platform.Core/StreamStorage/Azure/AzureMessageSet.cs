@@ -6,7 +6,7 @@ using Microsoft.WindowsAzure.StorageClient;
 using Microsoft.WindowsAzure.StorageClient.Protocol;
 using Platform.StreamClients;
 
-namespace Platform.Storage.Azure
+namespace Platform.StreamStorage.Azure
 {
     public class AzureMessageSet : IDisposable
     {
