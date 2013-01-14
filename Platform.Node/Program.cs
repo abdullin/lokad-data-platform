@@ -5,6 +5,10 @@ using Platform.Node.Services.Timer;
 
 namespace Platform.Node
 {
+    /// <summary>
+    /// You can run DataPlatform server as a console application. All needed
+    /// wiring and management is provided in this class
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -26,7 +30,7 @@ namespace Platform.Node
             }
 
 
-            var mainQueue = ServerService.StartWithOptions(options);
+            var mainQueue = NodeEntryPoint.StartWithOptions(options);
 
             if (options.KillSwitch > 0)
             {
@@ -48,7 +52,7 @@ namespace Platform.Node
             }
             else
             {
-                ServerService.WaitForServiceToExit();
+                NodeEntryPoint.WaitForServiceToExit();
             }
         }
     }

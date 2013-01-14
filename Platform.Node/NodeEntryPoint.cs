@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Platform.CommandLine;
 using Platform.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
@@ -15,7 +14,10 @@ using Platform.Node.Services.Timer;
 
 namespace Platform.Node
 {
-    public class ServerService
+    /// <summary>
+    /// Serves as an execution entry point for the data platform server
+    /// </summary>
+    public class NodeEntryPoint
     {
         public static readonly ILogger Log = LogManager.GetLoggerFor<Program>();
         static readonly ManualResetEventSlim ExitWait = new ManualResetEventSlim(false);
@@ -30,7 +32,9 @@ namespace Platform.Node
             ExitWait.Set();
         }
 
-        static ServerService()
+        
+
+        static NodeEntryPoint()
         {
             // This is extremely important to enable high throughput 
             // of individual messages

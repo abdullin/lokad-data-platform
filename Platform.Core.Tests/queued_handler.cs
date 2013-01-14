@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
+using Platform.Node;
 
 namespace Platform.Core.Tests
 {

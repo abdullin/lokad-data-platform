@@ -5,10 +5,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 
-namespace Platform
+namespace Platform.Node
 {
     // this file contains classes of a simple in-memory
-    // messaging infrastructure
+    // messaging infrastructure needed for SEDA architecture
 
     /// <summary>
     /// Base class for messages

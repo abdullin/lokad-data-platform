@@ -35,14 +35,14 @@ namespace Platform.Node.Service
                 return false;
             }
 
-            ServerService.StartWithOptions(nodeOptions);
+            NodeEntryPoint.StartWithOptions(nodeOptions);
 
             return true;
         }
 
         public bool Stop(HostControl hostControl)
         {
-            ServerService.RequestServiceStop();
+            NodeEntryPoint.RequestServiceStop();
             return true;
         }
     }

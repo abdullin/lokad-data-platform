@@ -1,4 +1,5 @@
 using System;
+using Platform.Node;
 
 namespace Platform.Messages
 {

@@ -4,23 +4,16 @@ using Platform.Node.Services.Timer;
 
 namespace Platform.Node
 {
-    public enum NodeState
-    {
-        Initializing,
-        Master,
-        ShuttingDown,
-        ShutDown
-    }
-
+    /// <summary>
+    /// Controls lifetime of the DataPlatform server instance and
+    /// serves as a main entry-point for all messages
+    /// </summary>
     public sealed class NodeController : IHandle<Message>
     {
-
 
         readonly IPublisher _outputBus;
         QueuedHandler _mainQueue;
         public static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(5);
-
-
         private static readonly ILogger Log = LogManager.GetLoggerFor<NodeController>();
 
         readonly FiniteStateMachine<NodeState> _finiteStateMachine;
@@ -115,4 +108,13 @@ namespace Platform.Node
             _outputBus.Publish(e);
         }
     }
+
+    public enum NodeState
+    {
+        Initializing,
+        Master,
+        ShuttingDown,
+        ShutDown
+    }
+
 }

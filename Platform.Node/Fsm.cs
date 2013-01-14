@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Platform
+namespace Platform.Node
 {
+    /// <summary>
+    /// Generic finite state machine and builder with the fluent API.
+    /// It is used by the server core to manage different SEDA messages
+    /// differently based on it's state
+    /// </summary>
+    /// <typeparam name="TEnum"></typeparam>
     public sealed class FiniteStateMachine<TEnum> : IHandle<Message>
        where TEnum : struct
     {

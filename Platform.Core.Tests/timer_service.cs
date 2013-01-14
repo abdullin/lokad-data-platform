@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
+using Platform.Node;
 using Platform.Node.Services.Timer;
 // ReSharper disable InconsistentNaming
 

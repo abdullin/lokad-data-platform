@@ -64,7 +64,7 @@
     <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="NodeController.cs" />
     <Compile Include="NodeOptions.cs" />
-    <Compile Include="ServerService.cs" />
+    <Compile Include="NodeEntryPoint.cs" />
     <Compile Include="Services\ServerApi\ImportService.cs" />
     <Compile Include="Services\ServerApi\PlatformServerApiService.cs" />
     <Compile Include="Services\ServerApi\ServerApiService.cs" />

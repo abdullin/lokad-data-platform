@@ -1,3 +1,5 @@
+using Platform.Node;
+
 namespace Platform.Messages
 {
     public static class SystemMessage
