@@ -60,12 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="Storage\Azure\AzureContainerManager.cs" />
-    <Compile Include="Storage\Azure\AzureMetadataCheckpoint.cs" />
-    <Compile Include="Storage\FileCheckpoint.cs" />
+    <Compile Include="StreamStorage\Azure\AzureContainerManager.cs" />
+    <Compile Include="StreamStorage\Azure\AzureMetadataCheckpoint.cs" />
+    <Compile Include="StreamStorage\FileCheckpoint.cs" />
     <Compile Include="ContainerName.cs" />
-    <Compile Include="Storage\FileContainer.cs" />
-    <Compile Include="Storage\FileContainerManager.cs" />
+    <Compile Include="StreamStorage\FileContainer.cs" />
+    <Compile Include="StreamStorage\FileContainerManager.cs" />
     <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="ViewClients\AzureViewContainer.cs" />
@@ -80,15 +80,15 @@
     <Compile Include="StreamClients\JsonStreamClientBase.cs" />
     <Compile Include="PlatformClient.cs" />
     <Compile Include="StreamClients\AzureStreamClient.cs" />
-    <Compile Include="Storage\Azure\AzureMessageSet.cs" />
+    <Compile Include="StreamStorage\Azure\AzureMessageSet.cs" />
     <Compile Include="AzureStoreConfiguration.cs" />
-    <Compile Include="Storage\Azure\PageWriter.cs" />
-    <Compile Include="Storage\FileMessageSet.cs" />
+    <Compile Include="StreamStorage\Azure\PageWriter.cs" />
+    <Compile Include="StreamStorage\FileMessageSet.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Storage\RetrievedDataRecord.cs" />
+    <Compile Include="StreamStorage\RetrievedDataRecord.cs" />
     <Compile Include="StreamClients\IRawStreamClient.cs" />
-    <Compile Include="Storage\ReadResult.cs" />
-    <Compile Include="Storage\Azure\StorageExtensions.cs" />
+    <Compile Include="StreamStorage\ReadResult.cs" />
+    <Compile Include="StreamStorage\Azure\StorageExtensions.cs" />
     <Compile Include="ViewClients\ViewClient.cs" />
   </ItemGroup>
   <ItemGroup>
