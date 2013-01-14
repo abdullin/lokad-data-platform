@@ -1,4 +1,4 @@
 ﻿## Platform.Core 
 
-Core library for DataPlatform, which also acts as a storage client.
+Core library for the Lokad Data Platform, which also acts as a storage client.
  

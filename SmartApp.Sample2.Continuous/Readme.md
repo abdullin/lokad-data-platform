@@ -1,9 +1,12 @@
-﻿Lokad Data Plaform Sample - Smart App #2
+﻿Lokad Data Platform Sample - Smart App #2
 ========
 
-This smart app calculates distribution of events in events stream by length, showing it to the console. As more data comes in - calculations will be updated.
+This smart app calculates distribution of events in events stream by length, 
+showing it to the console. As more data comes in - calculations will be updated.
 
-It needs some data to come into the data platform. You can use either Stack Overflow dump tool from Sample 3 or manually add events to the store with TestClient.
+It needs some data to come into the data platform. You can use either 
+Stack Overflow dump tool from Sample 3 or manually add events to the store 
+with TestClient.
 
 Preparing
 ---------
@@ -23,7 +26,8 @@ Preparing
             [08448,10,03:20:32.530] Starting
             [08448,10,03:20:32.530] We are the master
 
-2. Run `SmartApp.Sample3.Dump.exe` from SmartApp.Sample3.Dump\bin\Debug to start converting StackOverflow data to events.
+2. Run `SmartApp.Sample3.Dump.exe` from SmartApp.Sample3.Dump\bin\Debug to 
+start converting StackOverflow data to events.
 
         Example output of Sample3.Dump
             Users:
