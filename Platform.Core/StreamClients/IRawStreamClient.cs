@@ -19,7 +19,7 @@ namespace Platform.StreamClients
     /// Provides raw byte-level access to the storage and messaging of
     /// Data platform
     /// </summary>
-    public interface IInternalStreamClient
+    public interface IRawStreamClient
     {
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 

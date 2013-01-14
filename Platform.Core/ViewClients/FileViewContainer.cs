@@ -8,7 +8,7 @@ namespace Platform.ViewClients
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data
     /// </summary>
-    public sealed class FileViewContainer : IViewContainer, IViewRoot
+    public sealed class FileViewContainer : IRawViewContainer, IRawViewRoot
     {
         readonly DirectoryInfo _root;
 
@@ -30,7 +30,7 @@ namespace Platform.ViewClients
         {
         }
 
-        public IViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string name)
         {
             var child = new DirectoryInfo(Path.Combine(_root.FullName, name));
             return new FileViewContainer(child);
@@ -73,7 +73,7 @@ namespace Platform.ViewClients
         }
 
 
-        public IViewContainer Create()
+        public IRawViewContainer Create()
         {
             _root.Create();
             return this;

@@ -14,7 +14,7 @@ namespace Platform.TestClient
         public readonly ClientOptions Options;
         readonly CommandProcessorCollection _commands = new CommandProcessorCollection(Log);
         
-        public IInternalStreamClient Streams;
+        public IRawStreamClient Streams;
         public string ClientHttpBase;
         public ViewClient Views;
 

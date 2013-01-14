@@ -46,7 +46,7 @@ namespace SmartApp.Sample3.Dump
             Task.WaitAll(threads.ToArray());
         }
 
-        private static IInternalStreamClient _reader;
+        private static IRawStreamClient _reader;
 
         static IEnumerable<string> ReadLinesSequentially(string path)
         {

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Platform.StreamClients
 {
-    public class FileStreamClient : JsonStreamClientBase, IInternalStreamClient
+    public class FileStreamClient : JsonStreamClientBase, IRawStreamClient
     {
 
         readonly string _serverFolder;

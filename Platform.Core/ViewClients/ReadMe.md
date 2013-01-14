@@ -7,8 +7,12 @@ switch between Azure and Filesystem storage without rewriting the code.
 
 See:
 
-* IViewRoot and IViewContainer - actual interface
-* ViewClient - helper wrapper arount IViewContainer, which can deal with
-  transient connectivity errors
+* ViewClient - helper wrapper arount IRawViewContainer, which can deal with
+  transient connectivity errors. This is the one you should normally use.
+* IRawViewRoot and IRawViewContainer - raw interface for reading and writing views.
 * AzureViewContainer - azure implementations of view storage
 * FileViewContainer - file I/O implementations of view storage
+
+
+Use PlatformClient in order to create an appropriate instance of view client,
+based on the configuration value.

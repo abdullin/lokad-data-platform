@@ -5,33 +5,13 @@ using System.Runtime.Serialization;
 
 namespace Platform.ViewClients
 {
-    /// <summary>
-    /// Equivalent of streaming root from Lokad.CQRS. It abstracts away
-    /// unrerlying binary storage (can be file, memory or Azure).
-    /// </summary>
-    public interface IViewRoot
-    {
-        /// <summary>
-        /// Gets the container reference, identified by it's name
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>new container referece</returns>
-        IViewContainer GetContainer(string name);
-
-        /// <summary>
-        /// Get a list of containers from the current root (supply non-null
-        /// prefix to enable filtering)
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
-        IEnumerable<string> ListContainers(string prefix = null);
-    }
 
     /// <summary>
     /// Represents storage container reference, equivalent of streaming
-    /// container from Lokad.CQRS.
+    /// container from Lokad.CQRS. Use <see cref="ViewClient"/> if you need
+    /// to operate views (it will handle exceptions)
     /// </summary>
-    public interface IViewContainer
+    public interface IRawViewContainer
     {
         /// <summary>
         /// Gets the full path.
@@ -44,7 +24,7 @@ namespace Platform.ViewClients
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        IViewContainer GetContainer(string name);
+        IRawViewContainer GetContainer(string name);
 
         /// <summary>
         /// Opens file in the current container for reading operation.
@@ -68,7 +48,7 @@ namespace Platform.ViewClients
         /// Ensures that the current reference represents valid container
         /// </summary>
         /// <returns></returns>
-        IViewContainer Create();
+        IRawViewContainer Create();
 
         /// <summary>
         /// Deletes this container
@@ -84,6 +64,29 @@ namespace Platform.ViewClients
         IEnumerable<string> ListAllNestedItems();
         IEnumerable<ViewDetail> ListAllNestedItemsWithDetail();
     }
+
+    /// <summary>
+    /// Equivalent of streaming root from Lokad.CQRS. It abstracts away
+    /// unrerlying binary storage (can be file, memory or Azure).
+    /// </summary>
+    public interface IRawViewRoot
+    {
+        /// <summary>
+        /// Gets the container reference, identified by it's name
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>new container referece</returns>
+        IRawViewContainer GetContainer(string name);
+
+        /// <summary>
+        /// Get a list of containers from the current root (supply non-null
+        /// prefix to enable filtering)
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        IEnumerable<string> ListContainers(string prefix = null);
+    }
+
 
     public sealed class ViewDetail
     {

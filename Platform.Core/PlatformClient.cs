@@ -15,7 +15,7 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IInternalStreamClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = ContainerName.Default)
+        public static IRawStreamClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = ContainerName.Default)
         {
             var container = ContainerName.Create(containerName);
 
@@ -26,7 +26,7 @@ namespace Platform
             }
             return new AzureStreamClient(configuration, container, serverEndpoint);
         }
-        public static IInternalStreamClient GetStreamReader(string storage, string containerName = ContainerName.Default)
+        public static IRawStreamClient GetStreamReader(string storage, string containerName = ContainerName.Default)
         {
             var container = ContainerName.Create(containerName);
             AzureStoreConfiguration configuration;

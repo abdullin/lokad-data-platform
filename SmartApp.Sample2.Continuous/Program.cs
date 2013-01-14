@@ -43,7 +43,7 @@ namespace SmartApp.Sample2.Continuous
             }
         }
 
-        static void ProcessNextIncrementOfEventsOrSleep(Sample2Data data, IInternalStreamClient reader, ViewClient views)
+        static void ProcessNextIncrementOfEventsOrSleep(Sample2Data data, IRawStreamClient reader, ViewClient views)
         {
             var nextOffset = data.NextOffset;
             

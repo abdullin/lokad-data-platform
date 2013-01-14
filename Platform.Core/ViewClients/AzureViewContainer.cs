@@ -10,7 +10,7 @@ namespace Platform.ViewClients
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class AzureViewRoot : IViewRoot
+    public sealed class AzureViewRoot : IRawViewRoot
     {
         readonly CloudBlobClient _client;
 
@@ -23,7 +23,7 @@ namespace Platform.ViewClients
             _client = client;
         }
 
-        public IViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string name)
         {
             return new AzureViewContainer(_client.GetBlobDirectoryReference(name));
         }
@@ -41,7 +41,7 @@ namespace Platform.ViewClients
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class AzureViewContainer : IViewContainer
+    public sealed class AzureViewContainer : IRawViewContainer
     {
         readonly CloudBlobDirectory _directory;
 
@@ -54,7 +54,7 @@ namespace Platform.ViewClients
             _directory = directory;
         }
 
-        public IViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
 
@@ -90,7 +90,7 @@ namespace Platform.ViewClients
         }
 
 
-        public IViewContainer Create()
+        public IRawViewContainer Create()
         {
             _directory.Container.CreateIfNotExist();
             return this;

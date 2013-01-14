@@ -6,11 +6,11 @@ namespace Platform.ViewClients
 {
     public class ViewClient
     {
-        public readonly IViewContainer Advanced;
+        public readonly IRawViewContainer Advanced;
 
         readonly Func<Queue<Exception>, bool> _actionPolicy; 
 
-        public ViewClient(IViewContainer advanced, Func<Queue<Exception>, bool> actionPolicy)
+        public ViewClient(IRawViewContainer advanced, Func<Queue<Exception>, bool> actionPolicy)
         {
             Advanced = advanced;
             _actionPolicy = actionPolicy;
