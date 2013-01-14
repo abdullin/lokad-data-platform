@@ -1,14 +1,13 @@
-﻿Core/StreamClients 
-================
+﻿# Core/StreamClients 
 
-This folder contains multiple implementations of clients used to access
+This folder contains multiple implementations of clients used to access a
 running **data platform server**. This access involves using RestAPI to directly
 send messages to the server and also access to the underlying storage in
 order to upload event batches efficiently (leveraging cloud storage scalability)
 
 See:
 
-* StreamClient - helper wrapper arount IRawStreamClient, which can deal with
+* StreamClient - helper wrapper around IRawStreamClient, which can deal with
   transient connectivity errors. This is the one you should normally use
 * IRawStreamClient - raw interface for manipulating the data platform
 
