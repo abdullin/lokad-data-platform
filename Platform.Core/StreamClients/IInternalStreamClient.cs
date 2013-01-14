@@ -31,66 +31,6 @@ namespace Platform.StreamClients
         void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records);
     }
 
-    public sealed class StreamClient
-    {
-        public readonly IInternalStreamClient Advanced;
-        readonly Func<Queue<Exception>, bool> _actionPolicy;
-
-        public StreamClient(IInternalStreamClient advanced, Func<Queue<Exception>, bool> policy)
-        {
-            Advanced = advanced;
-            _actionPolicy = policy;
-        }
-
-        public void WriteEvent(string streamName, byte[] data)
-        {
-            
-        }
-
-        
-
-        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset = default (StorageOffset),
-            int maxRecordCount = int.MaxValue)
-        {
-
-            var position = startOffset;
-            var remaining = maxRecordCount;
-
-            Queue<Exception> errors = null;
-            while (true)
-            {
-                if (remaining <= 0)
-                    yield break;
-
-                using (var enumerator = Advanced.ReadAll(position, remaining).GetEnumerator())
-                {
-                    try
-                    {
-                        if (!enumerator.MoveNext())
-                            yield break;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (errors == null)
-                        {
-                            errors = new Queue<Exception>();
-                        }
-                        errors.Enqueue(ex);
-                        if (_actionPolicy(errors))
-                            throw new PlatformClientException(ex.Message, new AggregateException(errors));
-                    }
-
-                    yield return enumerator.Current;
-                    position = enumerator.Current.Next;
-                    remaining -= 1;
-                }
-            }
-
-            
-        } 
-    }
-
-
 
     [StructLayout(LayoutKind.Sequential)]
     public struct StorageOffset

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Net;
 
@@ -15,11 +16,12 @@ namespace Platform.TestClient
             ServicePointManager.DefaultConnectionLimit = 48;
 
             var options = new ClientOptions();
-            if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
-            {
-                Console.WriteLine(options.GetUsage());
-                return;
-            }
+
+                if (!CommandLine.CommandLineParser.Default.ParseArguments(args, options))
+                {
+                    Console.WriteLine(options.GetUsage());
+                    return;
+                }
             
             try
             {

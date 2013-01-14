@@ -66,6 +66,7 @@
     <Compile Include="ContainerName.cs" />
     <Compile Include="Storage\FileContainer.cs" />
     <Compile Include="Storage\FileContainerManager.cs" />
+    <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="ViewClients\BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />
     <Compile Include="CommandLine.cs" />
