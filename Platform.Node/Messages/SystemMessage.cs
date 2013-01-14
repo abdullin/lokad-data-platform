@@ -1,7 +1,8 @@
-using Platform.Node;
-
-namespace Platform.Messages
+namespace Platform.Node.Messages
 {
+    /// <summary>
+    /// Core messages related to server lifetime
+    /// </summary>
     public static class SystemMessage
     {
         public sealed class Init : Message

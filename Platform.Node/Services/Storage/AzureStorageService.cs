@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.WindowsAzure.StorageClient;
-using Platform.Messages;
+using Platform.Node.Messages;
 using Platform.StreamStorage.Azure;
 
 namespace Platform.Node.Services.Storage

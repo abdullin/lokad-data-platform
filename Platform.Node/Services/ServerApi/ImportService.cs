@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Platform.Messages;
+using Platform.Node.Messages;
 using ServiceStack.ServiceInterface;
 
 namespace Platform.Node.Services.ServerApi

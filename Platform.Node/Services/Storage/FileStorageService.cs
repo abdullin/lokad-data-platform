@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Platform.Messages;
+using Platform.Node.Messages;
 using Platform.StreamStorage.File;
 
 namespace Platform.Node.Services.Storage

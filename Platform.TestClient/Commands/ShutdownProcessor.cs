@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
 namespace Platform.TestClient.Commands

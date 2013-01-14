@@ -1,5 +1,5 @@
 using System;
-using Platform.Messages;
+using Platform.Node.Messages;
 
 namespace Platform.Node.Services.ServerApi
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using Platform.CommandLine;
-using Platform.Messages;
+using Platform.Node.Messages;
 using Platform.Node.Services.Timer;
 
 namespace Platform.Node

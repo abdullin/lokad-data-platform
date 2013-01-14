@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Platform.Messages;
+using Platform.Node.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
 using Platform.Node.Services.Timer;

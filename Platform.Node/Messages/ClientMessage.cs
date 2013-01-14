@@ -1,8 +1,10 @@
 using System;
-using Platform.Node;
 
-namespace Platform.Messages
+namespace Platform.Node.Messages
 {
+    /// <summary>
+    /// These messages are produced and consumed by the ServerAPI service
+    /// </summary>
     public static class ClientMessage
     {
 
