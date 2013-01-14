@@ -53,12 +53,14 @@ creating the impression that the platform itself is slow. Here are some recommen
 an incremental projection which scans through all events in the store (alternatively you can
 run projection from Sample 2 against the appropriate stream container). Then, compare it with 
 the time needed to run your projection. Extra time is spent in projection implementation code.
-* Batch processing of multiple events together to reduce IO cost of reading/writing the same view.
-Sample 2 implements such batching.
+* **Batch process multiple events together** to reduce IO cost of reading/writing the same view.
+Sample 2 implements such batching and can be used as a guidance.
 * By default stream client will lazily enumerate all events, keeping memory consumption to minimum,
-even while enumerating 100GB streams. Make sure that you avoid unnecessary memory allocations (e.g.
+even while enumerating 100GB streams. Make sure that you **avoid unnecessary memory allocations** (e.g.
 they happen if code converts event streams to arrays or lists via the use of ToList or ToArray). 
 Also avoid any double enumerations.
-* Measure and optimize memory consumption of the projected views along with read-write speeds of such vuews. 
+* **Measure and optimize memory consumption of the projected views along with read-write speeds** of such vuews. 
 If a large view takes 1GB in memory and is saved/read every 100 messages, then processing billions
 of messages can take a lot of time. 
+
+Should you have more questions, please get in touch with Lokad support via contact@lokad.com
