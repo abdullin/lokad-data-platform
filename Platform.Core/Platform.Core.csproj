@@ -98,6 +98,7 @@
   <ItemGroup>
     <None Include="ReadMe.md" />
     <None Include="StreamClients\ReadMe.md" />
+    <None Include="StreamStorage\ReadMe.md" />
     <None Include="ViewClients\ReadMe.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

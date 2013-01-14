@@ -2,7 +2,7 @@
 ================
 
 This folder contains multiple implementations of clients used to access
-data platform event storage. This access involves using RestAPI to directly
+running **data platform server**. This access involves using RestAPI to directly
 send messages to the server and also access to the underlying storage in
 order to upload event batches efficiently (leveraging cloud storage scalability)
 
