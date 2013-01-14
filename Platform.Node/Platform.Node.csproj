@@ -58,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\ClientMessage.cs" />
+    <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="NodeController.cs" />
     <Compile Include="NodeOptions.cs" />
     <Compile Include="ServerService.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Services\Timer\TimerService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Messages\ReadMe.md" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

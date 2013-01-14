@@ -1,5 +1,4 @@
 using System.Net;
-using Platform.Messages;
 using ServiceStack.ServiceClient.Web;
 
 namespace Platform.StreamClients

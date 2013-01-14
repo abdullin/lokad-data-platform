@@ -1,5 +1,8 @@
-namespace Platform.Messages
+namespace Platform
 {
+    /// <summary>
+    /// Messages used to communicate with the server
+    /// </summary>
     public static class ClientDto
     {
         public class WriteEvent

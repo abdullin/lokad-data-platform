@@ -1,4 +1,5 @@
-﻿## Platform.Core 
+﻿Platform.Core 
+=============
 
-Core library for the Lokad Data Platform, which also acts as a storage client.
- 
+This is Core library for the Lokad Data Platform, which also acts as 
+a storage client library.

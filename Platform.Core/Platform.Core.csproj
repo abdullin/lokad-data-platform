@@ -66,6 +66,7 @@
     <Compile Include="ContainerName.cs" />
     <Compile Include="Storage\FileContainer.cs" />
     <Compile Include="Storage\FileContainerManager.cs" />
+    <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="ViewClients\BlobViewRoot.cs" />
     <Compile Include="Bus.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="Fsm.cs" />
     <Compile Include="ViewClients\IViewRoot.cs" />
     <Compile Include="StreamClients\JsonStreamClientBase.cs" />
-    <Compile Include="Messages\ClientDto.cs" />
     <Compile Include="PlatformClient.cs" />
     <Compile Include="StreamClients\AzureStreamClient.cs" />
     <Compile Include="Storage\Azure\AzureMessageSet.cs" />
@@ -85,8 +85,6 @@
     <Compile Include="Storage\Azure\PageWriter.cs" />
     <Compile Include="Storage\FileMessageSet.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Messages\ClientMessage.cs" />
-    <Compile Include="Messages\SystemMessage.cs" />
     <Compile Include="Storage\RetrievedDataRecord.cs" />
     <Compile Include="StreamClients\IInternalStreamClient.cs" />
     <Compile Include="Storage\ReadResult.cs" />
