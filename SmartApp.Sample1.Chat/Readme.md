@@ -1,12 +1,13 @@
 ﻿Lokad Data Plaform Sample #1
 ========
 
-This sample is dead simple example of reading events stream.
+This sample is a chat application implemented on top of Data Platform
 
 Preparing
 ---------
 
-0. Download dump of StackOverflow (SO) data from here http://media10.simplex.tv/content/xtendx/stu/stackoverflow/
+0. Build solution
+1. Run Platform.Node.exe with administrative credentials from `..\bin\server` folder.
 
          Example output of Platform.Node
             [09528,01,07:51:06.535] KillSwitch : -1
@@ -19,17 +20,8 @@ Preparing
             [09528,10,07:51:06.914] Starting
             [09528,10,07:51:06.914] We are the master
 
-1. Run Platform.Node.exe with administrative credentials from bin\server folder.
-2. Run SmartApp.Sample3.Dump.exe from SmartApp.Sample3.Dump\bin\Debug to start converting StackOverflow data to events.
+Running sample
+--------------
 
-
-Sample
-------
-
-Run SmartApp.Sample1.Continuous.exe from SmartApp.Sample1.Continuous\bin\Debug
-Application dumps to console window "Next offset" of event stream.
-
-        Example output:
-            [25.10.2012 13:50:10] Next offset(real data): Offset 1441598494b
-            [25.10.2012 13:50:11] Next offset(real data): Offset 1456085908b
-            [25.10.2012 13:50:13] Next offset(real data): Offset 1458470552b
+0. Run `..\bin\sample1\sample1.exe`, enter your name and start typing messages.
+1. Launch multiple chat windows and see how messages are delivered to other windows

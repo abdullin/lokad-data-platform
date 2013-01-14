@@ -30,7 +30,6 @@ namespace SmartApp.Sample2.Continuous
             {
                 try
                 {
-                    
                     ProcessNextIncrementOfEventsOrSleep(data, reader, views);
                 }
                 catch (Exception ex)
@@ -46,11 +45,14 @@ namespace SmartApp.Sample2.Continuous
         {
             var nextOffset = data.NextOffset;
             
-            // try to read next events from the platform,
-            // starting from the specified offset
-            var nextEvents = reader.ReadAll(new StorageOffset(nextOffset), int.MaxValue);
+            // try to read next 500 events from the platform,
+            // starting from the recorded offset.
+            // This is more efficient, than reading one event by one, since it
+            // reduces cost of reading/writing data by batching
+            const int maxRecordCount = 500;
+            var nextEvents = reader.ReadAll(new StorageOffset(nextOffset), maxRecordCount);
             var emptyData = true;
-
+            // process
             foreach (var dataRecord in nextEvents)
             {
                 // update next offset
@@ -63,18 +65,18 @@ namespace SmartApp.Sample2.Continuous
                 emptyData = false;
             }
 
-            if (!emptyData)
-            {
-                // we had some events incoming, so save projection
-                // at least to update offset record
-                PrintDataToConsole(data, false);
-                views.WriteAsJson(data,ViewName);
-            }
-            else
+            if (emptyData)
             {
                 // we didn't have any new data, so sleep
                 const int seconds = 1;
                 Thread.Sleep(seconds * 1000);
+            }
+            else
+            {
+                // we had some events incoming, so save projection
+                // at least to update offset record
+                PrintDataToConsole(data, false);
+                views.WriteAsJson(data, ViewName);
             }
         }
 
