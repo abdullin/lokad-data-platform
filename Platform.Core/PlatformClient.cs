@@ -52,7 +52,7 @@ namespace Platform
             {
                 var account = CloudStorageAccount.Parse(configuration.ConnectionString);
                 var client = account.CreateCloudBlobClient();
-                var viewContainer = new BlobViewRoot(client).GetContainer(configuration.Container);
+                var viewContainer = new AzureViewRoot(client).GetContainer(configuration.Container);
 
                 var viewClient = new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
                 viewClient.CreateContainer();

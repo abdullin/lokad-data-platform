@@ -10,22 +10,22 @@ namespace Platform.ViewClients
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class BlobViewRoot : IViewRoot
+    public sealed class AzureViewRoot : IViewRoot
     {
         readonly CloudBlobClient _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlobViewRoot"/> class.
+        /// Initializes a new instance of the <see cref="AzureViewRoot"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public BlobViewRoot(CloudBlobClient client)
+        public AzureViewRoot(CloudBlobClient client)
         {
             _client = client;
         }
 
         public IViewContainer GetContainer(string name)
         {
-            return new BlobStreamingContainer(_client.GetBlobDirectoryReference(name));
+            return new AzureViewContainer(_client.GetBlobDirectoryReference(name));
         }
 
         public IEnumerable<string> ListContainers(string prefix)
@@ -41,15 +41,15 @@ namespace Platform.ViewClients
     /// <summary>
     /// Windows Azure implementation of storage 
     /// </summary>
-    public sealed class BlobStreamingContainer : IViewContainer
+    public sealed class AzureViewContainer : IViewContainer
     {
         readonly CloudBlobDirectory _directory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlobStreamingContainer"/> class.
+        /// Initializes a new instance of the <see cref="AzureViewContainer"/> class.
         /// </summary>
         /// <param name="directory">The directory.</param>
-        public BlobStreamingContainer(CloudBlobDirectory directory)
+        public AzureViewContainer(CloudBlobDirectory directory)
         {
             _directory = directory;
         }
@@ -58,7 +58,7 @@ namespace Platform.ViewClients
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            return new BlobStreamingContainer(_directory.GetSubdirectory(name));
+            return new AzureViewContainer(_directory.GetSubdirectory(name));
         }
 
         public Stream OpenRead(string name)
