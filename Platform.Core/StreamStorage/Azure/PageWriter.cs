@@ -7,7 +7,7 @@ namespace Platform.StreamStorage.Azure
     /// Helps to write data to the underlying store, which accepts only
     /// pages with specific size
     /// </summary>
-    public sealed class PageWriter : IDisposable
+    sealed class PageWriter : IDisposable
     {
         /// <summary>
         /// Delegate that writes pages to the underlying paged store.
