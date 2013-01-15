@@ -1,7 +1,7 @@
 namespace Platform.Node.Messages
 {
     /// <summary>
-    /// Core messages related to server lifetime
+    /// Core messages related to the server lifetime.
     /// </summary>
     public static class SystemMessage
     {
@@ -11,6 +11,7 @@ namespace Platform.Node.Messages
         }
 
         public sealed class Start : Message {}
+
         public sealed class StartShutdown : Message
         {
             
@@ -19,6 +20,7 @@ namespace Platform.Node.Messages
         public class StorageWriterInitializationDone : Message
         {
         }
+
         public sealed class BecameShutdown : Message{}
 
         public sealed class BecameWorking : Message{}

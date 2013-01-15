@@ -3,12 +3,12 @@ using System;
 namespace Platform.Node.Messages
 {
     /// <summary>
-    /// These messages are produced and consumed by the ServerAPI service
+    /// These messages are produced and consumed by the ServerAPI service.
     /// </summary>
     public static class ClientMessage
     {
-
         public class RequestShutdown : Message{}
+
         public abstract class WriteMessage : Message {}
 
         public class RequestStoreReset : WriteMessage
@@ -35,7 +35,8 @@ namespace Platform.Node.Messages
             
             public readonly Action<AppendEventsCompleted> Envelope;
 
-            public AppendEvents(EventStoreId storeId, string streamId, byte[] eventData,  Action<AppendEventsCompleted> envelope)
+            public AppendEvents(EventStoreId storeId, 
+                string streamId, byte[] eventData,  Action<AppendEventsCompleted> envelope)
             {
                 StoreId = storeId;
                 StreamId = streamId;
@@ -53,7 +54,8 @@ namespace Platform.Node.Messages
             public readonly long Size;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(EventStoreId storeId, string streamId, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(EventStoreId storeId, 
+                string streamId, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
             {
                 StoreId = storeId;
                 StreamId = streamId;

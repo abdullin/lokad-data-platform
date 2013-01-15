@@ -1,7 +1,6 @@
-﻿Node/Services
-=============
+﻿# Node/Services
 
-This folder contains various services which implement actual server functionality
+This folder contains various services which implement actual server functionalities.
 
 See also:
 

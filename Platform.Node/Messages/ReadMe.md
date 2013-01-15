@@ -1,8 +1,7 @@
-﻿Node/Messages 
-=============
+﻿# Node/Messages 
 
 This folder contains in-memory messages which are used by server and its
-different services for communication. They "drive" the server
+different services for communication. They "drive" the server.
 
 See also:
 

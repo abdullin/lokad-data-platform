@@ -6,7 +6,7 @@ namespace Platform.Node
 {
     /// <summary>
     /// Generic finite state machine and builder with the fluent API.
-    /// It is used by the server core to manage different SEDA messages
+    /// It is used by the server to manage different SEDA messages
     /// differently based on it's state
     /// </summary>
     /// <typeparam name="TEnum"></typeparam>

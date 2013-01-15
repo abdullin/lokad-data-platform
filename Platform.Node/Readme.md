@@ -1,5 +1,4 @@
-﻿Platform Node by Lokad SAS
-==========================
+﻿# Platform.Node
 
 This is actual data platform server, runnable as a console. You can configure 
 it via command-line parameters. Run it with --help or /? to see command-line

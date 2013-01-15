@@ -1,5 +1,4 @@
-﻿Platform.Core 
-=============
+﻿# Platform.Core 
 
 This is Core library for the Lokad Data Platform, which also acts as 
 a storage client library. Some code in this library is used by Data Platform
