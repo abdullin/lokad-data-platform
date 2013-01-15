@@ -67,9 +67,9 @@ namespace Platform.TestClient.Commands
             int batchMessageCount = batchCount * batchSize;
             int floodMessagesCount = threadCount * floodSize;
 
-            foreach (var record in context.Client.Streams.ReadAll())
+            foreach (var record in context.Client.Streams.ReadAllEvents())
             {
-                var receivedMessage = Encoding.UTF8.GetString(record.Data);
+                var receivedMessage = Encoding.UTF8.GetString(record.EventData);
 
                 if (!receivedMessage.StartsWith(streamId))
                     continue;
@@ -176,7 +176,7 @@ namespace Platform.TestClient.Commands
                             {
                                 var bytes = Encoding.UTF8.GetBytes(streamId + string.Format(message, x));
                                 totalBytes += bytes.Length;
-                                return new RecordForStaging(bytes);
+                                return (bytes);
                             }
                             catch (Exception ex)
                             {

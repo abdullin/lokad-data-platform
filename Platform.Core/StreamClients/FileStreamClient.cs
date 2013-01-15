@@ -31,7 +31,7 @@ namespace Platform.StreamClients
 
 
 
-        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset, int maxRecordCount)
         {
             if (!FileContainer.ExistsValid(_serverFolder, Container))
                 yield break;
@@ -47,7 +47,7 @@ namespace Platform.StreamClients
 
 
 
-        public void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData)
         {
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);
@@ -55,8 +55,8 @@ namespace Platform.StreamClients
             var location = Path.Combine(_serverFolder, Guid.NewGuid().ToString());
             try
             {
-                var result = PrepareStaging(records, location);
-                ImportEventsInternal(streamKey, location, result);
+                var result = PrepareStaging(eventData, location);
+                ImportEventsInternal(streamName, location, result);
             }
             finally
             {
@@ -64,19 +64,19 @@ namespace Platform.StreamClients
             }
         }
 
-        static long PrepareStaging(IEnumerable<RecordForStaging> records, string location)
+        static long PrepareStaging(IEnumerable<byte[]> eventData, string location)
         {
             try
             {
                 using (var fs = FileMessageSet.CreateNew(location))
                 {
-                    return fs.Append("", records.Select(r =>
+                    return fs.Append("", eventData.Select(r =>
                         {
-                            if (r.Data.Length > MessageSizeLimit)
+                            if (r.Length > MessageSizeLimit)
                                 throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
                                     MessageSizeLimit));
                             
-                            return r.Data;
+                            return r;
                         }));
                 }
             }

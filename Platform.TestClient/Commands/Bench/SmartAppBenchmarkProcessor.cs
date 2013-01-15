@@ -146,7 +146,7 @@ namespace Platform.TestClient.Commands.Bench
                 {
                     var records = Enumerable.Range(0, batchSize)
                         .Select(_ =>
-                            new RecordForStaging(Enumerable.Range(0, msgSize).Select(b => (byte) rnd.Next()).ToArray()));
+                            (Enumerable.Range(0, msgSize).Select(b => (byte) rnd.Next()).ToArray()));
                     context.Client.Streams.WriteEventsInLargeBatch(streamId, records);
                     count++;
                     totalBytes += batchSize * msgSize;
@@ -185,10 +185,10 @@ namespace Platform.TestClient.Commands.Bench
                     {
                         var nextOffset = projection.NextOffsetInBytes;
 
-                        IEnumerable<RetrievedDataRecord> records;
+                        IEnumerable<RetrievedEventWithMetaData> records;
                         try
                         {
-                            records = context.Client.Streams.ReadAll(new StorageOffset(nextOffset), 10000);
+                            records = context.Client.Streams.ReadAllEvents(new StorageOffset(nextOffset), 10000);
                         }
                         catch (Exception e)
                         {
@@ -201,15 +201,15 @@ namespace Platform.TestClient.Commands.Bench
                         var emptyData = true;
                         foreach (var dataRecord in records)
                         {
-                            totalBytes += dataRecord.Data.Length;
+                            totalBytes += dataRecord.EventData.Length;
 
-                            if (dataRecord.Key != streamId)
+                            if (dataRecord.StreamName != streamId)
                             {
                                 projection.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
                                 continue;
                             }
 
-                            projection.Handle(dataRecord.Data);
+                            projection.Handle(dataRecord.EventData);
                             projection.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
                             emptyData = false;

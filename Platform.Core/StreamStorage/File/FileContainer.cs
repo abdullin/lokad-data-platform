@@ -78,7 +78,7 @@ namespace Platform.StreamStorage.File
 
         }
 
-        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventWithMetaData> ReadAll(StorageOffset startOffset, int maxRecordCount)
         {
             Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
 
@@ -92,7 +92,7 @@ namespace Platform.StreamStorage.File
             int recordCount = 0;
             foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                yield return new RetrievedDataRecord(msg.StreamKey, msg.Message, new StorageOffset(msg.NextOffset));
+                yield return new RetrievedEventWithMetaData(msg.StreamKey, msg.Message, new StorageOffset(msg.NextOffset));
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark

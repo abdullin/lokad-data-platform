@@ -137,7 +137,7 @@ namespace Platform.StreamStorage.Azure
             using (request.GetResponse()) { }
         }
 
-        public IEnumerable<RetrievedDataRecord> ReadAll(long startOffset, long endOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventWithMetaData> ReadAll(long startOffset, long endOffset, int maxRecordCount)
         {
             using (var stream = _blob.OpenRead())
             using (var reader = new BinaryReader(stream))
@@ -151,7 +151,7 @@ namespace Platform.StreamStorage.Azure
                     var length = reader.ReadInt32();
                    
                     var data = reader.ReadBytes(length);
-                    yield return new RetrievedDataRecord(key, data, new StorageOffset(stream.Position));
+                    yield return new RetrievedEventWithMetaData(key, data, new StorageOffset(stream.Position));
 
                     if (count == maxRecordCount)
                         break;

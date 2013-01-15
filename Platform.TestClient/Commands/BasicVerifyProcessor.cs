@@ -66,7 +66,7 @@ namespace Platform.TestClient.Commands
                                 x =>
                                 {
                                     var bytes = Encoding.UTF8.GetBytes(batchMsg);
-                                    return new RecordForStaging(bytes);
+                                    return (bytes);
                                 }));
                             Interlocked.Add(ref batchCount, 1);
                         }
@@ -121,10 +121,10 @@ namespace Platform.TestClient.Commands
             string floodMsg, int batchCount, int floodCount)
         {
             var errors = new List<string>();
-            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId);
+            var records = context.Client.Streams.ReadAllEvents().Where(x => x.StreamName == streamId);
             foreach (var record in records)
             {
-                var msg = Encoding.UTF8.GetString(record.Data);
+                var msg = Encoding.UTF8.GetString(record.EventData);
                 if (msg.Equals(batchMsg))
                     batchCount--;
                 else if (msg.Equals(floodMsg))
@@ -144,21 +144,21 @@ namespace Platform.TestClient.Commands
         private bool ReadMessageWithNextOffset(CommandProcessorContext context)
         {
             var result = true;
-            var records = context.Client.Streams.ReadAll(maxRecordCount: 20).ToArray();
+            var records = context.Client.Streams.ReadAllEvents(maxRecordCount: 20).ToArray();
 
             if (records.Length == 0)
                 return true;
 
-            RetrievedDataRecord prevRecord = records[0];
+            RetrievedEventWithMetaData prevRecord = records[0];
 
             for (int i = 1; i < records.Length; i++)
             {
-                var prevNextRecord = context.Client.Streams.ReadAll(prevRecord.Next, 1).First();
-                var expectedBytes = records[i].Data.Except(prevNextRecord.Data).ToList();
-                if (records[i].Key != prevNextRecord.Key | expectedBytes.Count != 0)
+                var prevNextRecord = context.Client.Streams.ReadAllEvents(prevRecord.Next, 1).First();
+                var expectedBytes = records[i].EventData.Except(prevNextRecord.EventData).ToList();
+                if (records[i].StreamName != prevNextRecord.StreamName | expectedBytes.Count != 0)
                 {
-                    context.Log.Error("Expected key: {0}, Received key: {1}", records[i].Key, prevNextRecord.Key);
-                    context.Log.Error("Expected dat: {0}, Received key: {1}", records[i].Data.Length, prevNextRecord.Data.Length);
+                    context.Log.Error("Expected key: {0}, Received key: {1}", records[i].StreamName, prevNextRecord.StreamName);
+                    context.Log.Error("Expected dat: {0}, Received key: {1}", records[i].EventData.Length, prevNextRecord.EventData.Length);
                     result = false;
                 }
                 prevRecord = records[i];
@@ -185,49 +185,49 @@ namespace Platform.TestClient.Commands
             context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(dateVal.ToBinary()));
             context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(doubleVal));
 
-            var batchBody = new List<RecordForStaging>
+            var batchBody = new List<byte[]>
                            {
-                               new RecordForStaging(BitConverter.GetBytes(intVal)),
-                               new RecordForStaging(BitConverter.GetBytes(longVal)),
-                               new RecordForStaging(BitConverter.GetBytes(charVal)),
-                               new RecordForStaging(Encoding.UTF8.GetBytes(stringVal)),
-                               new RecordForStaging(BitConverter.GetBytes(dateVal.ToBinary())),
-                               new RecordForStaging(BitConverter.GetBytes(doubleVal))
+                               (BitConverter.GetBytes(intVal)),
+                               (BitConverter.GetBytes(longVal)),
+                               (BitConverter.GetBytes(charVal)),
+                               (Encoding.UTF8.GetBytes(stringVal)),
+                               (BitConverter.GetBytes(dateVal.ToBinary())),
+                               (BitConverter.GetBytes(doubleVal))
                            };
 
             context.Client.Streams.WriteEventsInLargeBatch(streamId, batchBody);
 
-            var records = context.Client.Streams.ReadAll().Where(x => x.Key == streamId).ToArray();
+            var records = context.Client.Streams.ReadAllEvents().Where(x => x.StreamName == streamId).ToArray();
             bool result = true;
 
             for (int i = 0; i < 2; i++)
             {
-                if (BitConverter.ToInt32(records[i * 6 + 0].Data, 0) != intVal)
+                if (BitConverter.ToInt32(records[i * 6 + 0].EventData, 0) != intVal)
                 {
                     context.Log.Error("could not read the INT");
                     result = false;
                 }
-                if (BitConverter.ToInt64(records[i * 6 + 1].Data, 0) != longVal)
+                if (BitConverter.ToInt64(records[i * 6 + 1].EventData, 0) != longVal)
                 {
                     context.Log.Error("could not read the LONG");
                     result = false;
                 }
-                if (BitConverter.ToChar(records[i * 6 + 2].Data, 0) != charVal)
+                if (BitConverter.ToChar(records[i * 6 + 2].EventData, 0) != charVal)
                 {
                     context.Log.Error("could not read the CHAR");
                     result = false;
                 }
-                if (Encoding.UTF8.GetString(records[i * 6 + 3].Data) != stringVal)
+                if (Encoding.UTF8.GetString(records[i * 6 + 3].EventData) != stringVal)
                 {
                     context.Log.Error("could not read the STRING");
                     result = false;
                 }
-                if (DateTime.FromBinary(BitConverter.ToInt64(records[i * 6 + 4].Data, 0)) != dateVal)
+                if (DateTime.FromBinary(BitConverter.ToInt64(records[i * 6 + 4].EventData, 0)) != dateVal)
                 {
                     context.Log.Error("could not read the DATETIME");
                     result = false;
                 }
-                if (BitConverter.ToDouble(records[i * 6 + 5].Data, 0) != doubleVal)
+                if (BitConverter.ToDouble(records[i * 6 + 5].EventData, 0) != doubleVal)
                 {
                     context.Log.Error("could not read the DOUBLE");
                     result = false;
@@ -247,15 +247,15 @@ namespace Platform.TestClient.Commands
             string streamId = Guid.NewGuid().ToString();
             var testData = Enumerable.Range(1, 100);
 
-            context.Client.Streams.WriteEventsInLargeBatch(streamId, testData.Select(x => new RecordForStaging(BitConverter.GetBytes(x))));
+            context.Client.Streams.WriteEventsInLargeBatch(streamId, testData.Select(x => (BitConverter.GetBytes(x))));
 
             var data = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
-            var records = context.Client.Streams.ReadAll(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.Key == streamId);
+            var records = context.Client.Streams.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamName == streamId);
 
             foreach (var record in records)
             {
-                data.Distribution.Add(BitConverter.ToInt32(record.Data, 0));
+                data.Distribution.Add(BitConverter.ToInt32(record.EventData, 0));
                 data.NextOffsetInBytes = record.Next.OffsetInBytes;
             }
 

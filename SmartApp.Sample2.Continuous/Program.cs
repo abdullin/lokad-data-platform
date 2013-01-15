@@ -52,7 +52,7 @@ namespace SmartApp.Sample2.Continuous
             // This is more efficient, than reading one event by one, since it
             // reduces cost of reading/writing data by batching
             const int maxRecordCount = 10000;
-            var nextEvents = reader.ReadAll(new StorageOffset(nextOffset), maxRecordCount);
+            var nextEvents = reader.ReadAllEvents(new StorageOffset(nextOffset), maxRecordCount);
             var emptyData = true;
             // process
             foreach (var dataRecord in nextEvents)
@@ -60,10 +60,10 @@ namespace SmartApp.Sample2.Continuous
                 // update next offset
                 data.NextOffset = dataRecord.Next.OffsetInBytes;
                 // update distribution
-                if (data.Distribution.ContainsKey(dataRecord.Data.Length))
-                    data.Distribution[dataRecord.Data.Length]++;
+                if (data.Distribution.ContainsKey(dataRecord.EventData.Length))
+                    data.Distribution[dataRecord.EventData.Length]++;
                 else
-                    data.Distribution[dataRecord.Data.Length] = 1;
+                    data.Distribution[dataRecord.EventData.Length] = 1;
                 emptyData = false;
             }
 

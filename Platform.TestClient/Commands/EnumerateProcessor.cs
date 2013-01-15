@@ -16,13 +16,13 @@ namespace Platform.TestClient.Commands
             if (args.Length > 0)
                 int.TryParse(args[0], out maxCount);
             var sw = Stopwatch.StartNew();
-            var records = context.Client.Streams.ReadAll(StorageOffset.Zero, maxCount);
+            var records = context.Client.Streams.ReadAllEvents(StorageOffset.Zero, maxCount);
             int msgCount = 0;
             long dataSize = 0;
             foreach (var record in records)
             {
                 msgCount += 1;
-                dataSize += record.Data.Length;
+                dataSize += record.EventData.Length;
             }
             
             sw.Stop();

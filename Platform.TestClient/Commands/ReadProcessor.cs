@@ -31,13 +31,13 @@ namespace Platform.TestClient.Commands
 
             //context.IsAsync();
 
-            var result = context.Client.Streams.ReadAll(new StorageOffset(fromOffset), maxRecordCount);
+            var result = context.Client.Streams.ReadAllEvents(new StorageOffset(fromOffset), maxRecordCount);
 
             StorageOffset next = StorageOffset.Zero;
             bool empty = true;
             foreach (var record in result)
             {
-                context.Log.Info("  stream-id: {0}, data: {1}", record.Key, Encoding.UTF8.GetString(record.Data));
+                context.Log.Info("  stream-id: {0}, data: {1}", record.StreamName, Encoding.UTF8.GetString(record.EventData));
                 next = record.Next;
                 empty = false;
             }

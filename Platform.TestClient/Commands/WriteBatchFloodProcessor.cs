@@ -48,7 +48,7 @@ namespace Platform.TestClient.Commands
                     for (int i = 0; i < repeatForEachThread; i++)
                     {
                         
-                        context.Client.Streams.WriteEventsInLargeBatch(streamId, Enumerable.Repeat(new RecordForStaging(bytes), batchSize));
+                        context.Client.Streams.WriteEventsInLargeBatch(streamId, Enumerable.Repeat((bytes), batchSize));
                         
                     }
 

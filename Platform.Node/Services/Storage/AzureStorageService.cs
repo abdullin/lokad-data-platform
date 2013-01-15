@@ -97,7 +97,7 @@ namespace Platform.Node.Services.Storage
             {
                 foreach (var msg in fs.ReadAll(0,size, int.MaxValue))
                 {
-                    yield return msg.Data;
+                    yield return msg.EventData;
                 }
             }
         }

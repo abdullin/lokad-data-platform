@@ -23,7 +23,7 @@ namespace Platform.StreamClients
             _blob.Container.CreateIfNotExist();
         }
 
-        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset, int maxRecordCount)
         {
             if (maxRecordCount < 0)
                 throw new ArgumentOutOfRangeException("maxRecordCount");
@@ -41,7 +41,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records)
+        public void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData)
         {
             var container = _blob.Container;
             container.CreateIfNotExist();
@@ -51,8 +51,8 @@ namespace Platform.StreamClients
             try
             {
                 Log.Debug("Uploading staging to {0}", uri);
-                var size = PrepareStaging(records, tempBlob);
-                ImportEventsInternal(streamKey, uri, size);
+                var size = PrepareStaging(eventData, tempBlob);
+                ImportEventsInternal(streamName, uri, size);
             }
             finally
             {
@@ -60,17 +60,17 @@ namespace Platform.StreamClients
             }
         }
 
-        static long PrepareStaging(IEnumerable<RecordForStaging> records, CloudPageBlob blob)
+        static long PrepareStaging(IEnumerable<byte[]> events, CloudPageBlob blob)
         {
             using (var fs = AzureMessageSet.CreateNewForWriting(blob))
             {
-                return fs.Append("", records.Select(r =>
+                return fs.Append("", events.Select(r =>
                 {
-                    if (r.Data.Length > MessageSizeLimit)
+                    if (r.Length > MessageSizeLimit)
                         throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
                             MessageSizeLimit));
 
-                    return r.Data;
+                    return r;
                 }));
 
             }

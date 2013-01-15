@@ -24,11 +24,11 @@ namespace Platform.StreamClients
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 
         /// </summary>
-        IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset = default (StorageOffset),
+        IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset = default (StorageOffset),
             int maxRecordCount = int.MaxValue);
 
-        void WriteEvent(string streamName, byte[] data);
-        void WriteEventsInLargeBatch(string streamKey, IEnumerable<RecordForStaging> records);
+        void WriteEvent(string streamName, byte[] eventData);
+        void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData);
     }
 
 
@@ -69,15 +69,4 @@ namespace Platform.StreamClients
 
 
     }
-
-    public struct RecordForStaging
-    {
-        public readonly byte[] Data;
-        public RecordForStaging(byte[] data)
-        {
-            Data = data;
-        }
-    }
-
-
 }

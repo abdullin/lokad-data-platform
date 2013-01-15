@@ -73,11 +73,11 @@ namespace SmartApp.Sample1.Chat
             {
                 var last = StorageOffset.Zero;
                 var existMessages = false;
-                foreach (var message in _client.ReadAll(nextOffset))
+                foreach (var message in _client.ReadAllEvents(nextOffset))
                 {
                     last = message.Next;
                     existMessages = true;
-                    var text = Encoding.UTF8.GetString(message.Data);
+                    var text = Encoding.UTF8.GetString(message.EventData);
                     var userName = text.Split('|')[0];
                     var msg = text.Split(new[] { '|' }, 2)[1];
                     if (userName == _userName)

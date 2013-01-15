@@ -43,13 +43,13 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAllEvents(new StorageOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
-                    var post = Post.TryGetFromBinary(dataRecord.Data);
+                    var post = Post.TryGetFromBinary(dataRecord.EventData);
                     if (post == null)
                         continue;
 
@@ -98,21 +98,21 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAll(new StorageOffset(nextOffset), 10000);
+                var records = store.ReadAllEvents(new StorageOffset(nextOffset), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
                     processingInfo.EventsProcessed += 1;
 
-                    var user = User.TryGetFromBinary(dataRecord.Data);
+                    var user = User.TryGetFromBinary(dataRecord.EventData);
                     if (user != null)
                     {
                         data.Users[user.Id] = user;
                         emptyData = false;
                         continue;
                     }
-                    var comment = Comment.TryGetFromBinary(dataRecord.Data);
+                    var comment = Comment.TryGetFromBinary(dataRecord.EventData);
 
                     if (comment != null)
                     {
@@ -157,13 +157,13 @@ namespace SmartApp.Sample3.Continuous
             {
                 var nextOffcet = processingInfo.NextOffsetInBytes;
 
-                var records = store.ReadAll(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAllEvents(new StorageOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
                     processingInfo.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
 
-                    var user = User.TryGetFromBinary(dataRecord.Data);
+                    var user = User.TryGetFromBinary(dataRecord.EventData);
                     if (user != null)
                     {
                         data.Users[user.Id] = user;
@@ -171,7 +171,7 @@ namespace SmartApp.Sample3.Continuous
                         continue;
                     }
 
-                    var comment = Comment.TryGetFromBinary(dataRecord.Data);
+                    var comment = Comment.TryGetFromBinary(dataRecord.EventData);
                     if (comment != null)
                     {
 

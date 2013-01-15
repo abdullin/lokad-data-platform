@@ -85,7 +85,7 @@ namespace SmartApp.Sample3.Dump
                 
                 if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
+                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => (x)));
                     buffer.Clear();
 
                     var speed = total / sw.Elapsed.TotalSeconds;
@@ -94,7 +94,7 @@ namespace SmartApp.Sample3.Dump
                 
                 
             }
-            _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("", buffer.Select(x => (x)));
             Console.WriteLine("Comments import complete");
         }
 
@@ -148,13 +148,13 @@ namespace SmartApp.Sample3.Dump
 
                 if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => new RecordForStaging(x)));
+                    _reader.WriteEventsInLargeBatch("", buffer.Select(x => (x)));
                     buffer.Clear();
                     var speed = total / sw.Elapsed.TotalSeconds;
                     Console.WriteLine("Posts:\r\n\t{0} per second\r\n\tAdded {1} posts", speed, total);
                 }
             }
-            _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("s3:post", buffer.Select(x => (x)));
             Console.WriteLine("Posts import complete");
         }
 
@@ -209,14 +209,14 @@ namespace SmartApp.Sample3.Dump
 
                 if (buffer.Count == buffer.Capacity)
                 {
-                    _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => new RecordForStaging(x)));
+                    _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => (x)));
                     buffer.Clear();
                     var speed = total/sw.Elapsed.TotalSeconds;
                     Console.WriteLine("Users:\r\n\t{0} per second\r\n\tAdded {1} users", speed, total);
                 }
             }
 
-            _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => new RecordForStaging(x)));
+            _reader.WriteEventsInLargeBatch("s3:user", buffer.Select(x => (x)));
             Console.WriteLine("Users import complete");
         }
 

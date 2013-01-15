@@ -4,7 +4,15 @@ using System.IO;
 
 namespace Platform.StreamStorage.File
 {
-    public class FileContainerManager : IDisposable
+    /// <summary>
+    /// This interface is not really needed in the codebase,
+    /// but is introduced to explicitly demonstrate the concept
+    /// </summary>
+    public interface IContainerManagerConcept : IDisposable
+    {
+        
+    }
+    public class FileContainerManager : IContainerManagerConcept
     {
         readonly IDictionary<string, FileContainer> _stores = new Dictionary<string, FileContainer>();
 

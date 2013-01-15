@@ -20,7 +20,7 @@ namespace Platform.StreamClients
             
         }
 
-        public IEnumerable<RetrievedDataRecord> ReadAll(StorageOffset startOffset = default (StorageOffset),
+        public IEnumerable<RetrievedEventWithMetaData> ReadAll(StorageOffset startOffset = default (StorageOffset),
             int maxRecordCount = int.MaxValue)
         {
 
@@ -33,7 +33,7 @@ namespace Platform.StreamClients
                 if (remaining <= 0)
                     yield break;
 
-                using (var enumerator = Advanced.ReadAll(position, remaining).GetEnumerator())
+                using (var enumerator = Advanced.ReadAllEvents(position, remaining).GetEnumerator())
                 {
                     try
                     {

@@ -84,7 +84,7 @@
     <Compile Include="StreamStorage\Azure\PageWriter.cs" />
     <Compile Include="StreamStorage\File\FileMessageSet.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="StreamStorage\RetrievedDataRecord.cs" />
+    <Compile Include="StreamStorage\RetrievedEventWithMetaData.cs" />
     <Compile Include="StreamClients\IRawStreamClient.cs" />
     <Compile Include="StreamStorage\ReadResult.cs" />
     <Compile Include="StreamStorage\Azure\StorageExtensions.cs" />
