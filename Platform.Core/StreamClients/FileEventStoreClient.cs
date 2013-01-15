@@ -12,11 +12,6 @@ namespace Platform.StreamClients
 
         readonly string _serverFolder;
 
-        public FileEventStoreClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, EventStoreId.Create(EventStoreId.Default),serverEndpoint)
-        {
-            
-        }
-
         public FileEventStoreClient(string serverFolder, EventStoreId storeId, string serverEndpoint = null) : base(storeId, serverEndpoint)
         {
 

@@ -13,8 +13,6 @@ namespace Platform
             Name = name;
         }
 
-        public const string Default = "default";
-
         public static EventStoreId Create(string name)
         {
             ThrowIfInvalid(name);
