@@ -9,7 +9,7 @@ namespace Platform.StreamStorage.File
     /// Checkpointed stream stored in file system with some 
     /// specific naming conventions
     /// </summary>
-    public sealed class FileContainer : IDisposable
+    public sealed class FileEventStore : IDisposable
     {
         public EventStoreId Container;
         public FileMessageSet Store;
@@ -32,7 +32,7 @@ namespace Platform.StreamStorage.File
             return (System.IO.File.Exists(check) && System.IO.File.Exists(store));
         }
 
-        public static FileContainer CreateNew(string root, EventStoreId container)
+        public static FileEventStore CreateNew(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             if (!Directory.Exists(folder))
@@ -40,21 +40,21 @@ namespace Platform.StreamStorage.File
 
             var check = FileCheckpoint.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
             var store = FileMessageSet.CreateNew(Path.Combine(folder, "stream.dat"));
-            return new FileContainer
+            return new FileEventStore
             {
                 Container = container,
                 Checkpoint = check,
                 Store = store
             };
         }
-        public static FileContainer OpenExistingForWriting(string root, EventStoreId container)
+        public static FileEventStore OpenExistingForWriting(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
             var store = FileMessageSet.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
                 check.Read());
 
-            return new FileContainer
+            return new FileEventStore
             {
                 Checkpoint = check,
                 Container = container,
@@ -63,13 +63,13 @@ namespace Platform.StreamStorage.File
         }
 
 
-        public static FileContainer OpenForReading(string root, EventStoreId container)
+        public static FileEventStore OpenForReading(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
             var store = FileMessageSet.OpenForReading(Path.Combine(folder, "stream.dat"));
 
-            return new FileContainer
+            return new FileEventStore
             {
                 Checkpoint = check,
                 Container = container,

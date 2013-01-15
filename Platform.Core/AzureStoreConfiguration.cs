@@ -9,11 +9,11 @@ namespace Platform
     public sealed class AzureStoreConfiguration
     {
         public readonly string ConnectionString;
-        public readonly string Container;
+        public readonly string RootBlobContainerName;
 
-        public AzureStoreConfiguration(string connectionString, string container)
+        public AzureStoreConfiguration(string connectionString, string rootBlobContainerName)
         {
-            Container = container;
+            RootBlobContainerName = rootBlobContainerName;
             ConnectionString = connectionString;
         }
 
@@ -25,12 +25,12 @@ namespace Platform
             {
                 var parts = source.Split('|');
 
-                string container = "dp-store";
+                string rootBlobContainerName = "dp-store";
                 if (parts.Length>1)
                 {
-                    container = parts[1];
+                    rootBlobContainerName = parts[1];
                 }
-                configuration = new AzureStoreConfiguration(parts[0], container);
+                configuration = new AzureStoreConfiguration(parts[0], rootBlobContainerName);
                 return true;
             }
             configuration = null;

@@ -15,11 +15,11 @@ namespace Platform.StreamClients
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureEventStoreClient>();
 
-        public AzureEventStoreClient(AzureStoreConfiguration config, EventStoreId container, string serverEndpoint = null)
-            : base(container, serverEndpoint)
+        public AzureEventStoreClient(AzureStoreConfiguration config, EventStoreId storeId, string serverEndpoint = null)
+            : base(storeId, serverEndpoint)
         {
             Config = config;
-            _blob = config.GetPageBlob(container.Name + "/stream.dat");
+            _blob = config.GetPageBlob(storeId.Name + "/stream.dat");
             _blob.Container.CreateIfNotExist();
         }
 
@@ -28,11 +28,11 @@ namespace Platform.StreamClients
             if (maxRecordCount < 0)
                 throw new ArgumentOutOfRangeException("maxRecordCount");
 
-            if (!AzureContainer.IsValid(Config, Container))
+            if (!AzureEventStore.IsValid(Config, StoreId))
                 yield break;
 
             // CHECK existence
-            using (var cont = AzureContainer.OpenExistingForReading(Config, Container))
+            using (var cont = AzureEventStore.OpenExistingForReading(Config, StoreId))
             {
                 foreach (var record in cont.ReadAll(startOffset, maxRecordCount))
                 {

@@ -15,9 +15,9 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IRawEventStoreClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = EventStoreId.Default)
+        public static IRawEventStoreClient GetEventStoreReaderWriter(string storage, string serverEndpoint, string storeId = EventStoreId.Default)
         {
-            var container = EventStoreId.Create(containerName);
+            var container = EventStoreId.Create(storeId);
 
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
@@ -52,7 +52,7 @@ namespace Platform
             {
                 var account = CloudStorageAccount.Parse(configuration.ConnectionString);
                 var client = account.CreateCloudBlobClient();
-                var viewContainer = new AzureViewRoot(client).GetContainer(configuration.Container);
+                var viewContainer = new AzureViewRoot(client).GetContainer(configuration.RootBlobContainerName);
 
                 var viewClient = new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
                 viewClient.CreateContainer();

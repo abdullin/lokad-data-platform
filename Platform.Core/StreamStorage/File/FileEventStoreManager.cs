@@ -6,7 +6,7 @@ namespace Platform.StreamStorage.File
 {
     public class FileEventStoreManager : IEventStoreManager
     {
-        readonly IDictionary<string, FileContainer> _stores = new Dictionary<string, FileContainer>();
+        readonly IDictionary<string, FileEventStore> _stores = new Dictionary<string, FileEventStore>();
 
         readonly string _rootDirectory;
 
@@ -31,9 +31,9 @@ namespace Platform.StreamStorage.File
                     continue;
                 }
                 var container = EventStoreId.Create(child.Name);
-                if (FileContainer.ExistsValid(rootDirectory, container))
+                if (FileEventStore.ExistsValid(rootDirectory, container))
                 {
-                    var writer = FileContainer.OpenExistingForWriting(rootDirectory, container);
+                    var writer = FileEventStore.OpenExistingForWriting(rootDirectory, container);
                     _stores.Add(container.Name, writer);
                 }
                 else
@@ -53,10 +53,10 @@ namespace Platform.StreamStorage.File
 
         public void AppendEventsToStore(EventStoreId storeId, string streamId, IEnumerable<byte[]> eventData)
         {
-            FileContainer value;
+            FileEventStore value;
             if (!_stores.TryGetValue(storeId.Name, out value))
             {
-                value = FileContainer.CreateNew(_rootDirectory, storeId);
+                value = FileEventStore.CreateNew(_rootDirectory, storeId);
                 _stores.Add(storeId.Name, value);
             }
             value.Write(streamId, eventData);

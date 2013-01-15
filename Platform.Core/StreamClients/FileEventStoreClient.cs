@@ -17,13 +17,13 @@ namespace Platform.StreamClients
             
         }
 
-        public FileEventStoreClient(string serverFolder, EventStoreId container, string serverEndpoint = null) : base(container, serverEndpoint)
+        public FileEventStoreClient(string serverFolder, EventStoreId storeId, string serverEndpoint = null) : base(storeId, serverEndpoint)
         {
 
             // open for reading or new
             _serverFolder = serverFolder;
             
-            var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), container.Name);
+            var path = Path.Combine(Path.GetFullPath(serverFolder ?? ""), storeId.Name);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -33,12 +33,12 @@ namespace Platform.StreamClients
 
         public IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset, int maxRecordCount)
         {
-            if (!FileContainer.ExistsValid(_serverFolder, Container))
+            if (!FileEventStore.ExistsValid(_serverFolder, StoreId))
                 yield break;
 
-            using (var container = FileContainer.OpenForReading(_serverFolder, Container))
+            using (var store = FileEventStore.OpenForReading(_serverFolder, StoreId))
             {
-                foreach (var record in container.ReadAll(startOffset, maxRecordCount))
+                foreach (var record in store.ReadAll(startOffset, maxRecordCount))
                 {
                     yield return record;
                 }

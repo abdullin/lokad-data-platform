@@ -8,8 +8,8 @@ namespace Platform
         public class WriteEvent
         {
             public const string Url = "/stream/";
-            public string Container { get; set; }
-            public string StreamKey { get; set; }
+            public string StoreId { get; set; }
+            public string StreamId { get; set; }
             public byte[] Data { get; set; }
             public int ExpectedVersion { get; set; }
         }
@@ -23,9 +23,9 @@ namespace Platform
         public class WriteBatch
         {
             public const string Url = "/import/";
-            public string Container { get; set; }
-            public string StreamKey { get; set; }
-            public string Location { get; set; }
+            public string StoreId { get; set; }
+            public string StreamId { get; set; }
+            public string BatchLocation { get; set; }
             public long Length { get; set; }
         }
 

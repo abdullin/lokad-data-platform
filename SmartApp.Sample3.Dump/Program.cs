@@ -30,7 +30,7 @@ namespace SmartApp.Sample3.Dump
             Console.WriteLine("  StoreDataPath: {0}", StorePath);
             Console.WriteLine("  StoreConnection: {0}", StoreConnection);
             
-            _reader =  PlatformClient.GetStreamReaderWriter(StorePath, StoreConnection);
+            _reader =  PlatformClient.GetEventStoreReaderWriter(StorePath, StoreConnection);
             Thread.Sleep(2000); //waiting for server initialization
 
             var threads = new List<Task>

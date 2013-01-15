@@ -9,7 +9,7 @@ namespace Platform.StreamStorage.Azure
         {
             var account = CloudStorageAccount.Parse(config.ConnectionString);
             var client = account.CreateCloudBlobClient();
-            var path = config.Container + "/" + blobAddress.TrimStart('/');
+            var path = config.RootBlobContainerName + "/" + blobAddress.TrimStart('/');
             return client.GetPageBlobReference(path);
         }
     }

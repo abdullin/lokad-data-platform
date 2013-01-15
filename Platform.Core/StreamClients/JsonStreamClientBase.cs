@@ -6,11 +6,11 @@ namespace Platform.StreamClients
     public abstract class JsonStreamClientBase
     {
         public  JsonServiceClient WriteClient;
-        public readonly EventStoreId Container;
+        public readonly EventStoreId StoreId;
 
-        protected JsonStreamClientBase(EventStoreId container, string uri)
+        protected JsonStreamClientBase(EventStoreId storeId, string uri)
         {
-            Container = container;
+            StoreId = storeId;
             if (!string.IsNullOrWhiteSpace(uri))
             {
                 WriteClient = new JsonServiceClient(uri);
@@ -27,9 +27,9 @@ namespace Platform.StreamClients
                 var response = WriteClient.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
                     new ClientDto.WriteBatch
                         {
-                            Container = Container.Name,
-                            StreamKey = streamId,
-                            Location = location,
+                            StoreId = StoreId.Name,
+                            StreamId = streamId,
+                            BatchLocation = location,
                             Length = length
                         });
                 if (!response.Success)
@@ -52,8 +52,8 @@ namespace Platform.StreamClients
                 var response = WriteClient.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
                     new ClientDto.WriteEvent
                         {
-                            Container = Container.Name,
-                            StreamKey = streamId,
+                            StoreId = StoreId.Name,
+                            StreamId = streamId,
                             Data = eventData,
                         });
                 if (!response.Success)

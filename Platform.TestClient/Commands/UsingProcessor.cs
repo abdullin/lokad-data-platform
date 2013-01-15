@@ -23,7 +23,7 @@ namespace Platform.TestClient.Commands
             }
 
             context.Log.Info("Switching to container '{0}'", args[0]);
-            context.Client.UseStreamContainer(args[0]);
+            context.Client.UseEventStore(args[0]);
             
             return true;
         }

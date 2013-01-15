@@ -25,14 +25,14 @@ namespace Platform.TestClient
             ClientHttpBase = string.Format("http://{0}:{1}", options.Ip, options.HttpPort);
             Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
             
-            UseStreamContainer("default");
+            UseEventStore("default");
 
             RegisterCommands();
         }
 
-        public void UseStreamContainer(string containerName = "default")
+        public void UseEventStore(string storeId = "default")
         {
-            EventStores = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase, containerName);
+            EventStores = PlatformClient.GetEventStoreReaderWriter(Options.StoreLocation, ClientHttpBase, storeId);
         }
 
         void RegisterCommands()
