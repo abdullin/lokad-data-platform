@@ -48,6 +48,10 @@ namespace Platform.StreamClients
     /// <summary>
     /// Points to a physical location of event inside an event store.
     /// </summary>
+    /// <remarks>
+    /// When switching to multi-file (chunked) event stores, this class will
+    /// have to be adjusted
+    /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
     public struct EventStoreOffset
     {
