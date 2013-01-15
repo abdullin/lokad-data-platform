@@ -12,7 +12,7 @@ namespace Platform.StreamStorage.File
     public sealed class FileEventStore : IDisposable
     {
         public EventStoreId Container;
-        public FileMessageSet Store;
+        public FileEventStoreChunk Store;
         public FileCheckpoint Checkpoint;
 
         public void Write(string streamId, IEnumerable<byte[]> eventData)
@@ -39,7 +39,7 @@ namespace Platform.StreamStorage.File
                 Directory.CreateDirectory(folder);
 
             var check = FileCheckpoint.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
-            var store = FileMessageSet.CreateNew(Path.Combine(folder, "stream.dat"));
+            var store = FileEventStoreChunk.CreateNew(Path.Combine(folder, "stream.dat"));
             return new FileEventStore
             {
                 Container = container,
@@ -51,7 +51,7 @@ namespace Platform.StreamStorage.File
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
-            var store = FileMessageSet.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
+            var store = FileEventStoreChunk.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
                 check.Read());
 
             return new FileEventStore
@@ -67,7 +67,7 @@ namespace Platform.StreamStorage.File
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
-            var store = FileMessageSet.OpenForReading(Path.Combine(folder, "stream.dat"));
+            var store = FileEventStoreChunk.OpenForReading(Path.Combine(folder, "stream.dat"));
 
             return new FileEventStore
             {

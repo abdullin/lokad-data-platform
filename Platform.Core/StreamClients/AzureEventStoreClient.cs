@@ -62,7 +62,7 @@ namespace Platform.StreamClients
 
         static long PrepareStaging(IEnumerable<byte[]> events, CloudPageBlob blob)
         {
-            using (var fs = AzureMessageSet.CreateNewForWriting(blob))
+            using (var fs = AzureEventStoreChunk.CreateNewForWriting(blob))
             {
                 return fs.Append("", events.Select(r =>
                 {

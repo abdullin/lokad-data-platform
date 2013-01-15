@@ -40,7 +40,7 @@ namespace Platform.Node.Services.Storage
 
         static IEnumerable<byte[]> EnumerateStaging(string location)
         {
-            using (var fs = FileMessageSet.OpenForReading(location))
+            using (var fs = FileEventStoreChunk.OpenForReading(location))
             {
                 foreach (var msg in fs.ReadAll(0,int.MaxValue))
                 {

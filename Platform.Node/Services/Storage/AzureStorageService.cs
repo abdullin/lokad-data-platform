@@ -93,7 +93,7 @@ namespace Platform.Node.Services.Storage
 
         static IEnumerable<byte[]> EnumerateStaging(CloudPageBlob location, long size)
         {
-            using (var fs = AzureMessageSet.OpenExistingForReading(location, size))
+            using (var fs = AzureEventStoreChunk.OpenExistingForReading(location, size))
             {
                 foreach (var msg in fs.ReadAll(0,size, int.MaxValue))
                 {

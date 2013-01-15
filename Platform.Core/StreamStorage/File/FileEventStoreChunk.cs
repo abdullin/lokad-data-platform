@@ -12,7 +12,11 @@ using Platform.StreamClients;
 
 namespace Platform.StreamStorage.File
 {
-    public sealed class FileMessageSet : IDisposable
+    /// <summary>
+    /// Represents collection of events within a single physical file. 
+    /// It can be opened as mutable or as read-only
+    /// </summary>
+    public sealed class FileEventStoreChunk : IDisposable
     {
         readonly BinaryWriter _writer;
         readonly FileStream _stream;
@@ -20,7 +24,7 @@ namespace Platform.StreamStorage.File
 
         readonly bool _isMutable;
 
-        FileMessageSet(FileStream stream, bool isMutable)
+        FileEventStoreChunk(FileStream stream, bool isMutable)
         {
             if (null == stream)
                 throw new ArgumentNullException("stream");
@@ -57,23 +61,23 @@ namespace Platform.StreamStorage.File
 
         }
 
-        public static FileMessageSet OpenExistingForWriting(string path, long offset)
+        public static FileEventStoreChunk OpenExistingForWriting(string path, long offset)
         {
             var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
             stream.Seek(offset, SeekOrigin.Begin);
-            return new FileMessageSet(stream, true);
+            return new FileEventStoreChunk(stream, true);
         }
 
-        public static FileMessageSet CreateNew(string path)
+        public static FileEventStoreChunk CreateNew(string path)
         {
             var stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
-            return new FileMessageSet(stream, true);
+            return new FileEventStoreChunk(stream, true);
         }
 
-        public static FileMessageSet OpenForReading(string path)
+        public static FileEventStoreChunk OpenForReading(string path)
         {
             var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            return new FileMessageSet(stream, false);
+            return new FileEventStoreChunk(stream, false);
         }
 
 

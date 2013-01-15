@@ -68,7 +68,7 @@ namespace Platform.StreamClients
         {
             try
             {
-                using (var fs = FileMessageSet.CreateNew(location))
+                using (var fs = FileEventStoreChunk.CreateNew(location))
                 {
                     return fs.Append("", eventData.Select(r =>
                         {

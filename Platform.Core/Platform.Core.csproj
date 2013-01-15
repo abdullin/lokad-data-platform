@@ -80,10 +80,10 @@
     <Compile Include="StreamClients\JsonStreamClientBase.cs" />
     <Compile Include="PlatformClient.cs" />
     <Compile Include="StreamClients\AzureEventStoreClient.cs" />
-    <Compile Include="StreamStorage\Azure\AzureMessageSet.cs" />
+    <Compile Include="StreamStorage\Azure\AzureEventStoreChunk.cs" />
     <Compile Include="AzureStoreConfiguration.cs" />
     <Compile Include="StreamStorage\Azure\PageWriter.cs" />
-    <Compile Include="StreamStorage\File\FileMessageSet.cs" />
+    <Compile Include="StreamStorage\File\FileEventStoreChunk.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="StreamStorage\RetrievedEventsWithMetaData.cs" />
     <Compile Include="StreamClients\IRawEventStoreClient.cs" />

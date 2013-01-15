@@ -8,7 +8,12 @@ using Platform.StreamClients;
 
 namespace Platform.StreamStorage.Azure
 {
-    public class AzureMessageSet : IDisposable
+    /// <summary>
+    /// Represents collection of events within an azure storage
+    /// (residing inside a <see cref="CloudPageBlob"/>). It can be opened as 
+    /// mutable or as read-only
+    /// </summary>
+    public class AzureEventStoreChunk : IDisposable
     {
         readonly CloudPageBlob _blob;
         readonly PageWriter _pageWriter;
@@ -17,9 +22,9 @@ namespace Platform.StreamStorage.Azure
 
         public const long ChunkSize = 1024 * 1024 * 4;
 
-        static readonly ILogger Log = LogManager.GetLoggerFor<AzureMessageSet>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureEventStoreChunk>();
 
-        AzureMessageSet(CloudPageBlob blob, long offset, long size)
+        AzureEventStoreChunk(CloudPageBlob blob, long offset, long size)
         {
             _blob = blob;
             _pageWriter = new PageWriter(512, WriteProc);
@@ -44,22 +49,22 @@ namespace Platform.StreamStorage.Azure
             }
         }
 
-        public static AzureMessageSet OpenExistingForWriting(CloudPageBlob blob, long offset, long length)
+        public static AzureEventStoreChunk OpenExistingForWriting(CloudPageBlob blob, long offset, long length)
         {
             Ensure.Positive(length,"length");
             Ensure.Nonnegative(offset, "offset");
-            return new AzureMessageSet(blob, offset, length);
+            return new AzureEventStoreChunk(blob, offset, length);
         }
 
-        public static AzureMessageSet CreateNewForWriting(CloudPageBlob blob)
+        public static AzureEventStoreChunk CreateNewForWriting(CloudPageBlob blob)
         {
             blob.Create(ChunkSize);
-            return new AzureMessageSet(blob, 0, ChunkSize);
+            return new AzureEventStoreChunk(blob, 0, ChunkSize);
         }
-        public static AzureMessageSet OpenExistingForReading(CloudPageBlob blob, long length)
+        public static AzureEventStoreChunk OpenExistingForReading(CloudPageBlob blob, long length)
         {
             Ensure.Positive(length, "length");
-            return new AzureMessageSet(blob, -1, length);
+            return new AzureEventStoreChunk(blob, -1, length);
         }
 
         public long Append(string streamId, IEnumerable<byte[]> eventData)
