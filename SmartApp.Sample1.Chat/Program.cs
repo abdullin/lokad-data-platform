@@ -33,8 +33,8 @@ namespace SmartApp.Sample1.Chat
                 StoreConnection = "http://localhost:8080";
 
             // Use "default" container for reading/writing events
-            _client = PlatformClient.GetEventStoreReaderWriter(StorePath, StoreConnection, storeId:"default");
-            _view = PlatformClient.GetViewClient(StorePath, "sample1-views");
+            _client = PlatformClient.ConnectToEventStore(StorePath, StoreConnection, storeId:"default");
+            _view = PlatformClient.ConnectToViewStorage(StorePath, "sample1-views");
             
 
             Console.WriteLine("You name:");

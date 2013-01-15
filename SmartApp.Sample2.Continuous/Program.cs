@@ -19,8 +19,8 @@ namespace SmartApp.Sample2.Continuous
             // configure the system
             var store = @"C:\LokadData\dp-store";
             // scan "default" event container
-            var reader = PlatformClient.GetStreamReader(store, containerName:"default");
-            var views = PlatformClient.GetViewClient(store, "sample2-views");
+            var reader = PlatformClient.ConnectToEventStoreAsReadOnly(store, storeId:"default");
+            var views = PlatformClient.ConnectToViewStorage(store, "sample2-views");
 
             // Load view, in case this console continues previous work
             var data = views.ReadAsJsonOrGetNew<Sample2Data>(ViewName);

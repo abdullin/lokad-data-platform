@@ -15,36 +15,62 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IRawEventStoreClient GetEventStoreReaderWriter(string storage, 
-            string serverEndpoint, string storeId = EventStoreId.Default)
+        /// <summary>
+        /// Creates a connection to event store, which can both read and write events
+        /// </summary>
+        /// <param name="storageConfiguration">Storage configuration (either local file path
+        /// or <see cref="AzureStoreConfiguration"/>)</param>
+        /// <param name="platformServerEndpoint">url of publice server API</param>
+        /// <param name="storeId">Id of the store to connect to</param>
+        /// <returns>new instance of the client that can read and write events</returns>
+        public static IRawEventStoreClient ConnectToEventStore(
+            string storageConfiguration, 
+            string platformServerEndpoint, 
+            string storeId = EventStoreId.Default)
         {
             var container = EventStoreId.Create(storeId);
 
             AzureStoreConfiguration configuration;
-            if (!AzureStoreConfiguration.TryParse(storage,out configuration))
+            if (!AzureStoreConfiguration.TryParse(storageConfiguration,out configuration))
             {
-                return new FileEventStoreClient(storage,container, serverEndpoint);
+                return new FileEventStoreClient(storageConfiguration,container, platformServerEndpoint);
             }
-            return new AzureEventStoreClient(configuration, container, serverEndpoint);
+            return new AzureEventStoreClient(configuration, container, platformServerEndpoint);
         }
-
-        public static IRawEventStoreClient GetStreamReader(string storage, string containerName = EventStoreId.Default)
+        /// <summary>
+        /// Creates a connection to event store, which can only both read and write events.
+        /// Platform API connection is not needed.
+        /// </summary>
+        /// <param name="storageConfiguration">Storage configuration (either local file path
+        /// or <see cref="AzureStoreConfiguration"/>)</param>
+        /// <param name="storeId">Id of the store to connect to</param>
+        /// <returns>new instance of the client that can read events</returns>
+        public static IRawEventStoreClient ConnectToEventStoreAsReadOnly(
+            string storageConfiguration, 
+            string storeId = EventStoreId.Default)
         {
-            var container = EventStoreId.Create(containerName);
+            var container = EventStoreId.Create(storeId);
             AzureStoreConfiguration configuration;
-            if (!AzureStoreConfiguration.TryParse(storage, out configuration))
+            if (!AzureStoreConfiguration.TryParse(storageConfiguration, out configuration))
             {
-                return new FileEventStoreClient(storage, container);
+                return new FileEventStoreClient(storageConfiguration, container);
             }
             return new AzureEventStoreClient(configuration, container);
         }
 
-        public static ViewClient GetViewClient(string storage, string containerName)
+        /// <summary>
+        /// Creates a connection to view storage
+        /// </summary>
+        /// <param name="storageConfiguration">Storage configuration (either local file path
+        /// or <see cref="AzureStoreConfiguration"/>)</param>
+        /// <param name="containerName">container name (directory) where to put views</param>
+        /// <returns>new instance of the client that can read and write events</returns>
+        public static ViewClient ConnectToViewStorage(string storageConfiguration, string containerName)
         {
             AzureStoreConfiguration configuration;
-            if (!AzureStoreConfiguration.TryParse(storage, out configuration))
+            if (!AzureStoreConfiguration.TryParse(storageConfiguration, out configuration))
             {
-                var container = new FileViewContainer(new DirectoryInfo(storage));
+                var container = new FileViewContainer(new DirectoryInfo(storageConfiguration));
 
                 var viewClient = new ViewClient(container.GetContainer(containerName), FileActionPolicy);
                 viewClient.CreateContainerIfNeeded();

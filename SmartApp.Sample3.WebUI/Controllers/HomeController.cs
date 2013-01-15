@@ -11,7 +11,7 @@ namespace SmartApp.Sample3.WebUI.Controllers
         // TODO: put into config
         const string config = @"C:\LokadData\dp-store";
 
-        static readonly ViewClient Global = PlatformClient.GetViewClient(config, Conventions.ViewContainer);
+        static readonly ViewClient Global = PlatformClient.ConnectToViewStorage(config, Conventions.ViewContainer);
         public ActionResult Index()
         {
             return View();

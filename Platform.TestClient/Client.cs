@@ -23,7 +23,7 @@ namespace Platform.TestClient
             Options = options;
             // TODO : pass server options
             ClientHttpBase = string.Format("http://{0}:{1}", options.Ip, options.HttpPort);
-            Views = PlatformClient.GetViewClient(options.StoreLocation, options.ViewsFolder);
+            Views = PlatformClient.ConnectToViewStorage(options.StoreLocation, options.ViewsFolder);
             
             UseEventStore("default");
 
@@ -32,7 +32,7 @@ namespace Platform.TestClient
 
         public void UseEventStore(string storeId = "default")
         {
-            EventStores = PlatformClient.GetEventStoreReaderWriter(Options.StoreLocation, ClientHttpBase, storeId);
+            EventStores = PlatformClient.ConnectToEventStore(Options.StoreLocation, ClientHttpBase, storeId);
         }
 
         void RegisterCommands()
