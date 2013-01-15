@@ -4,23 +4,15 @@ using System.IO;
 
 namespace Platform.StreamStorage.File
 {
-    /// <summary>
-    /// This interface is not really needed in the codebase,
-    /// but is introduced to explicitly demonstrate the concept
-    /// </summary>
-    public interface IContainerManagerConcept : IDisposable
-    {
-        
-    }
-    public class FileContainerManager : IContainerManagerConcept
+    public class FileEventStoreManager : IEventStoreManager
     {
         readonly IDictionary<string, FileContainer> _stores = new Dictionary<string, FileContainer>();
 
         readonly string _rootDirectory;
 
-        readonly ILogger Log = LogManager.GetLoggerFor<FileContainerManager>();
+        readonly ILogger Log = LogManager.GetLoggerFor<FileEventStoreManager>();
 
-        public FileContainerManager(string rootDirectory)
+        public FileEventStoreManager(string rootDirectory)
         {
             if (null == rootDirectory)
                 throw new ArgumentNullException("rootDirectory");
@@ -33,12 +25,12 @@ namespace Platform.StreamStorage.File
             var info = new DirectoryInfo(rootDirectory);
             foreach (var child in info.GetDirectories())
             {
-                if (EventStoreName.IsValid(child.Name) != EventStoreName.Rule.Valid)
+                if (EventStoreId.IsValid(child.Name) != EventStoreId.Rule.Valid)
                 {
                     Log.Error("Skipping invalid folder {0}", child.Name);
                     continue;
                 }
-                var container = EventStoreName.Create(child.Name);
+                var container = EventStoreId.Create(child.Name);
                 if (FileContainer.ExistsValid(rootDirectory, container))
                 {
                     var writer = FileContainer.OpenExistingForWriting(rootDirectory, container);
@@ -51,7 +43,7 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        public void Reset()
+        public void ResetAlEventStores()
         {
             foreach (var store in _stores)
             {
@@ -59,15 +51,15 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        public void Append(EventStoreName container, string streamKey, IEnumerable<byte[]> data)
+        public void AppendEventsToStore(EventStoreId storeId, string streamId, IEnumerable<byte[]> eventData)
         {
             FileContainer value;
-            if (!_stores.TryGetValue(container.Name, out value))
+            if (!_stores.TryGetValue(storeId.Name, out value))
             {
-                value = FileContainer.CreateNew(_rootDirectory, container);
-                _stores.Add(container.Name, value);
+                value = FileContainer.CreateNew(_rootDirectory, storeId);
+                _stores.Add(storeId.Name, value);
             }
-            value.Write(streamKey, data);
+            value.Write(streamId, eventData);
         }
 
 

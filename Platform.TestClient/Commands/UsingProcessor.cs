@@ -15,8 +15,8 @@ namespace Platform.TestClient.Commands
                 return false;
             }
 
-            var isValid = EventStoreName.IsValid(args[0]);
-            if (isValid != EventStoreName.Rule.Valid)
+            var isValid = EventStoreId.IsValid(args[0]);
+            if (isValid != EventStoreId.Rule.Valid)
             {
                 context.Log.Error("Container name is invalid: {0}", isValid);
                 return false;

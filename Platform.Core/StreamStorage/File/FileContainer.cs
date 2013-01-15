@@ -11,7 +11,7 @@ namespace Platform.StreamStorage.File
     /// </summary>
     public sealed class FileContainer : IDisposable
     {
-        public EventStoreName Container;
+        public EventStoreId Container;
         public FileMessageSet Store;
         public FileCheckpoint Checkpoint;
 
@@ -21,7 +21,7 @@ namespace Platform.StreamStorage.File
             Checkpoint.Write(position);
         }
 
-        public static bool ExistsValid(string root, EventStoreName container)
+        public static bool ExistsValid(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             if (!Directory.Exists(folder))
@@ -32,7 +32,7 @@ namespace Platform.StreamStorage.File
             return (System.IO.File.Exists(check) && System.IO.File.Exists(store));
         }
 
-        public static FileContainer CreateNew(string root, EventStoreName container)
+        public static FileContainer CreateNew(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             if (!Directory.Exists(folder))
@@ -47,7 +47,7 @@ namespace Platform.StreamStorage.File
                 Store = store
             };
         }
-        public static FileContainer OpenExistingForWriting(string root, EventStoreName container)
+        public static FileContainer OpenExistingForWriting(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
@@ -63,7 +63,7 @@ namespace Platform.StreamStorage.File
         }
 
 
-        public static FileContainer OpenForReading(string root, EventStoreName container)
+        public static FileContainer OpenForReading(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileCheckpoint.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));

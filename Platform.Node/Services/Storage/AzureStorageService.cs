@@ -22,7 +22,7 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<AzureStorageService>();
         readonly IPublisher _publisher;
         readonly AzureStoreConfiguration _config;
-        AzureContainerManager _manager;
+        AzureEventStoreManager _manager;
 
         public AzureStorageService(AzureStoreConfiguration config, IPublisher publisher)
         {
@@ -35,7 +35,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _manager = new AzureContainerManager(_config);
+                _manager = new AzureEventStoreManager(_config);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _manager.Append(message.Container, message.StreamKey, new[] { message.Data });
+            _manager.AppendEventsToStore(message.Container, message.StreamKey, new[] { message.Data });
 
             Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -60,7 +60,7 @@ namespace Platform.Node.Services.Storage
             var count = 0;
             var size = 0;
             var blob = _config.GetPageBlob(msg.StagingLocation);
-            _manager.Append(msg.Container, msg.StreamKey, EnumerateStaging(blob,msg.Size).Select(bytes =>
+            _manager.AppendEventsToStore(msg.Container, msg.StreamKey, EnumerateStaging(blob,msg.Size).Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -86,7 +86,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.RequestStoreReset message)
         {
-            _manager.Reset();
+            _manager.ResetAlEventStores();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }

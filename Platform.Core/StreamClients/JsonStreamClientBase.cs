@@ -6,9 +6,9 @@ namespace Platform.StreamClients
     public abstract class JsonStreamClientBase
     {
         public  JsonServiceClient WriteClient;
-        public readonly EventStoreName Container;
+        public readonly EventStoreId Container;
 
-        protected JsonStreamClientBase(EventStoreName container, string uri)
+        protected JsonStreamClientBase(EventStoreId container, string uri)
         {
             Container = container;
             if (!string.IsNullOrWhiteSpace(uri))

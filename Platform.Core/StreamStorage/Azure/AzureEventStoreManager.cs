@@ -6,13 +6,13 @@ using Platform.StreamClients;
 
 namespace Platform.StreamStorage.Azure
 {
-    public class AzureContainerManager : IDisposable
+    public class AzureEventStoreManager : IEventStoreManager
     {
         readonly AzureStoreConfiguration _config;
-        readonly ILogger Log = LogManager.GetLoggerFor<AzureContainerManager>();
+        readonly ILogger Log = LogManager.GetLoggerFor<AzureEventStoreManager>();
         readonly IDictionary<string, AzureContainer> _stores = new Dictionary<string, AzureContainer>();
 
-        public AzureContainerManager(AzureStoreConfiguration config)
+        public AzureEventStoreManager(AzureStoreConfiguration config)
         {
             _config = config;
 
@@ -27,7 +27,7 @@ namespace Platform.StreamStorage.Azure
 
                 if (dir == null) continue;
 
-                EventStoreName container;
+                EventStoreId container;
 
                 if (AzureContainer.TryGetContainerName(_config, dir, out container))
                 {
@@ -41,7 +41,7 @@ namespace Platform.StreamStorage.Azure
             }
         }
 
-        public void Reset()
+        public void ResetAlEventStores()
         {
             foreach (var store in _stores.Values)
             {
@@ -49,15 +49,15 @@ namespace Platform.StreamStorage.Azure
             }
         }
 
-        public void Append(EventStoreName container, string streamKey, IEnumerable<byte[]> data)
+        public void AppendEventsToStore(EventStoreId storeId, string streamId, IEnumerable<byte[]> eventData)
         {
             AzureContainer store;
-            if (!_stores.TryGetValue(container.Name, out store))
+            if (!_stores.TryGetValue(storeId.Name, out store))
             {
-                store = AzureContainer.CreateNewForWriting(_config, container);
-                _stores.Add(container.Name, store);
+                store = AzureContainer.CreateNewForWriting(_config, storeId);
+                _stores.Add(storeId.Name, store);
             }
-            store.Write(streamKey, data);
+            store.Write(streamId, eventData);
         }
 
         public void Dispose()
@@ -69,11 +69,11 @@ namespace Platform.StreamStorage.Azure
 
     public sealed class AzureContainer : IDisposable
     {
-        public readonly EventStoreName Container;
+        public readonly EventStoreId Container;
         readonly AzureMessageSet _store;
         readonly AzureMetadataCheckpoint _checkpoint;
 
-        public AzureContainer(EventStoreName container, AzureMessageSet store, AzureMetadataCheckpoint checkpoint)
+        public AzureContainer(EventStoreId container, AzureMessageSet store, AzureMetadataCheckpoint checkpoint)
         {
             Container = container;
             _store = store;
@@ -84,18 +84,18 @@ namespace Platform.StreamStorage.Azure
         (
             AzureStoreConfiguration config, 
             CloudBlobDirectory dir,
-            out EventStoreName container)
+            out EventStoreId container)
         {
             var topic = dir.Uri.ToString().Remove(0, dir.Container.Uri.ToString().Length).Trim('/');
 
             container = null;
-            if (EventStoreName.IsValid(topic)!= EventStoreName.Rule.Valid)
+            if (EventStoreId.IsValid(topic)!= EventStoreId.Rule.Valid)
                 return false;
-            container = EventStoreName.Create(topic);
+            container = EventStoreId.Create(topic);
             return IsValid(config, container);
         }
 
-        public static bool IsValid(AzureStoreConfiguration config, EventStoreName container)
+        public static bool IsValid(AzureStoreConfiguration config, EventStoreId container)
         {
             var store = config.GetPageBlob(container.Name + "/stream.dat");
             return Exists(store);
@@ -121,7 +121,7 @@ namespace Platform.StreamStorage.Azure
         }
 
 
-        public static AzureContainer OpenExistingForWriting(AzureStoreConfiguration config, EventStoreName container)
+        public static AzureContainer OpenExistingForWriting(AzureStoreConfiguration config, EventStoreId container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
             var check = AzureMetadataCheckpoint.OpenWriteable(blob);
@@ -130,7 +130,7 @@ namespace Platform.StreamStorage.Azure
             var store = AzureMessageSet.OpenExistingForWriting(blob, offset, length);
             return new AzureContainer(container, store, check);
         }
-        public static AzureContainer CreateNewForWriting(AzureStoreConfiguration config, EventStoreName container)
+        public static AzureContainer CreateNewForWriting(AzureStoreConfiguration config, EventStoreId container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
             blob.Container.CreateIfNotExist();
@@ -141,7 +141,7 @@ namespace Platform.StreamStorage.Azure
             return new AzureContainer(container, store, check);
         }
 
-        public static AzureContainer OpenExistingForReading(AzureStoreConfiguration config, EventStoreName container)
+        public static AzureContainer OpenExistingForReading(AzureStoreConfiguration config, EventStoreId container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
             var check = AzureMetadataCheckpoint.OpenReadable(blob);

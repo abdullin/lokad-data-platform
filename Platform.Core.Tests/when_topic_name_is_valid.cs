@@ -19,48 +19,48 @@ namespace Platform.Core.Tests
 
             foreach (var line in lines)
             {
-                Should(EventStoreName.Rule.Valid, line);
+                Should(EventStoreId.Rule.Valid, line);
             }
         }
 
         [Test]
         public void given_two_consequitive_dashes()
         {
-            Should(EventStoreName.Rule.ShouldNotHaveHasTwoConsequitiveDashes, "asd--asd");
+            Should(EventStoreId.Rule.ShouldNotHaveHasTwoConsequitiveDashes, "asd--asd");
         }
 
         [Test]
         public void given_starting_dash()
         {
-            Should(EventStoreName.Rule.ShouldStartWithLowercaseLetterOrNumber, "-asd");
+            Should(EventStoreId.Rule.ShouldStartWithLowercaseLetterOrNumber, "-asd");
         }
 
         [Test]
         public void given_string_with_last_dash()
         {
-            Should(EventStoreName.Rule.ShouldEndWithLowercaseLetterOrNumber, "asd-");
+            Should(EventStoreId.Rule.ShouldEndWithLowercaseLetterOrNumber, "asd-");
         }
         [Test]
         public void given_illegal_char_in_middle()
         {
-            Should(EventStoreName.Rule.ShouldContainOnlyLowercaseLetterNumberOrDash, "aAa");
+            Should(EventStoreId.Rule.ShouldContainOnlyLowercaseLetterNumberOrDash, "aAa");
         }
 
         [Test]
         public void given_really_long_string()
         {
-            Should(EventStoreName.Rule.ShouldHave48CharsOrLess, new string('a',49));
+            Should(EventStoreId.Rule.ShouldHave48CharsOrLess, new string('a',49));
         }
 
         [Test]
         public void given_really_short_string()
         {
-            Should(EventStoreName.Rule.ShouldHave3CharsOrMore, "um");
+            Should(EventStoreId.Rule.ShouldHave3CharsOrMore, "um");
         }
 
-        void Should(EventStoreName.Rule validity, string asdAsd)
+        void Should(EventStoreId.Rule validity, string asdAsd)
         {
-            Assert.AreEqual(validity, EventStoreName.IsValid(asdAsd), asdAsd);
+            Assert.AreEqual(validity, EventStoreId.IsValid(asdAsd), asdAsd);
         }
     }
 }

@@ -5,10 +5,10 @@ namespace Platform
     /// <summary>
     /// Name of an event store within Data Platform. It has to follow strict semantics
     /// </summary>
-    public sealed class EventStoreName
+    public sealed class EventStoreId
     {
         public readonly string Name;
-        EventStoreName(string name)
+        EventStoreId(string name)
         {
             Name = name;
         }
@@ -16,10 +16,10 @@ namespace Platform
         public const string Default = "default";
         //public static readonly ContainerName Default = new ContainerName(DefaultName);
 
-        public static EventStoreName Create(string name)
+        public static EventStoreId Create(string name)
         {
             ThrowIfInvalid(name);
-            return new EventStoreName(name);
+            return new EventStoreId(name);
         }
 
         static bool IsAlphanumberic(char c)

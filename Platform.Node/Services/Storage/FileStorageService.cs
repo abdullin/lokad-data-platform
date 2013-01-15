@@ -21,7 +21,7 @@ namespace Platform.Node.Services.Storage
         readonly static ILogger Log = LogManager.GetLoggerFor<FileStorageService>();
         readonly IPublisher _publisher;
 
-        FileContainerManager _managerForServer;
+        FileEventStoreManager _managerForServer;
         readonly string _location;
         
         public FileStorageService(string location, IPublisher publisher)
@@ -32,7 +32,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _managerForServer.Append(message.Container, message.StreamKey, new[] { message.Data });
+            _managerForServer.AppendEventsToStore(message.Container, message.StreamKey, new[] { message.Data });
 
             //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -59,7 +59,7 @@ namespace Platform.Node.Services.Storage
 
             var lazy = EnumerateStaging(msg.StagingLocation);
 
-            _managerForServer.Append(msg.Container,msg.StreamKey, lazy.Select(bytes =>
+            _managerForServer.AppendEventsToStore(msg.Container,msg.StreamKey, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -89,7 +89,7 @@ namespace Platform.Node.Services.Storage
             Log.Info("Storage starting");
             try
             {
-                _managerForServer = new FileContainerManager(_location);
+                _managerForServer = new FileEventStoreManager(_location);
                 _publisher.Publish(new SystemMessage.StorageWriterInitializationDone());
             }
             catch (Exception ex)
@@ -101,7 +101,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.RequestStoreReset message)
         {
-            _managerForServer.Reset();
+            _managerForServer.ResetAlEventStores();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }

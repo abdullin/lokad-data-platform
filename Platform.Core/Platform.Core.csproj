@@ -60,14 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="StreamStorage\Azure\AzureContainerManager.cs" />
+    <Compile Include="StreamStorage\Azure\AzureEventStoreManager.cs" />
     <Compile Include="StreamStorage\Azure\AzureMetadataCheckpoint.cs" />
     <Compile Include="StreamStorage\File\FileCheckpoint.cs" />
-    <Compile Include="EventStoreName.cs" />
+    <Compile Include="EventStoreId.cs" />
     <Compile Include="StreamStorage\File\FileContainer.cs" />
-    <Compile Include="StreamStorage\File\FileContainerManager.cs" />
+    <Compile Include="StreamStorage\File\FileEventStoreManager.cs" />
     <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
+    <Compile Include="StreamStorage\IEventStoreManager.cs" />
     <Compile Include="StreamStorage\MessageWithOffset.cs" />
     <Compile Include="ViewClients\AzureViewContainer.cs" />
     <Compile Include="CommandLine.cs" />

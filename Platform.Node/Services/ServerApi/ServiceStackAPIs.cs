@@ -98,7 +98,7 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.WriteBatch request)
         {
             var token = new ManualResetEventSlim(false);
-            var container = EventStoreName.Create(request.Container);
+            var container = EventStoreId.Create(request.Container);
             _publisher.Publish(new ClientMessage.ImportEvents(container, request.StreamKey, request.Location, request.Length, s => token.Set()));
 
             return Task.Factory.StartNew(() =>
@@ -133,7 +133,7 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientDto.WriteEvent request)
         {
             var token = new ManualResetEventSlim(false);
-            var name = EventStoreName.Create(request.Container);
+            var name = EventStoreId.Create(request.Container);
 
             _publisher.Publish(new ClientMessage.AppendEvents(
                 name,

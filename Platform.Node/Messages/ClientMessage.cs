@@ -29,13 +29,13 @@ namespace Platform.Node.Messages
 
         public class AppendEvents : WriteMessage
         {
-            public readonly EventStoreName Container;
+            public readonly EventStoreId Container;
             public readonly string StreamKey;
             public readonly byte[] Data;
             
             public readonly Action<AppendEventsCompleted> Envelope;
 
-            public AppendEvents(EventStoreName container, string streamKey, byte[] data,  Action<AppendEventsCompleted> envelope)
+            public AppendEvents(EventStoreId container, string streamKey, byte[] data,  Action<AppendEventsCompleted> envelope)
             {
                 Container = container;
                 StreamKey = streamKey;
@@ -46,14 +46,14 @@ namespace Platform.Node.Messages
 
         public class ImportEvents : WriteMessage
         {
-            public readonly EventStoreName Container;
+            public readonly EventStoreId Container;
             public readonly string StreamKey;
             
             public readonly string StagingLocation;
             public readonly long Size;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(EventStoreName container, string streamKey, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(EventStoreId container, string streamKey, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
             {
                 Container = container;
                 StreamKey = streamKey;

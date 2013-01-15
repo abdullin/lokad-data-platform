@@ -15,9 +15,9 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IRawEventStoreClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = EventStoreName.Default)
+        public static IRawEventStoreClient GetStreamReaderWriter(string storage, string serverEndpoint, string containerName = EventStoreId.Default)
         {
-            var container = EventStoreName.Create(containerName);
+            var container = EventStoreId.Create(containerName);
 
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage,out configuration))
@@ -26,9 +26,9 @@ namespace Platform
             }
             return new AzureEventStoreClient(configuration, container, serverEndpoint);
         }
-        public static IRawEventStoreClient GetStreamReader(string storage, string containerName = EventStoreName.Default)
+        public static IRawEventStoreClient GetStreamReader(string storage, string containerName = EventStoreId.Default)
         {
-            var container = EventStoreName.Create(containerName);
+            var container = EventStoreId.Create(containerName);
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storage, out configuration))
             {
