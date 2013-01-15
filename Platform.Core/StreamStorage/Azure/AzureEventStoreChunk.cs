@@ -9,9 +9,9 @@ using Platform.StreamClients;
 namespace Platform.StreamStorage.Azure
 {
     /// <summary>
-    /// Represents collection of events within an azure storage
+    /// Represents collection of events within a Windows Azure Blob 
     /// (residing inside a <see cref="CloudPageBlob"/>). It can be opened as 
-    /// mutable or as read-only
+    /// mutable or as read-only.
     /// </summary>
     public class AzureEventStoreChunk : IDisposable
     {

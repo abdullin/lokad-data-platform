@@ -3,11 +3,12 @@ using System;
 namespace Platform
 {
     /// <summary>
-    /// Id of an event store within Data Platform. It has to follow strict semantics
+    /// Id of an event store within Data Platform. It has to follow strict semantics.
     /// </summary>
     public sealed class EventStoreId
     {
         public readonly string Name;
+
         EventStoreId(string name)
         {
             Name = name;
