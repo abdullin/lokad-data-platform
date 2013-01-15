@@ -22,17 +22,17 @@ principles of saving, processing and managing large datasets composed of
 millions of messages or data transactions.
 
 Data Platform is represented by:
- 
-* Storage Engine - set of classes for manipulating message sets in large blobs
-  or files. Each event store can be represented as a separate message set.
-* Data Platform server - high-throughput server based on Staged Event Driven
+
+* **Data Platform Node (Server)** - high-throughput server based on Staged Event Driven
   Architecture, which coordinates writes to event stores from various clients.
-* Storage Client - client API library which provides convenient access from
+* **Storage Engine** - set of classes for manipulating message sets in large blobs
+  or files. Each event store can be represented as a separate message set.
+* **Storage Client** - client API library which provides convenient access from
   .NET code to push events to event stores or enumerate them. It also provides
   access to store simple key-value documents (which can be used as views in 
   CQRS)
 
-![High-level overview of DataPlatform](https://raw.github.com/Lokad/lokad-data-platform/master/Library/Images/platform-high.png)
+![High-level overview of DataPlatform](https://raw.github.com/Lokad/lokad-data-platform/master/Library/Images/platform-high-v2.png)
 
 ### Terminology
 
