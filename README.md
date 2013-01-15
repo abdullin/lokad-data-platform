@@ -23,11 +23,11 @@ millions of messages or data transactions.
 
 Data Platform is represented by:
 
-* **Data Platform Node (Server)** - high-throughput server based on Staged Event Driven
+* **Data Platform Node** - high-throughput server based on Staged Event Driven
   Architecture, which coordinates writes to event stores from various clients.
 * **Storage Engine** - set of classes for manipulating message sets in large blobs
   or files. Each event store can be represented as a separate message set.
-* **Storage Client** - client API library which provides convenient access from
+* **Storage Client** (Client Library) - client API library which provides convenient access from
   .NET code to push events to event stores or enumerate them. It also provides
   access to store simple key-value documents (which can be used as views in 
   CQRS)
