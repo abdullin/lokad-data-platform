@@ -2,7 +2,11 @@
 
 This is Data Platform sample from Lokad - showing principles of storing and 
 processing large (GBytes and TBytes) data streams in the cloud. It is based 
-on concepts from Lokad.CQRS, Lokad.Cloud and EventStore.
+on concepts from: Lokad.CQRS, Lokad.Cloud, EventStore, kafka and bitcask.
+
+Data platform is **designed to be run on Windows Azure** (as a Windows Service
+on VM or it can be plugged into an Azure Worker Role). However, it can also
+run on **file system for local development and testing purposes**.
 
 Some introductory information:
 
@@ -13,11 +17,42 @@ More documentation will be available, once we push through first production depl
 
 ## Core concepts
 
-Data platform currently is a really simple concept aiming to demonstrate core
+Data platform currently is a really simple project aiming to demonstrate core
 principles of saving, processing and managing large datasets composed of 
 millions of messages or data transactions.
 
+Data Platform is represented by:
+ 
+* Storage Engine - set of classes for manipulating message sets in large blobs
+  or files. Each event store can be represented as a separate message set.
+* Data Platform server - high-throughput server based on Staged Event Driven
+  Architecture, which coordinates writes to event stores from various clients.
+* Storage Client - client API library which provides convenient access from
+  .NET code to push events to event stores or enumerate them. It also provides
+  access to store simple key-value documents (which can be used as views in 
+  CQRS)
+
 ![High-level overview of DataPlatform](https://raw.github.com/Lokad/lokad-data-platform/master/Library/Images/platform-high.png)
+
+### Terminology
+
+**Data Platform Server (Node)** - single instance of data platform server, 
+  responsible for coordinating multiple writers. Lokad Data Platform servers
+  support multiple event stores. 
+
+**Event Store** - set of events which are logically grouped together (e.g. 
+  belong to the same subsystem or subdomain). Single event store can keep 
+  multiple event streams for different aggregates). Each event store has
+  it's own version (which increments, as new events are added to it).
+
+**Event Stream** - group of events within a single event store, which are 
+  identified by the same stream name or key. If you are applying Domain-
+  Driven Design with Event Sourcing, then such event stream would represent 
+  a single entity.
+
+**Checkpoint** - pointer to some event (either using it's sequential number
+  or as direct byte offset in a file). It can be used by event storage to
+  record last committed (and flushed) event.
 
 ## Credits
 
