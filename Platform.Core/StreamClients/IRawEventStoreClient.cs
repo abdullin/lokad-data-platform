@@ -29,6 +29,9 @@ namespace Platform.StreamClients
         /// Returns lazy enumeration over all events in a given record range, fetching
         /// stream Ids inside <see cref="RetrievedEventsWithMetaData"/>.
         /// </summary>
+        /// <remarks>Fetching events by streamId is currently not possible. If you need such functionality,
+        /// you can put events to different event stores, implement your own caching or
+        /// wait till that functionality is added to data platform</remarks>
         IEnumerable<RetrievedEventsWithMetaData> ReadAllEvents(
             EventStoreOffset startOffset = default (EventStoreOffset),
             int maxRecordCount = int.MaxValue);
