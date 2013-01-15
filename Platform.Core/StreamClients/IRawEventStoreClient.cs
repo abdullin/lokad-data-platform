@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Runtime.InteropServices;
 using Platform.StreamStorage;
 
@@ -11,7 +10,6 @@ namespace Platform.StreamClients
     {
         public PlatformClientException(string message, Exception ex) : base(message, ex) {}
         public PlatformClientException(string message) : base(message) {}
-
     }
 
 
@@ -41,6 +39,7 @@ namespace Platform.StreamClients
         /// </summary>
         /// <param name="streamId">Name of the stream to upload to</param>
         /// <param name="eventData">Event Data to upload</param>
+        /// <exception cref="PlatformClientException">if this is read-only client</exception>
         void WriteEvent(string streamId, byte[] eventData);
         /// <summary>
         /// Writes events to server in a batch by first uploading it to the staging ground
@@ -49,6 +48,7 @@ namespace Platform.StreamClients
         /// </summary>
         /// <param name="streamId">Name of the stream to upload to</param>
         /// <param name="eventData">Enumeration of the events to upload (can be lazy)</param>
+        /// <exception cref="PlatformClientException">if this is read-only client</exception>
         void WriteEventsInLargeBatch(string streamId, IEnumerable<byte[]> eventData);
     }
 
