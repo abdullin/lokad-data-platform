@@ -5,8 +5,9 @@ using ServiceStack.Text;
 namespace Platform.ViewClients
 {
     /// <summary>
-    /// Read-write client to access the views (typically, but not restricted to, the
-    /// persistent output of projections).
+    /// Intended client to read-write views. (typically, but not restricted to, the
+    /// persistent output of projections). Handle transient connectivity error (very
+    /// handy in case of cloud storage).
     /// </summary>
     public class ViewClient
     {

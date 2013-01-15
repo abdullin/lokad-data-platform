@@ -1,5 +1,4 @@
-﻿Core/StreamStorage
-=================
+﻿# Core/StreamStorage
 
 Stream storage folder contains classes that are used to manipulate 
 (read and write) actual underlying event storage directly. This is an

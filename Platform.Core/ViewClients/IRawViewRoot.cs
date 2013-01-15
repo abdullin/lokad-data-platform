@@ -32,6 +32,7 @@ namespace Platform.ViewClients
         /// <param name="name"></param>
         /// <returns></returns>
         Stream OpenRead(string name);
+
         /// <summary>
         /// Open file in the current container for the writing operations.
         /// </summary>
@@ -67,26 +68,25 @@ namespace Platform.ViewClients
 
     /// <summary>
     /// Equivalent of streaming root from Lokad.CQRS. It abstracts away
-    /// unrerlying binary storage (can be file, memory or Azure).
+    /// underlying binary storage (can be file, memory or Azure).
     /// </summary>
     public interface IRawViewRoot
     {
         /// <summary>
-        /// Gets the container reference, identified by it's name
+        /// Gets the container reference, identified by it's name.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns>new container referece</returns>
+        /// <returns>new container reference.</returns>
         IRawViewContainer GetContainer(string name);
 
         /// <summary>
         /// Get a list of containers from the current root (supply non-null
-        /// prefix to enable filtering)
+        /// prefix to enable filtering).
         /// </summary>
         /// <param name="prefix"></param>
         /// <returns></returns>
         IEnumerable<string> ListContainers(string prefix = null);
     }
-
 
     public sealed class ViewDetail
     {
@@ -124,7 +124,6 @@ namespace Platform.ViewClients
         {
         }
 
-
         protected ViewNotFoundException(
             SerializationInfo info,
             StreamingContext context)
@@ -140,7 +139,5 @@ namespace Platform.ViewClients
             : base(message, inner)
         {
         }
-
-
     }
 }
