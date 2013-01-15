@@ -63,7 +63,7 @@
     <Compile Include="StreamStorage\Azure\AzureContainerManager.cs" />
     <Compile Include="StreamStorage\Azure\AzureMetadataCheckpoint.cs" />
     <Compile Include="StreamStorage\File\FileCheckpoint.cs" />
-    <Compile Include="ContainerName.cs" />
+    <Compile Include="EventStoreName.cs" />
     <Compile Include="StreamStorage\File\FileContainer.cs" />
     <Compile Include="StreamStorage\File\FileContainerManager.cs" />
     <Compile Include="ClientDto.cs" />

@@ -19,48 +19,48 @@ namespace Platform.Core.Tests
 
             foreach (var line in lines)
             {
-                Should(ContainerName.Rule.Valid, line);
+                Should(EventStoreName.Rule.Valid, line);
             }
         }
 
         [Test]
         public void given_two_consequitive_dashes()
         {
-            Should(ContainerName.Rule.ShouldNotHaveHasTwoConsequitiveDashes, "asd--asd");
+            Should(EventStoreName.Rule.ShouldNotHaveHasTwoConsequitiveDashes, "asd--asd");
         }
 
         [Test]
         public void given_starting_dash()
         {
-            Should(ContainerName.Rule.ShouldStartWithLowercaseLetterOrNumber, "-asd");
+            Should(EventStoreName.Rule.ShouldStartWithLowercaseLetterOrNumber, "-asd");
         }
 
         [Test]
         public void given_string_with_last_dash()
         {
-            Should(ContainerName.Rule.ShouldEndWithLowercaseLetterOrNumber, "asd-");
+            Should(EventStoreName.Rule.ShouldEndWithLowercaseLetterOrNumber, "asd-");
         }
         [Test]
         public void given_illegal_char_in_middle()
         {
-            Should(ContainerName.Rule.ShouldContainOnlyLowercaseLetterNumberOrDash, "aAa");
+            Should(EventStoreName.Rule.ShouldContainOnlyLowercaseLetterNumberOrDash, "aAa");
         }
 
         [Test]
         public void given_really_long_string()
         {
-            Should(ContainerName.Rule.ShouldHave48CharsOrLess, new string('a',49));
+            Should(EventStoreName.Rule.ShouldHave48CharsOrLess, new string('a',49));
         }
 
         [Test]
         public void given_really_short_string()
         {
-            Should(ContainerName.Rule.ShouldHave3CharsOrMore, "um");
+            Should(EventStoreName.Rule.ShouldHave3CharsOrMore, "um");
         }
 
-        void Should(ContainerName.Rule validity, string asdAsd)
+        void Should(EventStoreName.Rule validity, string asdAsd)
         {
-            Assert.AreEqual(validity, ContainerName.IsValid(asdAsd), asdAsd);
+            Assert.AreEqual(validity, EventStoreName.IsValid(asdAsd), asdAsd);
         }
     }
 }

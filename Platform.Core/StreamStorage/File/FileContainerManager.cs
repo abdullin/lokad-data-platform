@@ -25,12 +25,12 @@ namespace Platform.StreamStorage.File
             var info = new DirectoryInfo(rootDirectory);
             foreach (var child in info.GetDirectories())
             {
-                if (ContainerName.IsValid(child.Name) != ContainerName.Rule.Valid)
+                if (EventStoreName.IsValid(child.Name) != EventStoreName.Rule.Valid)
                 {
                     Log.Error("Skipping invalid folder {0}", child.Name);
                     continue;
                 }
-                var container = ContainerName.Create(child.Name);
+                var container = EventStoreName.Create(child.Name);
                 if (FileContainer.ExistsValid(rootDirectory, container))
                 {
                     var writer = FileContainer.OpenExistingForWriting(rootDirectory, container);
@@ -51,7 +51,7 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        public void Append(ContainerName container, string streamKey, IEnumerable<byte[]> data)
+        public void Append(EventStoreName container, string streamKey, IEnumerable<byte[]> data)
         {
             FileContainer value;
             if (!_stores.TryGetValue(container.Name, out value))

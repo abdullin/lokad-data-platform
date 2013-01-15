@@ -12,12 +12,12 @@ namespace Platform.StreamClients
 
         readonly string _serverFolder;
 
-        public FileStreamClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, ContainerName.Create(ContainerName.Default),serverEndpoint)
+        public FileStreamClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, EventStoreName.Create(EventStoreName.Default),serverEndpoint)
         {
             
         }
 
-        public FileStreamClient(string serverFolder, ContainerName container, string serverEndpoint = null) : base(container, serverEndpoint)
+        public FileStreamClient(string serverFolder, EventStoreName container, string serverEndpoint = null) : base(container, serverEndpoint)
         {
 
             // open for reading or new

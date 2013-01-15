@@ -15,7 +15,7 @@ namespace Platform.StreamClients
 
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureStreamClient>();
 
-        public AzureStreamClient(AzureStoreConfiguration config, ContainerName container, string serverEndpoint = null)
+        public AzureStreamClient(AzureStoreConfiguration config, EventStoreName container, string serverEndpoint = null)
             : base(container, serverEndpoint)
         {
             Config = config;

@@ -3,12 +3,12 @@ using System;
 namespace Platform
 {
     /// <summary>
-    /// Name of Data Platform container. It has to follow strict semantics
+    /// Name of an event store within Data Platform. It has to follow strict semantics
     /// </summary>
-    public sealed class ContainerName
+    public sealed class EventStoreName
     {
         public readonly string Name;
-        ContainerName(string name)
+        EventStoreName(string name)
         {
             Name = name;
         }
@@ -16,10 +16,10 @@ namespace Platform
         public const string Default = "default";
         //public static readonly ContainerName Default = new ContainerName(DefaultName);
 
-        public static ContainerName Create(string name)
+        public static EventStoreName Create(string name)
         {
             ThrowIfInvalid(name);
-            return new ContainerName(name);
+            return new EventStoreName(name);
         }
 
         static bool IsAlphanumberic(char c)
