@@ -19,14 +19,11 @@ namespace Platform
         /// Creates a connection to event store, which can both read and write events
         /// </summary>
         /// <param name="storageConfiguration">Storage configuration (either local file path
-        /// or <see cref="AzureStoreConfiguration"/>)</param>
-        /// <param name="platformServerEndpoint">url of publice server API</param>
+        ///     or <see cref="AzureStoreConfiguration"/>)</param>
         /// <param name="storeId">Id of the store to connect to</param>
+        /// <param name="platformServerEndpoint">url of publice server API</param>
         /// <returns>new instance of the client that can read and write events</returns>
-        public static IRawEventStoreClient ConnectToEventStore(
-            string storageConfiguration, 
-            string platformServerEndpoint, 
-            string storeId)
+        public static IRawEventStoreClient ConnectToEventStore(string storageConfiguration, string storeId, string platformServerEndpoint)
         {
             var container = EventStoreId.Create(storeId);
 

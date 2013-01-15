@@ -32,7 +32,7 @@ namespace Platform.TestClient
 
         public void UseEventStore(string storeId = "default")
         {
-            EventStores = PlatformClient.ConnectToEventStore(Options.StoreLocation, ClientHttpBase, storeId);
+            EventStores = PlatformClient.ConnectToEventStore(Options.StoreLocation, storeId, ClientHttpBase);
         }
 
         void RegisterCommands()
