@@ -185,10 +185,10 @@ namespace Platform.TestClient.Commands.Bench
                     {
                         var nextOffset = projection.NextOffsetInBytes;
 
-                        IEnumerable<RetrievedEventWithMetaData> records;
+                        IEnumerable<RetrievedEventsWithMetaData> records;
                         try
                         {
-                            records = context.Client.EventStores.ReadAllEvents(new StorageOffset(nextOffset), 10000);
+                            records = context.Client.EventStores.ReadAllEvents(new EventStoreOffset(nextOffset), 10000);
                         }
                         catch (Exception e)
                         {

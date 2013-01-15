@@ -23,7 +23,7 @@ namespace Platform.StreamClients
             _blob.Container.CreateIfNotExist();
         }
 
-        public IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventsWithMetaData> ReadAllEvents(EventStoreOffset startOffset, int maxRecordCount)
         {
             if (maxRecordCount < 0)
                 throw new ArgumentOutOfRangeException("maxRecordCount");

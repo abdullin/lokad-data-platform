@@ -78,7 +78,7 @@ namespace Platform.StreamStorage.File
 
         }
 
-        public IEnumerable<RetrievedEventWithMetaData> ReadAll(StorageOffset startOffset, int maxRecordCount)
+        public IEnumerable<RetrievedEventsWithMetaData> ReadAll(EventStoreOffset startOffset, int maxRecordCount)
         {
             Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
 
@@ -86,13 +86,13 @@ namespace Platform.StreamStorage.File
             var maxOffset = Checkpoint.Read();
 
             // nothing to read from here
-            if (startOffset >= new StorageOffset(maxOffset))
+            if (startOffset >= new EventStoreOffset(maxOffset))
                 yield break;
 
             int recordCount = 0;
             foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                yield return new RetrievedEventWithMetaData(msg.StreamId, msg.EventData, new StorageOffset(msg.NextOffset));
+                yield return new RetrievedEventsWithMetaData(msg.StreamId, msg.EventData, new EventStoreOffset(msg.NextOffset));
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark

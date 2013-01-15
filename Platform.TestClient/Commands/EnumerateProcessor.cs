@@ -16,7 +16,7 @@ namespace Platform.TestClient.Commands
             if (args.Length > 0)
                 int.TryParse(args[0], out maxCount);
             var sw = Stopwatch.StartNew();
-            var records = context.Client.EventStores.ReadAllEvents(StorageOffset.Zero, maxCount);
+            var records = context.Client.EventStores.ReadAllEvents(EventStoreOffset.Zero, maxCount);
             int msgCount = 0;
             long dataSize = 0;
             foreach (var record in records)

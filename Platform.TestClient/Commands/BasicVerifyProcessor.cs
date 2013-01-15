@@ -149,7 +149,7 @@ namespace Platform.TestClient.Commands
             if (records.Length == 0)
                 return true;
 
-            RetrievedEventWithMetaData prevRecord = records[0];
+            RetrievedEventsWithMetaData prevRecord = records[0];
 
             for (int i = 1; i < records.Length; i++)
             {
@@ -251,7 +251,7 @@ namespace Platform.TestClient.Commands
 
             var data = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
-            var records = context.Client.EventStores.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamId == streamId);
+            var records = context.Client.EventStores.ReadAllEvents(new EventStoreOffset(data.NextOffsetInBytes)).Where(x => x.StreamId == streamId);
 
             foreach (var record in records)
             {

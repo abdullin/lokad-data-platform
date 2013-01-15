@@ -31,9 +31,9 @@ namespace Platform.TestClient.Commands
 
             //context.IsAsync();
 
-            var result = context.Client.EventStores.ReadAllEvents(new StorageOffset(fromOffset), maxRecordCount);
+            var result = context.Client.EventStores.ReadAllEvents(new EventStoreOffset(fromOffset), maxRecordCount);
 
-            StorageOffset next = StorageOffset.Zero;
+            EventStoreOffset next = EventStoreOffset.Zero;
             bool empty = true;
             foreach (var record in result)
             {
@@ -42,7 +42,7 @@ namespace Platform.TestClient.Commands
                 empty = false;
             }
 
-            var nextOffset = !empty ? next : StorageOffset.Zero;
+            var nextOffset = !empty ? next : EventStoreOffset.Zero;
             context.Log.Info("Next stream offset: {0}", nextOffset);
 
             //context.Completed();

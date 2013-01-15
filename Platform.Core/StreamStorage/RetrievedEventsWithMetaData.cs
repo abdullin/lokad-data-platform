@@ -6,14 +6,15 @@ namespace Platform.StreamStorage
     /// <summary>
     /// Represents an non-typed record within the event-stream.
     /// </summary>
-    public struct RetrievedEventWithMetaData
+    public struct RetrievedEventsWithMetaData
     {
         public bool IsEmpty { get { return EventData == null; } }
 
-        public static readonly ICollection<RetrievedEventWithMetaData> EmptyList = new RetrievedEventWithMetaData[0];
+        public static readonly ICollection<RetrievedEventsWithMetaData> EmptyList = new RetrievedEventsWithMetaData[0];
 
         /// <summary>
-        /// Name of the stream to which this event belongs
+        /// Id of the stream to which this event belongs (can be used
+        /// as aggregate ID or as message serialization contract)
         /// </summary>
         public readonly string StreamId;
         
@@ -21,10 +22,13 @@ namespace Platform.StreamStorage
         /// Data of the record itself (to be deserialized).
         /// </summary>
         public readonly byte[] EventData;
+        /// <summary>
+        ///  Pointer to the next event, can be used as a continuation token
+        /// or persisted locally to remember location
+        /// </summary>
+        public readonly EventStoreOffset Next;
 
-        public readonly StorageOffset Next;
-
-        public RetrievedEventWithMetaData(string streamId, byte[] eventData,StorageOffset next) 
+        public RetrievedEventsWithMetaData(string streamId, byte[] eventData,EventStoreOffset next) 
         {
             StreamId = streamId;
             EventData = eventData;

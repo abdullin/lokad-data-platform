@@ -68,10 +68,10 @@ namespace SmartApp.Sample1.Chat
         private static void ScanChat()
         {
             var lastMessage = _view.ReadAsJsonOrNull<Sample1LastReadMessage>("sample1.dat");
-            var nextOffset = lastMessage == null ? new StorageOffset(0) : new StorageOffset(lastMessage.LastOffset);
+            var nextOffset = lastMessage == null ? new EventStoreOffset(0) : new EventStoreOffset(lastMessage.LastOffset);
             while (true)
             {
-                var last = StorageOffset.Zero;
+                var last = EventStoreOffset.Zero;
                 var existMessages = false;
                 foreach (var message in _client.ReadAllEvents(nextOffset))
                 {

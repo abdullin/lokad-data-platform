@@ -52,7 +52,7 @@ namespace SmartApp.Sample2.Continuous
             // This is more efficient, than reading one event by one, since it
             // reduces cost of reading/writing data by batching
             const int maxRecordCount = 10000;
-            var nextEvents = reader.ReadAllEvents(new StorageOffset(nextOffset), maxRecordCount);
+            var nextEvents = reader.ReadAllEvents(new EventStoreOffset(nextOffset), maxRecordCount);
             var emptyData = true;
             // process
             foreach (var dataRecord in nextEvents)

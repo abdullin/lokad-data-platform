@@ -24,8 +24,8 @@ namespace Platform.StreamClients
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 
         /// </summary>
-        IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(
-            StorageOffset startOffset = default (StorageOffset),
+        IEnumerable<RetrievedEventsWithMetaData> ReadAllEvents(
+            EventStoreOffset startOffset = default (EventStoreOffset),
             int maxRecordCount = int.MaxValue);
         /// <summary>
         /// Writes a single event to the storage under the given key. Use this method
@@ -45,37 +45,40 @@ namespace Platform.StreamClients
     }
 
 
+    /// <summary>
+    /// Points to a physical location of event inside an event store.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct StorageOffset
+    public struct EventStoreOffset
     {
         public readonly long OffsetInBytes;
 
-        public static readonly StorageOffset Zero = new StorageOffset(0);
+        public static readonly EventStoreOffset Zero = new EventStoreOffset(0);
 
         public override string ToString()
         {
             return string.Format("Offset {0}b", OffsetInBytes);
         }
 
-        public StorageOffset(long offsetInBytes)
+        public EventStoreOffset(long offsetInBytes)
         {
             Ensure.Nonnegative(offsetInBytes, "offsetInBytes");
             OffsetInBytes = offsetInBytes;
         }
 
-        public static   bool operator >(StorageOffset x , StorageOffset y)
+        public static   bool operator >(EventStoreOffset x , EventStoreOffset y)
         {
             return x.OffsetInBytes > y.OffsetInBytes;
         }
-        public static bool operator <(StorageOffset x , StorageOffset y)
+        public static bool operator <(EventStoreOffset x , EventStoreOffset y)
         {
             return x.OffsetInBytes < y.OffsetInBytes;
         }
-        public static bool operator >= (StorageOffset left, StorageOffset right)
+        public static bool operator >= (EventStoreOffset left, EventStoreOffset right)
         {
             return left.OffsetInBytes >= right.OffsetInBytes;
         }
-        public static bool operator <=(StorageOffset left, StorageOffset right)
+        public static bool operator <=(EventStoreOffset left, EventStoreOffset right)
         {
             return left.OffsetInBytes <= right.OffsetInBytes;
         }

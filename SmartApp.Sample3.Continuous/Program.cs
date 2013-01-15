@@ -43,7 +43,7 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAllEvents(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAllEvents(new EventStoreOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -98,7 +98,7 @@ namespace SmartApp.Sample3.Continuous
                 processingInfo.LastOffsetInBytes = processingInfo.NextOffsetInBytes;
                 processingInfo.DateProcessingUtc = DateTime.UtcNow;
 
-                var records = store.ReadAllEvents(new StorageOffset(nextOffset), 10000);
+                var records = store.ReadAllEvents(new EventStoreOffset(nextOffset), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {
@@ -157,7 +157,7 @@ namespace SmartApp.Sample3.Continuous
             {
                 var nextOffcet = processingInfo.NextOffsetInBytes;
 
-                var records = store.ReadAllEvents(new StorageOffset(nextOffcet), 10000);
+                var records = store.ReadAllEvents(new EventStoreOffset(nextOffcet), 10000);
                 var emptyData = true;
                 foreach (var dataRecord in records)
                 {

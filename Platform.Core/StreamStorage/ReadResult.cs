@@ -10,9 +10,9 @@ namespace Platform.StreamStorage
     {
         public readonly long NextOffset;
 
-        public readonly ICollection<RetrievedEventWithMetaData> Records;
+        public readonly ICollection<RetrievedEventsWithMetaData> Records;
 
-        public ReadResult(long nextOffset, ICollection<RetrievedEventWithMetaData> records) : this()
+        public ReadResult(long nextOffset, ICollection<RetrievedEventsWithMetaData> records) : this()
         {
             NextOffset = nextOffset;
             Records = records;
