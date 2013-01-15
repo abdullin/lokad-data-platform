@@ -11,18 +11,18 @@ namespace Platform
 {
     /// <summary>
     /// Entry point for configuring access to the core of DataPlatform (both views and 
-    /// data streams)
+    /// data streams).
     /// </summary>
     public class PlatformClient
     {
         /// <summary>
-        /// Creates a connection to event store, which can both read and write events
+        /// Creates a connection to event store, which can both read and write events.
         /// </summary>
         /// <param name="storageConfiguration">Storage configuration (either local file path
-        ///     or <see cref="AzureStoreConfiguration"/>)</param>
+        ///     or <see cref="AzureStoreConfiguration"/>).</param>
         /// <param name="storeId">Id of the store to connect to</param>
-        /// <param name="platformServerEndpoint">url of publice server API</param>
-        /// <returns>new instance of the client that can read and write events</returns>
+        /// <param name="platformServerEndpoint">URL of public server API.</param>
+        /// <returns>new instance of the client that can read and write events.</returns>
         public static IRawEventStoreClient ConnectToEventStore(string storageConfiguration, string storeId, string platformServerEndpoint)
         {
             var container = EventStoreId.Create(storeId);
@@ -67,9 +67,9 @@ namespace Platform
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storageConfiguration, out configuration))
             {
-                var container = new FileViewContainer(new DirectoryInfo(storageConfiguration));
+                var root = new FileViewRoot(new DirectoryInfo(storageConfiguration));
 
-                var viewClient = new ViewClient(container.GetContainer(containerName), FileActionPolicy);
+                var viewClient = new ViewClient(root.GetContainer(containerName), FileActionPolicy);
                 viewClient.CreateContainerIfNeeded();
                 return viewClient;
             }

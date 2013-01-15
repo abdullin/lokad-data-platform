@@ -70,11 +70,11 @@
     <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="StreamStorage\IEventStoreManager.cs" />
-    <Compile Include="ViewClients\AzureViewContainer.cs" />
+    <Compile Include="ViewClients\AzureViewRoot.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="Ensure.cs" />
     <Compile Include="StreamClients\FileEventStoreClient.cs" />
-    <Compile Include="ViewClients\FileViewContainer.cs" />
+    <Compile Include="ViewClients\FileViewRoot.cs" />
     <Compile Include="FormatEvil.cs" />
     <Compile Include="ViewClients\IRawViewRoot.cs" />
     <Compile Include="StreamClients\JsonStreamClientBase.cs" />

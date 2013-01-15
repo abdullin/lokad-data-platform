@@ -8,24 +8,24 @@ namespace Platform.ViewClients
     /// <summary>
     /// Storage container using <see cref="System.IO"/> for persisting data
     /// </summary>
-    public sealed class FileViewContainer : IRawViewContainer, IRawViewRoot
+    public sealed class FileViewRoot : IRawViewContainer, IRawViewRoot
     {
         readonly DirectoryInfo _root;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileViewContainer"/> class.
+        /// Initializes a new instance of the <see cref="FileViewRoot"/> class.
         /// </summary>
         /// <param name="root">The root.</param>
-        public FileViewContainer(DirectoryInfo root)
+        public FileViewRoot(DirectoryInfo root)
         {
             _root = root;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileViewContainer"/> class.
+        /// Initializes a new instance of the <see cref="FileViewRoot"/> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        public FileViewContainer(string path)
+        public FileViewRoot(string path)
             : this(new DirectoryInfo(path))
         {
         }
@@ -33,7 +33,7 @@ namespace Platform.ViewClients
         public IRawViewContainer GetContainer(string name)
         {
             var child = new DirectoryInfo(Path.Combine(_root.FullName, name));
-            return new FileViewContainer(child);
+            return new FileViewRoot(child);
         }
 
         public IEnumerable<string> ListContainers(string prefix = null)
