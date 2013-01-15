@@ -11,6 +11,14 @@ Some introductory information:
 
 More documentation will be available, once we push through first production deployments internally.
 
+## Core concepts
+
+Data platform currently is a really simple concept aiming to demonstrate core
+principles of saving, processing and managing large datasets composed of 
+millions of messages or data transactions.
+
+![High-level overview of DataPlatform](https://raw.github.com/Lokad/lokad-data-platform/master/Library/Images/platform-high.png)
+
 ## Credits
 
 Thanks to the authors and maintainers of these projects for letting us stand on the shoulders of giants:
