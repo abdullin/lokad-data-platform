@@ -31,7 +31,7 @@ namespace Platform.TestClient.Commands
 
             //context.IsAsync();
 
-            var result = context.Client.Streams.ReadAllEvents(new StorageOffset(fromOffset), maxRecordCount);
+            var result = context.Client.EventStores.ReadAllEvents(new StorageOffset(fromOffset), maxRecordCount);
 
             StorageOffset next = StorageOffset.Zero;
             bool empty = true;

@@ -8,14 +8,14 @@ using Platform.StreamStorage.Azure;
 
 namespace Platform.StreamClients
 {
-    public class AzureStreamClient : JsonStreamClientBase, IRawStreamClient
+    public class AzureEventStoreClient : JsonStreamClientBase, IRawEventStoreClient
     {
         public AzureStoreConfiguration Config { get; set; }
         readonly CloudPageBlob _blob;
 
-        static readonly ILogger Log = LogManager.GetLoggerFor<AzureStreamClient>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureEventStoreClient>();
 
-        public AzureStreamClient(AzureStoreConfiguration config, EventStoreName container, string serverEndpoint = null)
+        public AzureEventStoreClient(AzureStoreConfiguration config, EventStoreName container, string serverEndpoint = null)
             : base(container, serverEndpoint)
         {
             Config = config;

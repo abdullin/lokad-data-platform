@@ -7,17 +7,17 @@ using Platform.StreamStorage.File;
 
 namespace Platform.StreamClients
 {
-    public class FileStreamClient : JsonStreamClientBase, IRawStreamClient
+    public class FileEventStoreClient : JsonStreamClientBase, IRawEventStoreClient
     {
 
         readonly string _serverFolder;
 
-        public FileStreamClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, EventStoreName.Create(EventStoreName.Default),serverEndpoint)
+        public FileEventStoreClient(string serverFolder, string serverEndpoint = null) : this(serverFolder, EventStoreName.Create(EventStoreName.Default),serverEndpoint)
         {
             
         }
 
-        public FileStreamClient(string serverFolder, EventStoreName container, string serverEndpoint = null) : base(container, serverEndpoint)
+        public FileEventStoreClient(string serverFolder, EventStoreName container, string serverEndpoint = null) : base(container, serverEndpoint)
         {
 
             // open for reading or new

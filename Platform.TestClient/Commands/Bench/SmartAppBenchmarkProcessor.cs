@@ -147,7 +147,7 @@ namespace Platform.TestClient.Commands.Bench
                     var records = Enumerable.Range(0, batchSize)
                         .Select(_ =>
                             (Enumerable.Range(0, msgSize).Select(b => (byte) rnd.Next()).ToArray()));
-                    context.Client.Streams.WriteEventsInLargeBatch(streamId, records);
+                    context.Client.EventStores.WriteEventsInLargeBatch(streamId, records);
                     count++;
                     totalBytes += batchSize * msgSize;
                 }
@@ -188,7 +188,7 @@ namespace Platform.TestClient.Commands.Bench
                         IEnumerable<RetrievedEventWithMetaData> records;
                         try
                         {
-                            records = context.Client.Streams.ReadAllEvents(new StorageOffset(nextOffset), 10000);
+                            records = context.Client.EventStores.ReadAllEvents(new StorageOffset(nextOffset), 10000);
                         }
                         catch (Exception e)
                         {

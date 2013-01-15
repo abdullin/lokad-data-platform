@@ -14,7 +14,7 @@ namespace SmartApp.Sample1.Chat
     // See Readme.md in this project for the description of the sample
     class Program
     {
-        private static IRawStreamClient _client;
+        private static IRawEventStoreClient _client;
         static ViewClient _view;
         public static string StorePath;
         public static string StoreConnection;

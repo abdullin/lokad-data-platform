@@ -61,7 +61,7 @@ namespace Platform.TestClient.Commands
                     {
                         try
                         {
-                            context.Client.Streams.WriteEventsInLargeBatch(streamId,
+                            context.Client.EventStores.WriteEventsInLargeBatch(streamId,
                             Enumerable.Range(0, batchSize).Select(
                                 x =>
                                 {
@@ -88,7 +88,7 @@ namespace Platform.TestClient.Commands
                         {
                             try
                             {
-                                context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(floodMsg));
+                                context.Client.EventStores.WriteEvent(streamId, Encoding.UTF8.GetBytes(floodMsg));
                                 Interlocked.Add(ref floodCount, 1);
                             }
                             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace Platform.TestClient.Commands
             string floodMsg, int batchCount, int floodCount)
         {
             var errors = new List<string>();
-            var records = context.Client.Streams.ReadAllEvents().Where(x => x.StreamName == streamId);
+            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamName == streamId);
             foreach (var record in records)
             {
                 var msg = Encoding.UTF8.GetString(record.EventData);
@@ -144,7 +144,7 @@ namespace Platform.TestClient.Commands
         private bool ReadMessageWithNextOffset(CommandProcessorContext context)
         {
             var result = true;
-            var records = context.Client.Streams.ReadAllEvents(maxRecordCount: 20).ToArray();
+            var records = context.Client.EventStores.ReadAllEvents(maxRecordCount: 20).ToArray();
 
             if (records.Length == 0)
                 return true;
@@ -153,7 +153,7 @@ namespace Platform.TestClient.Commands
 
             for (int i = 1; i < records.Length; i++)
             {
-                var prevNextRecord = context.Client.Streams.ReadAllEvents(prevRecord.Next, 1).First();
+                var prevNextRecord = context.Client.EventStores.ReadAllEvents(prevRecord.Next, 1).First();
                 var expectedBytes = records[i].EventData.Except(prevNextRecord.EventData).ToList();
                 if (records[i].StreamName != prevNextRecord.StreamName | expectedBytes.Count != 0)
                 {
@@ -178,12 +178,12 @@ namespace Platform.TestClient.Commands
             DateTime dateVal = new DateTime(2012, 10, 25, 1, 2, 3);
             double doubleVal = 103.0;
 
-            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(intVal));
-            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(longVal));
-            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(charVal));
-            context.Client.Streams.WriteEvent(streamId, Encoding.UTF8.GetBytes(stringVal));
-            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(dateVal.ToBinary()));
-            context.Client.Streams.WriteEvent(streamId, BitConverter.GetBytes(doubleVal));
+            context.Client.EventStores.WriteEvent(streamId, BitConverter.GetBytes(intVal));
+            context.Client.EventStores.WriteEvent(streamId, BitConverter.GetBytes(longVal));
+            context.Client.EventStores.WriteEvent(streamId, BitConverter.GetBytes(charVal));
+            context.Client.EventStores.WriteEvent(streamId, Encoding.UTF8.GetBytes(stringVal));
+            context.Client.EventStores.WriteEvent(streamId, BitConverter.GetBytes(dateVal.ToBinary()));
+            context.Client.EventStores.WriteEvent(streamId, BitConverter.GetBytes(doubleVal));
 
             var batchBody = new List<byte[]>
                            {
@@ -195,9 +195,9 @@ namespace Platform.TestClient.Commands
                                (BitConverter.GetBytes(doubleVal))
                            };
 
-            context.Client.Streams.WriteEventsInLargeBatch(streamId, batchBody);
+            context.Client.EventStores.WriteEventsInLargeBatch(streamId, batchBody);
 
-            var records = context.Client.Streams.ReadAllEvents().Where(x => x.StreamName == streamId).ToArray();
+            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamName == streamId).ToArray();
             bool result = true;
 
             for (int i = 0; i < 2; i++)
@@ -247,11 +247,11 @@ namespace Platform.TestClient.Commands
             string streamId = Guid.NewGuid().ToString();
             var testData = Enumerable.Range(1, 100);
 
-            context.Client.Streams.WriteEventsInLargeBatch(streamId, testData.Select(x => (BitConverter.GetBytes(x))));
+            context.Client.EventStores.WriteEventsInLargeBatch(streamId, testData.Select(x => (BitConverter.GetBytes(x))));
 
             var data = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
-            var records = context.Client.Streams.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamName == streamId);
+            var records = context.Client.EventStores.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamName == streamId);
 
             foreach (var record in records)
             {

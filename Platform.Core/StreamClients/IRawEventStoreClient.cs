@@ -19,15 +19,28 @@ namespace Platform.StreamClients
     /// Provides raw byte-level access to the storage and messaging of
     /// Data platform
     /// </summary>
-    public interface IRawStreamClient
+    public interface IRawEventStoreClient
     {
         /// <summary>
         /// Returns lazy enumeration over all events in a given record range. 
         /// </summary>
-        IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(StorageOffset startOffset = default (StorageOffset),
+        IEnumerable<RetrievedEventWithMetaData> ReadAllEvents(
+            StorageOffset startOffset = default (StorageOffset),
             int maxRecordCount = int.MaxValue);
-
+        /// <summary>
+        /// Writes a single event to the storage under the given key. Use this method
+        /// for high-concurrency and low latency operations
+        /// </summary>
+        /// <param name="streamName">Name of the stream to upload to</param>
+        /// <param name="eventData">Event Data to upload</param>
         void WriteEvent(string streamName, byte[] eventData);
+        /// <summary>
+        /// Writes events to server in a batch by first uploading it to the staging ground
+        /// (near the server) and then issuing an import request. This method has more
+        /// latency but is optimized for really high throughput.
+        /// </summary>
+        /// <param name="streamName">Name of the stream to upload to</param>
+        /// <param name="eventData">Enumeration of the events to upload (can be lazy)</param>
         void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData);
     }
 

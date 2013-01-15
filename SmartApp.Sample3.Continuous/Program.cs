@@ -32,7 +32,7 @@ namespace SmartApp.Sample3.Continuous
 
             Task.WaitAll(threads.ToArray());
         }
-        private static void TagProjection(IRawStreamClient store, ViewClient views)
+        private static void TagProjection(IRawEventStoreClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<TagsDistributionView>(TagsDistributionView.FileName);
             var processingInfo = views.ReadAsJsonOrGetNew<ProcessingInfoView>(TagsDistributionView.FileName + ".info");
@@ -87,7 +87,7 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        private static void CommentProjection(IRawStreamClient store, ViewClient views)
+        private static void CommentProjection(IRawEventStoreClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<CommentDistributionView>(CommentDistributionView.FileName);
             var processingInfo = views.ReadAsJsonOrGetNew<ProcessingInfoView>(CommentDistributionView.FileName + ".info");
@@ -147,7 +147,7 @@ namespace SmartApp.Sample3.Continuous
             }
         }
 
-        private static void UserCommentsPerDayDistributionProjection(IRawStreamClient store, ViewClient views)
+        private static void UserCommentsPerDayDistributionProjection(IRawEventStoreClient store, ViewClient views)
         {
             var data = views.ReadAsJsonOrGetNew<UserCommentsDistributionView>(UserCommentsDistributionView.FileName);
             var processingInfo =

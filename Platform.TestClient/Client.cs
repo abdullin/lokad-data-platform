@@ -14,7 +14,7 @@ namespace Platform.TestClient
         public readonly ClientOptions Options;
         readonly CommandProcessorCollection _commands = new CommandProcessorCollection(Log);
         
-        public IRawStreamClient Streams;
+        public IRawEventStoreClient EventStores;
         public string ClientHttpBase;
         public ViewClient Views;
 
@@ -32,7 +32,7 @@ namespace Platform.TestClient
 
         public void UseStreamContainer(string containerName = "default")
         {
-            Streams = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase, containerName);
+            EventStores = PlatformClient.GetStreamReaderWriter(Options.StoreLocation, ClientHttpBase, containerName);
         }
 
         void RegisterCommands()

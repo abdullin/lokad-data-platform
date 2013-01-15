@@ -6,10 +6,10 @@ namespace Platform.StreamClients
 {
     public sealed class StreamClient
     {
-        public readonly IRawStreamClient Advanced;
+        public readonly IRawEventStoreClient Advanced;
         readonly Func<Queue<Exception>, bool> _actionPolicy;
 
-        public StreamClient(IRawStreamClient advanced, Func<Queue<Exception>, bool> policy)
+        public StreamClient(IRawEventStoreClient advanced, Func<Queue<Exception>, bool> policy)
         {
             Advanced = advanced;
             _actionPolicy = policy;

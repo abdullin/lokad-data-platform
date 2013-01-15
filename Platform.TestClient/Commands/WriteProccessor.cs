@@ -25,7 +25,7 @@ namespace Platform.TestClient.Commands
 
                 data = args[1];
             }
-            context.Client.Streams.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
+            context.Client.EventStores.WriteEvent(eventStreamId, Encoding.UTF8.GetBytes(data));
             return true;
         }
     }

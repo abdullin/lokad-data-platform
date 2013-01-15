@@ -67,7 +67,7 @@ namespace Platform.TestClient.Commands
             int batchMessageCount = batchCount * batchSize;
             int floodMessagesCount = threadCount * floodSize;
 
-            foreach (var record in context.Client.Streams.ReadAllEvents())
+            foreach (var record in context.Client.EventStores.ReadAllEvents())
             {
                 var receivedMessage = Encoding.UTF8.GetString(record.EventData);
 
@@ -134,7 +134,7 @@ namespace Platform.TestClient.Commands
                             {
                                 if (token.IsCancellationRequested) return;
                                 var format = string.Format("basic-test-more-thread-message-{0}-{1}", t1, i);
-                                context.Client.Streams.WriteEvent("", Encoding.UTF8.GetBytes(streamId + format));
+                                context.Client.EventStores.WriteEvent("", Encoding.UTF8.GetBytes(streamId + format));
                                 result.Add(format);
                             }
                         }
@@ -168,7 +168,7 @@ namespace Platform.TestClient.Commands
             for (int i = 0; i < batchCount; i++)
             {
                 string message = string.Format(singleThreadMessageTemplate, i);
-                context.Client.Streams.WriteEventsInLargeBatch("",
+                context.Client.EventStores.WriteEventsInLargeBatch("",
                     Enumerable.Range(0, batchSize).Select(
                         x =>
                         {
