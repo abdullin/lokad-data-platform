@@ -4,9 +4,10 @@ using System.IO;
 namespace Platform.StreamStorage.File
 {
     /// <summary>
-    /// Tracks a given location in a single mutable file
+    /// Maintains a pointer to a specific event from event store in
+    /// a single mutable file
     /// </summary>
-    public sealed class FileCheckpoint : IDisposable
+    public sealed class FileEventPointer : IDisposable
     {
         readonly FileStream _stream;
         readonly BinaryReader _reader;
@@ -33,7 +34,7 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        FileCheckpoint(FileStream stream, bool isWriter)
+        FileEventPointer(FileStream stream, bool isWriter)
         {
             _stream = stream;
             _reader = new BinaryReader(_stream);
@@ -44,20 +45,20 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        public static FileCheckpoint OpenOrCreateForReading(string fullName)
+        public static FileEventPointer OpenOrCreateForReading(string fullName)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             if (stream.Length == 0)
                 stream.SetLength(8);
-            return new FileCheckpoint(stream, false);
+            return new FileEventPointer(stream, false);
             
         }
-        public static FileCheckpoint OpenOrCreateForWriting(string fullName)
+        public static FileEventPointer OpenOrCreateForWriting(string fullName)
         {
             var stream = new FileStream(fullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             if (stream.Length == 0)
                 stream.SetLength(8);
-            return new FileCheckpoint(stream, true);
+            return new FileEventPointer(stream, true);
         }
 
         public long Read()

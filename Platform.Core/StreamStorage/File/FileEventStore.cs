@@ -13,7 +13,7 @@ namespace Platform.StreamStorage.File
     {
         public EventStoreId Container;
         public FileEventStoreChunk Store;
-        public FileCheckpoint Checkpoint;
+        public FileEventPointer Checkpoint;
 
         public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
@@ -38,7 +38,7 @@ namespace Platform.StreamStorage.File
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
-            var check = FileCheckpoint.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
+            var check = FileEventPointer.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
             var store = FileEventStoreChunk.CreateNew(Path.Combine(folder, "stream.dat"));
             return new FileEventStore
             {
@@ -50,7 +50,7 @@ namespace Platform.StreamStorage.File
         public static FileEventStore OpenExistingForWriting(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
-            var check = FileCheckpoint.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
+            var check = FileEventPointer.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
             var store = FileEventStoreChunk.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
                 check.Read());
 
@@ -66,7 +66,7 @@ namespace Platform.StreamStorage.File
         public static FileEventStore OpenForReading(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
-            var check = FileCheckpoint.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
+            var check = FileEventPointer.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
             var store = FileEventStoreChunk.OpenForReading(Path.Combine(folder, "stream.dat"));
 
             return new FileEventStore
