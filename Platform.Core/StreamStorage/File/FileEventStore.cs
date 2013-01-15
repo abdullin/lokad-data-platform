@@ -92,13 +92,12 @@ namespace Platform.StreamStorage.File
             int recordCount = 0;
             foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                yield return new RetrievedEventsWithMetaData(msg.StreamId, msg.EventData, new EventStoreOffset(msg.NextOffset));
+                yield return msg;
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark
-                if (msg.NextOffset >= maxOffset)
+                if (msg.Next.OffsetInBytes >= maxOffset)
                     yield break;
-
             }
         }
 
