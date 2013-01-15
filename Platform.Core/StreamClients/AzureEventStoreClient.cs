@@ -8,7 +8,7 @@ using Platform.StreamStorage.Azure;
 
 namespace Platform.StreamClients
 {
-    public class AzureEventStoreClient : JsonStreamClientBase, IRawEventStoreClient
+    public class AzureEventStoreClient : JsonEventStoreClientBase, IRawEventStoreClient
     {
         public AzureStoreConfiguration Config { get; set; }
         readonly CloudPageBlob _blob;

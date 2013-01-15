@@ -3,12 +3,12 @@ using ServiceStack.ServiceClient.Web;
 
 namespace Platform.StreamClients
 {
-    public abstract class JsonStreamClientBase
+    public abstract class JsonEventStoreClientBase
     {
         public  JsonServiceClient WriteClient;
         public readonly EventStoreId StoreId;
 
-        protected JsonStreamClientBase(EventStoreId storeId, string uri)
+        protected JsonEventStoreClientBase(EventStoreId storeId, string uri)
         {
             StoreId = storeId;
             if (!string.IsNullOrWhiteSpace(uri))

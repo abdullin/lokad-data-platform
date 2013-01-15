@@ -77,7 +77,7 @@
     <Compile Include="ViewClients\FileViewRoot.cs" />
     <Compile Include="FormatEvil.cs" />
     <Compile Include="ViewClients\IRawViewRoot.cs" />
-    <Compile Include="StreamClients\JsonStreamClientBase.cs" />
+    <Compile Include="StreamClients\JsonEventStoreClientBase.cs" />
     <Compile Include="PlatformClient.cs" />
     <Compile Include="StreamClients\AzureEventStoreClient.cs" />
     <Compile Include="StreamStorage\Azure\AzureEventStoreChunk.cs" />
