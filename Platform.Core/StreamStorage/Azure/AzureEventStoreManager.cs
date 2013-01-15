@@ -4,6 +4,10 @@ using Microsoft.WindowsAzure.StorageClient;
 
 namespace Platform.StreamStorage.Azure
 {
+    /// <summary>
+    /// Event store based Windows Azure Blob Storage.
+    /// See documentation of the <c>IEventStoreManager</c>.
+    /// </summary>
     public class AzureEventStoreManager : IEventStoreManager
     {
         readonly AzureStoreConfiguration _config;

@@ -4,6 +4,10 @@ using System.IO;
 
 namespace Platform.StreamStorage.File
 {
+    /// <summary>
+    /// Event store based on local filesystem.
+    /// See documentation of the <c>IEventStoreManager</c>.
+    /// </summary>
     public class FileEventStoreManager : IEventStoreManager
     {
         readonly IDictionary<string, FileEventStore> _stores = new Dictionary<string, FileEventStore>();
