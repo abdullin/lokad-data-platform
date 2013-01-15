@@ -3,7 +3,7 @@ using Platform.CommandLine;
 namespace Platform.Node
 {
     /// <summary>
-    /// Command line options for the server
+    /// Command line options for the server.
     /// </summary>
     public class NodeOptions : CommandLineOptionsBase
     {
@@ -12,6 +12,7 @@ namespace Platform.Node
 
         [Option("h", "http-port", DefaultValue = 8080, HelpText = "Http Port to use")]
         public int HttpPort { get; set; }
+
         [Option("s", "store", DefaultValue = @"C:\LokadData\dp-store", HelpText = "Location of data store to use")]
         public string StoreLocation { get; set; }
     }

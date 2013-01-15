@@ -7,7 +7,7 @@ namespace Platform.Node
 {
     /// <summary>
     /// You can run DataPlatform server as a console application. All needed
-    /// wiring and management is provided in this class
+    /// wiring and management is provided in this class.
     /// </summary>
     class Program
     {
