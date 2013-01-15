@@ -3,7 +3,7 @@ using System;
 namespace Platform
 {
     /// <summary>
-    /// Name of an event store within Data Platform. It has to follow strict semantics
+    /// Id of an event store within Data Platform. It has to follow strict semantics
     /// </summary>
     public sealed class EventStoreId
     {
@@ -14,7 +14,6 @@ namespace Platform
         }
 
         public const string Default = "default";
-        //public static readonly ContainerName Default = new ContainerName(DefaultName);
 
         public static EventStoreId Create(string name)
         {
