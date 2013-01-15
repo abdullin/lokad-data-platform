@@ -19,7 +19,7 @@ namespace SmartApp.Sample3.Continuous
         {
             var store = PlatformClient.GetStreamReader(PlatformPath);
             var views = PlatformClient.GetViewClient(PlatformPath, Conventions.ViewContainer);
-            views.CreateContainer();
+            
             var threads = new List<Task>
                 {
                     Task.Factory.StartNew(() => TagProjection(store, views),

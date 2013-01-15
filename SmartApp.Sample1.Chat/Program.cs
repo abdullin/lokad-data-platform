@@ -35,7 +35,7 @@ namespace SmartApp.Sample1.Chat
             // Use "default" container for reading/writing events
             _client = PlatformClient.GetEventStoreReaderWriter(StorePath, StoreConnection, storeId:"default");
             _view = PlatformClient.GetViewClient(StorePath, "sample1-views");
-            _view.CreateContainer();
+            
 
             Console.WriteLine("You name:");
             _userName = Console.ReadLine();

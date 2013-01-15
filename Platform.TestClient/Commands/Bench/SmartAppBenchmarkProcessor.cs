@@ -172,7 +172,7 @@ namespace Platform.TestClient.Commands.Bench
                     var fileName = "smartapptest-" + index;
 
                     var views = context.Client.Views;
-                    views.CreateContainer();
+                    
                     var projection = new DistributionProjection(views.ReadAsJsonOrGetNew<DistributionView>(fileName));
 
                     var totalBytes = 0;

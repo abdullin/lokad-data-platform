@@ -47,7 +47,7 @@ namespace Platform
                 var container = new FileViewContainer(new DirectoryInfo(storage));
 
                 var viewClient = new ViewClient(container.GetContainer(containerName), FileActionPolicy);
-                viewClient.CreateContainer();
+                viewClient.CreateContainerIfNeeded();
                 return viewClient;
             }
             else
@@ -57,7 +57,7 @@ namespace Platform
                 var viewContainer = new AzureViewRoot(client).GetContainer(configuration.RootBlobContainerName);
 
                 var viewClient = new ViewClient(viewContainer.GetContainer(containerName), AzureActionPolicy);
-                viewClient.CreateContainer();
+                viewClient.CreateContainerIfNeeded();
                 return viewClient;
             }
         }

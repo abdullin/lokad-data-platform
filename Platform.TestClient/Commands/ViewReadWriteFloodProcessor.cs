@@ -12,7 +12,6 @@ namespace Platform.TestClient.Commands
         public string Usage { get { return Key + " [<size> <repeat> <readers>]"; } }
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
         {
-            context.Client.Views.CreateContainer();
             var counters = new ConcurrentDictionary<string, int>();
 
             int size = 1024;

@@ -56,7 +56,7 @@ namespace Platform.ViewClients
             }
         }
 
-        public void CreateContainer()
+        internal void CreateContainerIfNeeded()
         {
             GetResult(() => Advanced.Create());
         }

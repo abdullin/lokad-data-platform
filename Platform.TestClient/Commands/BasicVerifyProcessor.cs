@@ -242,7 +242,6 @@ namespace Platform.TestClient.Commands
         {
             bool result = true;
             var views = context.Client.Views;
-            views.CreateContainer();
 
             string streamId = Guid.NewGuid().ToString();
             var testData = Enumerable.Range(1, 100);
