@@ -4,6 +4,10 @@ using ServiceStack.Text;
 
 namespace Platform.ViewClients
 {
+    /// <summary>
+    /// Read-write client to access the views (typically, but not restricted to, the
+    /// persistent output of projections).
+    /// </summary>
     public class ViewClient
     {
         public readonly IRawViewContainer Advanced;
@@ -60,10 +64,12 @@ namespace Platform.ViewClients
         {
             GetResult(() => Advanced.Create());
         }
+
         public bool Exists(string name)
         {
             return GetResult(() => Advanced.Exists(name));
         }
+
         public void WriteAsJson<TEntity>(TEntity entity, string name)
         {
             GetResult(() =>

@@ -5,7 +5,8 @@ namespace Platform.StreamStorage
 {
     /// <summary>
     /// This interface is not really needed in the codebase,
-    /// but is introduced to explicitly demonstrate the concept
+    /// but it is introduced to explicitly demonstrate the unified
+    /// concept between the filesystem storage and Windows Azure storage.
     /// </summary>
     public interface IEventStoreManager : IDisposable
     {
@@ -13,6 +14,7 @@ namespace Platform.StreamStorage
         /// Wipes data in all loaded event stores
         /// </summary>
         void ResetAllStores();
+
         /// <summary>
         /// Appends events to a given store
         /// </summary>
