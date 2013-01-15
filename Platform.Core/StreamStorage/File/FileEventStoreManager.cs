@@ -43,7 +43,7 @@ namespace Platform.StreamStorage.File
             }
         }
 
-        public void ResetAlEventStores()
+        public void ResetAllStores()
         {
             foreach (var store in _stores)
             {

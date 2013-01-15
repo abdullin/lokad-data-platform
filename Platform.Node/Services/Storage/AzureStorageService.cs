@@ -47,7 +47,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _manager.AppendEventsToStore(message.Container, message.StreamKey, new[] { message.Data });
+            _manager.AppendEventsToStore(message.StoreId, message.StreamId, new[] { message.EventData });
 
             Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -60,7 +60,7 @@ namespace Platform.Node.Services.Storage
             var count = 0;
             var size = 0;
             var blob = _config.GetPageBlob(msg.StagingLocation);
-            _manager.AppendEventsToStore(msg.Container, msg.StreamKey, EnumerateStaging(blob,msg.Size).Select(bytes =>
+            _manager.AppendEventsToStore(msg.StoreId, msg.StreamId, EnumerateStaging(blob,msg.Size).Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -86,7 +86,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.RequestStoreReset message)
         {
-            _manager.ResetAlEventStores();
+            _manager.ResetAllStores();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }

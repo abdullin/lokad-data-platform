@@ -41,7 +41,7 @@ namespace Platform.StreamStorage.Azure
             }
         }
 
-        public void ResetAlEventStores()
+        public void ResetAllStores()
         {
             foreach (var store in _stores.Values)
             {
@@ -180,9 +180,9 @@ namespace Platform.StreamStorage.Azure
             }
         }
 
-        public void Write(string streamKey, IEnumerable<byte[]> data)
+        public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
-            var result = _store.Append(streamKey, data);
+            var result = _store.Append(streamId, eventData);
             _checkpoint.Write(result);
         }
 

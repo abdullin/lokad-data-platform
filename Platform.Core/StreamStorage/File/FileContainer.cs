@@ -15,9 +15,9 @@ namespace Platform.StreamStorage.File
         public FileMessageSet Store;
         public FileCheckpoint Checkpoint;
 
-        public void Write(string streamKey, IEnumerable<byte[]> data)
+        public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
-            var position = Store.Append(streamKey, data);
+            var position = Store.Append(streamId, eventData);
             Checkpoint.Write(position);
         }
 
@@ -92,7 +92,7 @@ namespace Platform.StreamStorage.File
             int recordCount = 0;
             foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
-                yield return new RetrievedEventWithMetaData(msg.StreamKey, msg.Message, new StorageOffset(msg.NextOffset));
+                yield return new RetrievedEventWithMetaData(msg.StreamId, msg.EventData, new StorageOffset(msg.NextOffset));
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark

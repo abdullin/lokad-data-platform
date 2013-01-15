@@ -69,7 +69,7 @@
     <Compile Include="ClientDto.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="StreamStorage\IEventStoreManager.cs" />
-    <Compile Include="StreamStorage\MessageWithOffset.cs" />
+    <Compile Include="StreamStorage\EventDataWithOffset.cs" />
     <Compile Include="ViewClients\AzureViewContainer.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="Ensure.cs" />

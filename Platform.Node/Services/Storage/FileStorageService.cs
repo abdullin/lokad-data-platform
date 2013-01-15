@@ -32,7 +32,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.AppendEvents message)
         {
-            _managerForServer.AppendEventsToStore(message.Container, message.StreamKey, new[] { message.Data });
+            _managerForServer.AppendEventsToStore(message.StoreId, message.StreamId, new[] { message.EventData });
 
             //Log.Info("Storage service got request");
             message.Envelope(new ClientMessage.AppendEventsCompleted());
@@ -44,7 +44,7 @@ namespace Platform.Node.Services.Storage
             {
                 foreach (var msg in fs.ReadAll(0,int.MaxValue))
                 {
-                    yield return msg.Message;
+                    yield return msg.EventData;
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace Platform.Node.Services.Storage
 
             var lazy = EnumerateStaging(msg.StagingLocation);
 
-            _managerForServer.AppendEventsToStore(msg.Container,msg.StreamKey, lazy.Select(bytes =>
+            _managerForServer.AppendEventsToStore(msg.StoreId,msg.StreamId, lazy.Select(bytes =>
                 {
                     count += 1;
                     size += bytes.Length;
@@ -101,7 +101,7 @@ namespace Platform.Node.Services.Storage
 
         public void Handle(ClientMessage.RequestStoreReset message)
         {
-            _managerForServer.ResetAlEventStores();
+            _managerForServer.ResetAllStores();
             Log.Info("Storage cleared");
             message.Envelope(new ClientMessage.StoreResetCompleted());
         }

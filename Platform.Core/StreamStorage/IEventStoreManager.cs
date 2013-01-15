@@ -9,7 +9,16 @@ namespace Platform.StreamStorage
     /// </summary>
     public interface IEventStoreManager : IDisposable
     {
-        void ResetAlEventStores();
+        /// <summary>
+        /// Wipes data in all loaded event stores
+        /// </summary>
+        void ResetAllStores();
+        /// <summary>
+        /// Appends events to a given store
+        /// </summary>
+        /// <param name="storeId">Id of the event store</param>
+        /// <param name="streamId">Id of the event stream in the store</param>
+        /// <param name="eventData">data to upload</param>
         void AppendEventsToStore(EventStoreId storeId, string streamId, IEnumerable<byte[]> eventData);
     }
 }

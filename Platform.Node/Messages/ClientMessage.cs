@@ -29,34 +29,34 @@ namespace Platform.Node.Messages
 
         public class AppendEvents : WriteMessage
         {
-            public readonly EventStoreId Container;
-            public readonly string StreamKey;
-            public readonly byte[] Data;
+            public readonly EventStoreId StoreId;
+            public readonly string StreamId;
+            public readonly byte[] EventData;
             
             public readonly Action<AppendEventsCompleted> Envelope;
 
-            public AppendEvents(EventStoreId container, string streamKey, byte[] data,  Action<AppendEventsCompleted> envelope)
+            public AppendEvents(EventStoreId storeId, string streamId, byte[] eventData,  Action<AppendEventsCompleted> envelope)
             {
-                Container = container;
-                StreamKey = streamKey;
-                Data = data;
+                StoreId = storeId;
+                StreamId = streamId;
+                EventData = eventData;
                 Envelope = envelope;
             }
         }
 
         public class ImportEvents : WriteMessage
         {
-            public readonly EventStoreId Container;
-            public readonly string StreamKey;
+            public readonly EventStoreId StoreId;
+            public readonly string StreamId;
             
             public readonly string StagingLocation;
             public readonly long Size;
 
             public readonly Action<ImportEventsCompleted> Envelope;
-            public ImportEvents(EventStoreId container, string streamKey, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
+            public ImportEvents(EventStoreId storeId, string streamId, string stagingLocation, long size, Action<ImportEventsCompleted> envelope)
             {
-                Container = container;
-                StreamKey = streamKey;
+                StoreId = storeId;
+                StreamId = streamId;
                 StagingLocation = stagingLocation;
                 Envelope = envelope;
                 Size = size;

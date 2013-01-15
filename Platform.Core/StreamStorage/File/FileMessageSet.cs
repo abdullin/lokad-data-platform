@@ -89,7 +89,7 @@ namespace Platform.StreamStorage.File
             return _stream.Position;
         }
 
-        public IEnumerable<MessageWithOffset> ReadAll(long starting, int maxCount)
+        public IEnumerable<EventDataWithOffset> ReadAll(long starting, int maxCount)
         {
             Ensure.Nonnegative(starting, "starting");
             Ensure.Nonnegative(maxCount, "maxCount");
@@ -114,7 +114,7 @@ namespace Platform.StreamStorage.File
 
 
                 var nextOffset = _stream.Position;
-                yield return new MessageWithOffset(key, nextOffset, data, recordOffset);
+                yield return new EventDataWithOffset(key, nextOffset, data, recordOffset);
 
                 recordCount += 1;
                 if (recordCount >= maxCount)

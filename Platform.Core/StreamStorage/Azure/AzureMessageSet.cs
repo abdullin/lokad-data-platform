@@ -62,7 +62,7 @@ namespace Platform.StreamStorage.Azure
             return new AzureMessageSet(blob, -1, length);
         }
 
-        public long Append(string streamKey, IEnumerable<byte[]> data)
+        public long Append(string streamId, IEnumerable<byte[]> eventData)
         {
             const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
@@ -70,9 +70,9 @@ namespace Platform.StreamStorage.Azure
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    foreach (var record in data)
+                    foreach (var record in eventData)
                     {
-                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(streamKey) + 4 + record.Length;
+                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(streamId) + 4 + record.Length;
                         if (stream.Position + newSizeEstimate >= limit)
                         {
                             writer.Flush();
@@ -82,7 +82,7 @@ namespace Platform.StreamStorage.Azure
                             stream.Seek(0, SeekOrigin.Begin);
                         }
 
-                        writer.Write(streamKey);
+                        writer.Write(streamId);
                         writer.Write((int)record.Length);
                         writer.Write(record);
                     }

@@ -19,7 +19,7 @@ namespace Platform.StreamClients
 
         public const int MessageSizeLimit = 1024 * 1024 * 2;
 
-        protected void ImportEventsInternal(string streamKey, string location, long length)
+        protected void ImportEventsInternal(string streamId, string location, long length)
         {
             ThrowIfClientNotInitialized();
             try
@@ -28,7 +28,7 @@ namespace Platform.StreamClients
                     new ClientDto.WriteBatch
                         {
                             Container = Container.Name,
-                            StreamKey = streamKey,
+                            StreamKey = streamId,
                             Location = location,
                             Length = length
                         });
@@ -44,7 +44,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEvent(string streamKey, byte[] data)
+        public void WriteEvent(string streamId, byte[] eventData)
         {
             ThrowIfClientNotInitialized();
             try
@@ -53,8 +53,8 @@ namespace Platform.StreamClients
                     new ClientDto.WriteEvent
                         {
                             Container = Container.Name,
-                            StreamKey = streamKey,
-                            Data = data,
+                            StreamKey = streamId,
+                            Data = eventData,
                         });
                 if (!response.Success)
                 {
