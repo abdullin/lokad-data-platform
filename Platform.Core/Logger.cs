@@ -78,7 +78,7 @@ namespace Platform
                 var exc = e.ExceptionObject as Exception;
                 if (exc != null)
                 {
-                    globalLogger.FatalException(exc, "Global Unhandled Exception occured.");
+                    globalLogger.FatalException(exc, "Global Unhandled Exception occurred.");
                 }
                 else
                 {
