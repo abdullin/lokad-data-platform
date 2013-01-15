@@ -26,7 +26,7 @@ namespace Platform
         public static IRawEventStoreClient ConnectToEventStore(
             string storageConfiguration, 
             string platformServerEndpoint, 
-            string storeId = EventStoreId.Default)
+            string storeId)
         {
             var container = EventStoreId.Create(storeId);
 
@@ -47,7 +47,7 @@ namespace Platform
         /// <returns>new instance of the client that can read events</returns>
         public static IRawEventStoreClient ConnectToEventStoreAsReadOnly(
             string storageConfiguration, 
-            string storeId = EventStoreId.Default)
+            string storeId)
         {
             var container = EventStoreId.Create(storeId);
             AzureStoreConfiguration configuration;
