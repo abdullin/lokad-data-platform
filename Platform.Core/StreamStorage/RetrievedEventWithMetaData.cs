@@ -15,7 +15,7 @@ namespace Platform.StreamStorage
         /// <summary>
         /// Name of the stream to which this event belongs
         /// </summary>
-        public readonly string StreamName;
+        public readonly string StreamId;
         
         /// <summary>
         /// Data of the record itself (to be deserialized).
@@ -24,9 +24,9 @@ namespace Platform.StreamStorage
 
         public readonly StorageOffset Next;
 
-        public RetrievedEventWithMetaData(string streamName, byte[] eventData,StorageOffset next) 
+        public RetrievedEventWithMetaData(string streamId, byte[] eventData,StorageOffset next) 
         {
-            StreamName = streamName;
+            StreamId = streamId;
             EventData = eventData;
             Next = next;
         }

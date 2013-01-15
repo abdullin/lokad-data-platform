@@ -170,7 +170,7 @@ namespace Platform.StreamStorage.Azure
             int recordCount = 0;
             foreach (var msg in _store.ReadAll(startOffset.OffsetInBytes, maxOffset, maxRecordCount))
             {
-                yield return new RetrievedEventWithMetaData(msg.StreamName, msg.EventData, msg.Next);
+                yield return new RetrievedEventWithMetaData(msg.StreamId, msg.EventData, msg.Next);
                 if (++recordCount >= maxRecordCount)
                     yield break;
                 // we don't want to go above the initial water mark

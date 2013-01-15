@@ -47,7 +47,7 @@ namespace Platform.StreamClients
 
 
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData)
+        public void WriteEventsInLargeBatch(string streamId, IEnumerable<byte[]> eventData)
         {
             if (!Directory.Exists(_serverFolder))
                 Directory.CreateDirectory(_serverFolder);
@@ -56,7 +56,7 @@ namespace Platform.StreamClients
             try
             {
                 var result = PrepareStaging(eventData, location);
-                ImportEventsInternal(streamName, location, result);
+                ImportEventsInternal(streamId, location, result);
             }
             finally
             {

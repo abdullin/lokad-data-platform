@@ -41,7 +41,7 @@ namespace Platform.StreamClients
             }
         }
 
-        public void WriteEventsInLargeBatch(string streamName, IEnumerable<byte[]> eventData)
+        public void WriteEventsInLargeBatch(string streamId, IEnumerable<byte[]> eventData)
         {
             var container = _blob.Container;
             container.CreateIfNotExist();
@@ -52,7 +52,7 @@ namespace Platform.StreamClients
             {
                 Log.Debug("Uploading staging to {0}", uri);
                 var size = PrepareStaging(eventData, tempBlob);
-                ImportEventsInternal(streamName, uri, size);
+                ImportEventsInternal(streamId, uri, size);
             }
             finally
             {

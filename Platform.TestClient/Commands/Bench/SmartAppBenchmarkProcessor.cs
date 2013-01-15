@@ -203,7 +203,7 @@ namespace Platform.TestClient.Commands.Bench
                         {
                             totalBytes += dataRecord.EventData.Length;
 
-                            if (dataRecord.StreamName != streamId)
+                            if (dataRecord.StreamId != streamId)
                             {
                                 projection.NextOffsetInBytes = dataRecord.Next.OffsetInBytes;
                                 continue;

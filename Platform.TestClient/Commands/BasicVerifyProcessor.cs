@@ -121,7 +121,7 @@ namespace Platform.TestClient.Commands
             string floodMsg, int batchCount, int floodCount)
         {
             var errors = new List<string>();
-            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamName == streamId);
+            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamId == streamId);
             foreach (var record in records)
             {
                 var msg = Encoding.UTF8.GetString(record.EventData);
@@ -155,9 +155,9 @@ namespace Platform.TestClient.Commands
             {
                 var prevNextRecord = context.Client.EventStores.ReadAllEvents(prevRecord.Next, 1).First();
                 var expectedBytes = records[i].EventData.Except(prevNextRecord.EventData).ToList();
-                if (records[i].StreamName != prevNextRecord.StreamName | expectedBytes.Count != 0)
+                if (records[i].StreamId != prevNextRecord.StreamId | expectedBytes.Count != 0)
                 {
-                    context.Log.Error("Expected key: {0}, Received key: {1}", records[i].StreamName, prevNextRecord.StreamName);
+                    context.Log.Error("Expected key: {0}, Received key: {1}", records[i].StreamId, prevNextRecord.StreamId);
                     context.Log.Error("Expected dat: {0}, Received key: {1}", records[i].EventData.Length, prevNextRecord.EventData.Length);
                     result = false;
                 }
@@ -197,7 +197,7 @@ namespace Platform.TestClient.Commands
 
             context.Client.EventStores.WriteEventsInLargeBatch(streamId, batchBody);
 
-            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamName == streamId).ToArray();
+            var records = context.Client.EventStores.ReadAllEvents().Where(x => x.StreamId == streamId).ToArray();
             bool result = true;
 
             for (int i = 0; i < 2; i++)
@@ -251,7 +251,7 @@ namespace Platform.TestClient.Commands
 
             var data = views.ReadAsJsonOrGetNew<IntDistribution>(IntDistribution.FileName);
 
-            var records = context.Client.EventStores.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamName == streamId);
+            var records = context.Client.EventStores.ReadAllEvents(new StorageOffset(data.NextOffsetInBytes)).Where(x => x.StreamId == streamId);
 
             foreach (var record in records)
             {

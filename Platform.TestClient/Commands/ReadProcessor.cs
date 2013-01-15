@@ -37,7 +37,7 @@ namespace Platform.TestClient.Commands
             bool empty = true;
             foreach (var record in result)
             {
-                context.Log.Info("  stream-id: {0}, data: {1}", record.StreamName, Encoding.UTF8.GetString(record.EventData));
+                context.Log.Info("  stream-id: {0}, data: {1}", record.StreamId, Encoding.UTF8.GetString(record.EventData));
                 next = record.Next;
                 empty = false;
             }
