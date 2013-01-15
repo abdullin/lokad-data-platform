@@ -15,7 +15,8 @@ namespace Platform
     /// </summary>
     public class PlatformClient
     {
-        public static IRawEventStoreClient GetEventStoreReaderWriter(string storage, string serverEndpoint, string storeId = EventStoreId.Default)
+        public static IRawEventStoreClient GetEventStoreReaderWriter(string storage, 
+            string serverEndpoint, string storeId = EventStoreId.Default)
         {
             var container = EventStoreId.Create(storeId);
 
@@ -26,6 +27,7 @@ namespace Platform
             }
             return new AzureEventStoreClient(configuration, container, serverEndpoint);
         }
+
         public static IRawEventStoreClient GetStreamReader(string storage, string containerName = EventStoreId.Default)
         {
             var container = EventStoreId.Create(containerName);
@@ -60,6 +62,10 @@ namespace Platform
             }
         }
 
+        /// <summary>
+        /// Retry policy to deal with transient errors on filesystem.
+        /// Defines when to give up on retry.
+        /// </summary>
         static bool FileActionPolicy(Queue<Exception> exceptions)
         {
             if (exceptions.Count >= 4)
@@ -74,6 +80,11 @@ namespace Platform
             Thread.Sleep(200 * exceptions.Count);
             return false;
         }
+
+        /// <summary>
+        /// Retry policy to deal with transient errors on Windows Azure Storage.
+        /// Defines when to give up on retry.
+        /// </summary>
         static bool AzureActionPolicy(Queue<Exception> exceptions)
         {
             if (exceptions.Count >= 4)
