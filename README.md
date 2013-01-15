@@ -38,21 +38,39 @@ Data Platform is represented by:
 
 **Data Platform Server (Node)** - single instance of data platform server, 
   responsible for coordinating multiple writers. Lokad Data Platform servers
-  support multiple event stores. 
+  can host multiple event stores, which are isolated from each other. 
 
-**Event Store** - set of events which are logically grouped together (e.g. 
-  belong to the same subsystem or subdomain). Single event store can keep 
+**Event Store** - set of events which are physically and logically grouped 
+  together (e.g. belong to the same subsystem or subdomain). Single event store can keep 
   multiple event streams for different aggregates). Each event store has
   it's own version (which increments, as new events are added to it).
 
 **Event Stream** - group of events within a single event store, which are 
-  identified by the same stream name or key. If you are applying Domain-
+  identified by the same stream identifier (or id). If you are applying Domain-
   Driven Design with Event Sourcing, then such event stream would represent 
   a single entity.
 
 **Checkpoint** - pointer to some event (either using it's sequential number
   or as direct byte offset in a file). It can be used by event storage to
   record last committed (and flushed) event.
+
+### References
+
+Data platform does not introduce any new significant concepts, it is based
+directly on the following works (which are highly recommended for reading, if
+you are interested in the deep reasoning behing the design):
+
+* [Apache Kafka Design](http://kafka.apache.org/design.html) - data platform 
+  developed at LinkedIn.
+* [Bitcask](http://downloads.basho.com/papers/bitcask-intro.pdf) (PDF) - 
+  A log-structured hash Table for key/value data used by Basho Riak
+* [Greg's Event Store Architecture](http://geteventstore.com/docs/architecture.html) - 
+  highly-performant event sourcing server for file systems.
+* [Redis Persistence](http://oldblog.antirez.com/post/redis-persistence-demystified.html) - 
+  append-only file persistence used by Redis server.
+* [Staged event-driven architecture](http://en.wikipedia.org/wiki/Staged_event-driven_architecture) - 
+  architecture principles which allow Data Platform server to concurrently serve
+  lots of clients using only a few threads.
 
 ## Credits
 

@@ -17,12 +17,17 @@ namespace Platform.StreamClients
 
     /// <summary>
     /// Provides raw byte-level access to the storage and messaging of
-    /// Data platform
+    /// Data platform. Semantics of this interface are tightly linked to
+    /// the storage implementation (for scalability and performance), which
+    /// in turn are linked to the concepts of transaction logs, key-value 
+    /// stores and high-performance message processing. See readme of this
+    /// project for more information.
     /// </summary>
     public interface IRawEventStoreClient
     {
         /// <summary>
-        /// Returns lazy enumeration over all events in a given record range. 
+        /// Returns lazy enumeration over all events in a given record range, fetching
+        /// stream Ids inside <see cref="RetrievedEventsWithMetaData"/>.
         /// </summary>
         IEnumerable<RetrievedEventsWithMetaData> ReadAllEvents(
             EventStoreOffset startOffset = default (EventStoreOffset),
