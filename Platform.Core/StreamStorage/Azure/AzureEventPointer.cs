@@ -5,16 +5,18 @@ using Microsoft.WindowsAzure.StorageClient;
 namespace Platform.StreamStorage.Azure
 {
     /// <summary>
-    /// Maintains a pointer to a specific event from event store in
-    /// a metadata of azure cloud page blob
+    /// Not intended to be used outside <c>Platform.Core</c> itself.
+    /// 
+    /// Maintains a pointer to a specific event within the event store 
+    /// using the metadata of a Windows Azure cloud page blob.
     /// </summary>
-    public class AzureMetadataEventPointer
+    public class AzureEventPointer
     {
         readonly CloudPageBlob _blob;
-        static readonly ILogger Log = LogManager.GetLoggerFor<AzureMetadataEventPointer>();
+        static readonly ILogger Log = LogManager.GetLoggerFor<AzureEventPointer>();
         readonly bool _readOnly;
 
-        AzureMetadataEventPointer(CloudPageBlob blob, bool readOnly)
+        AzureEventPointer(CloudPageBlob blob, bool readOnly)
         {
             _readOnly = readOnly;
             _blob = blob;
@@ -38,14 +40,14 @@ namespace Platform.StreamStorage.Azure
             return read;
         }
 
-        public static AzureMetadataEventPointer OpenWriteable(CloudPageBlob blob)
+        public static AzureEventPointer OpenWriteable(CloudPageBlob blob)
         {
-            return new AzureMetadataEventPointer(blob, readOnly:false);
+            return new AzureEventPointer(blob, readOnly:false);
         }
 
-        public static AzureMetadataEventPointer OpenReadable(CloudPageBlob blob)
+        public static AzureEventPointer OpenReadable(CloudPageBlob blob)
         {
-            return new AzureMetadataEventPointer(blob, readOnly:true);
+            return new AzureEventPointer(blob, readOnly:true);
         }
 
         public void Dispose()

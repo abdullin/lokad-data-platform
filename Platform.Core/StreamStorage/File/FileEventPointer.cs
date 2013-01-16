@@ -4,7 +4,9 @@ using System.IO;
 namespace Platform.StreamStorage.File
 {
     /// <summary>
-    /// Maintains a pointer to a specific event for an event store 
+    /// Not intended to be used outside <c>Platform.Core</c> itself.
+    /// 
+    /// Maintains a pointer to a specific event within an event store 
     /// persisted in a single mutable file (in the filesystem).
     /// </summary>
     public sealed class FileEventPointer : IDisposable

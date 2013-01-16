@@ -9,9 +9,9 @@ namespace Platform.StreamStorage.Azure
     {
         public readonly EventStoreId Container;
         readonly AzureEventStoreChunk _store;
-        readonly AzureMetadataEventPointer _checkpoint;
+        readonly AzureEventPointer _checkpoint;
 
-        public AzureEventStore(EventStoreId container, AzureEventStoreChunk store, AzureMetadataEventPointer checkpoint)
+        public AzureEventStore(EventStoreId container, AzureEventStoreChunk store, AzureEventPointer checkpoint)
         {
             Container = container;
             _store = store;
@@ -62,7 +62,7 @@ namespace Platform.StreamStorage.Azure
         public static AzureEventStore OpenExistingForWriting(AzureStoreConfiguration config, EventStoreId container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
-            var check = AzureMetadataEventPointer.OpenWriteable(blob);
+            var check = AzureEventPointer.OpenWriteable(blob);
             var offset = check.Read();
             var length = blob.Properties.Length;
             var store = AzureEventStoreChunk.OpenExistingForWriting(blob, offset, length);
@@ -74,7 +74,7 @@ namespace Platform.StreamStorage.Azure
             blob.Container.CreateIfNotExist();
 
             var store = AzureEventStoreChunk.CreateNewForWriting(blob);
-            var check = AzureMetadataEventPointer.OpenWriteable(blob);
+            var check = AzureEventPointer.OpenWriteable(blob);
 
             return new AzureEventStore(container, store, check);
         }
@@ -82,7 +82,7 @@ namespace Platform.StreamStorage.Azure
         public static AzureEventStore OpenExistingForReading(AzureStoreConfiguration config, EventStoreId container)
         {
             var blob = config.GetPageBlob(container.Name + "/stream.dat");
-            var check = AzureMetadataEventPointer.OpenReadable(blob);
+            var check = AzureEventPointer.OpenReadable(blob);
             blob.FetchAttributes();
             var store = AzureEventStoreChunk.OpenExistingForReading(blob, blob.Properties.Length);
             return new AzureEventStore(container, store, check);
