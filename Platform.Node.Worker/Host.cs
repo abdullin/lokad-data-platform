@@ -1,9 +1,8 @@
 ﻿using System.Threading;
-using Platform.Messages;
+using Platform.Node.Messages;
 using Platform.Node.Services.ServerApi;
 using Platform.Node.Services.Storage;
 using Platform.Node.Services.Timer;
-using Platform.Storage.Azure;
 
 namespace Platform.Node.Worker
 {
