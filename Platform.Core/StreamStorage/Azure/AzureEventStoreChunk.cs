@@ -17,7 +17,7 @@ namespace Platform.StreamStorage.Azure
     {
         readonly CloudPageBlob _blob;
         readonly PageWriter _pageWriter;
-        long _blobContentSize;
+        long _chunkContentSize;
         long _blobSpaceSize;
 
         public const long ChunkSize = 1024 * 1024 * 4;
@@ -28,7 +28,7 @@ namespace Platform.StreamStorage.Azure
         {
             _blob = blob;
             _pageWriter = new PageWriter(512, WriteProc);
-            _blobContentSize = offset;
+            _chunkContentSize = offset;
             _blobSpaceSize = size;
 
             if (offset > 0)
@@ -67,10 +67,11 @@ namespace Platform.StreamStorage.Azure
             return new AzureEventStoreChunk(blob, -1, length);
         }
 
-        public long Append(string streamId, IEnumerable<byte[]> eventData)
+        public ChunkAppendResult Append(string streamId, IEnumerable<byte[]> eventData)
         {
             const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
+            int writtenEvents = 0;
             using (var bufferMemory = new MemoryStream())
             using (var bufferWriter = new BinaryWriter(bufferMemory))
             {
@@ -89,22 +90,23 @@ namespace Platform.StreamStorage.Azure
                     bufferWriter.Write(streamId);
                     bufferWriter.Write((int)record.Length);
                     bufferWriter.Write(record);
+                    writtenEvents += 1;
                 }
                 bufferWriter.Flush();
                 _pageWriter.Write(bufferMemory.ToArray(), 0, bufferMemory.Position);
                 _pageWriter.Flush();
                 writtenBytes += bufferMemory.Position;
             }
-            _blobContentSize += writtenBytes;
+            _chunkContentSize += writtenBytes;
 
-            return _blobContentSize;
+            return new ChunkAppendResult(writtenBytes, writtenEvents, _chunkContentSize);
         }
 
 
         public void Reset()
         {
             _pageWriter.Reset();
-            _blobContentSize = 0;
+            _chunkContentSize = 0;
         }
 
         void WriteProc(int offset, Stream source)

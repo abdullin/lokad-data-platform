@@ -64,15 +64,14 @@ namespace Platform.StreamClients
         {
             using (var fs = AzureEventStoreChunk.CreateNewForWriting(blob))
             {
-                return fs.Append("", events.Select(r =>
-                {
-                    if (r.Length > MessageSizeLimit)
-                        throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
-                            MessageSizeLimit));
+                var result = fs.Append("", events.Select(r =>
+                    {
+                        if (r.Length > MessageSizeLimit)
+                            throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
 
-                    return r;
-                }));
-
+                        return r;
+                    }));
+                return result.ChunkPosition;
             }
         }
     }

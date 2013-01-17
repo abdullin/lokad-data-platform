@@ -121,7 +121,7 @@ namespace Platform.StreamStorage.Azure
         public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
             var result = _store.Append(streamId, eventData);
-            _checkpoint.Write(result);
+            _checkpoint.Write(result.ChunkPosition);
         }
 
         public void Dispose()
