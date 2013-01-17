@@ -8,7 +8,14 @@ namespace Platform.Node
     /// Generic finite state machine and builder with the fluent API.
     /// It is used by the server to manage different SEDA messages
     /// differently based on its state.
+    /// <p>
+    /// http://en.wikipedia.org/wiki/Finite-state_machine
+    /// </p>
     /// </summary>
+    /// <remarks>
+    /// This code is based on FSM from EventStore:
+    /// https://github.com/EventStore/EventStore/tree/master/src/EventStore/EventStore.Core/Services/VNode 
+    /// </remarks>
     /// <typeparam name="TEnum"></typeparam>
     public sealed class FiniteStateMachine<TEnum> : IHandle<Message>
        where TEnum : struct
