@@ -50,8 +50,8 @@ namespace Platform.StreamClients
             var location = Path.Combine(_serverFolder, Guid.NewGuid().ToString());
             try
             {
-                var result = PrepareStaging(eventData, location);
-                ImportEventsInternal(streamId, location, result);
+                var length = PrepareStaging(eventData, location);
+                ImportEventsInternal(streamId, location, length);
             }
             finally
             {
@@ -65,14 +65,14 @@ namespace Platform.StreamClients
             {
                 using (var fs = FileEventStoreChunk.CreateNew(location))
                 {
-                    return fs.Append("", eventData.Select(r =>
+                    var result = fs.Append("", eventData.Select(r =>
                         {
                             if (r.Length > MessageSizeLimit)
-                                throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes",
-                                    MessageSizeLimit));
-                            
+                                throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
+
                             return r;
                         }));
+                    return result.WrittenBytes;
                 }
             }
             catch(Exception)

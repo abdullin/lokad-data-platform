@@ -35,4 +35,18 @@ namespace Platform.StreamStorage
             Next = next;
         }
     }
+
+    public struct ChunkAppendResult
+    {
+        public readonly long WrittenBytes;
+        public readonly int WrittenEvents;
+        public readonly long ChunkPosition;
+
+        public ChunkAppendResult(long writtenBytes, int writtenEvents, long chunkPosition)
+        {
+            WrittenBytes = writtenBytes;
+            WrittenEvents = writtenEvents;
+            ChunkPosition = chunkPosition;
+        }
+    }
 }

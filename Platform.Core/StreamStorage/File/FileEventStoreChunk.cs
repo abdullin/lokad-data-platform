@@ -82,16 +82,21 @@ namespace Platform.StreamStorage.File
 
 
 
-        public long Append(string key, IEnumerable<byte[]> data)
-        {            
+        public ChunkAppendResult Append(string key, IEnumerable<byte[]> data)
+        {
+            int writtenEvents = 0;
+            long initialPosition = _stream.Position;
             foreach (var buffer in data)
             {
                 _writer.Write(key);
                 _writer.Write(buffer.Length);
                 _writer.Write(buffer);
+                writtenEvents += 1;
             }
             _stream.Flush(true);
-            return _stream.Position;
+
+            long currentPosition = _stream.Position;
+            return new ChunkAppendResult(currentPosition - initialPosition, writtenEvents, currentPosition);
         }
 
         public IEnumerable<RetrievedEventsWithMetaData> ReadAll(long starting, int maxCount)

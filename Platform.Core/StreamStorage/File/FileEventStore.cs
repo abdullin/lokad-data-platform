@@ -17,8 +17,8 @@ namespace Platform.StreamStorage.File
 
         public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
-            var position = Store.Append(streamId, eventData);
-            Checkpoint.Write(position);
+            var result = Store.Append(streamId, eventData);
+            Checkpoint.Write(result.ChunkPosition);
         }
 
         public static bool ExistsValid(string root, EventStoreId container)
