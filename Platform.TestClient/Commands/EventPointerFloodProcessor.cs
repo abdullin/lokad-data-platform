@@ -5,7 +5,6 @@ using System.Threading;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 using Platform.StreamStorage;
-using Platform.StreamStorage.Azure;
 using Platform.StreamStorage.File;
 
 namespace Platform.TestClient.Commands
@@ -14,7 +13,7 @@ namespace Platform.TestClient.Commands
     {
         public string Key { get { return "EPW"; } }
         public string Usage { get { return Key + @" [<count=10000>]
-    Executes checkpoint writes"; } }
+    Executes and measures speed of updating event pointer"; } }
 
 
         public bool Execute(CommandProcessorContext context, CancellationToken token, string[] args)
@@ -49,9 +48,9 @@ namespace Platform.TestClient.Commands
             return true;    
         }
 
-        static IEventPointer GetEventPointer(CommandProcessorContext context)
+         IEventPointer GetEventPointer(CommandProcessorContext context)
         {
-            var checkpointName = "cpfl.chk";
+            const string checkpointName = "epfl.chk";
             AzureStoreConfiguration configuration;
             var location = context.Client.Options.StoreLocation;
             if (AzureStoreConfiguration.TryParse(location, out configuration))
@@ -70,17 +69,16 @@ namespace Platform.TestClient.Commands
                 var azurePointer = new TestAzurePointer(blob);
                 return new TestEventPointer(azurePointer, () => blob.DeleteIfExists());
             }
-            else
-            {
-                var fullName = Path.Combine(location, checkpointName);
-                return new TestEventPointer(FileEventPointer.OpenOrCreateForWriting(fullName), () => File.Delete(fullName));
-            }
+             var fullName = Path.Combine(location, checkpointName);
+             return new TestEventPointer(FileEventPointer.OpenOrCreateForWriting(fullName), () => File.Delete(fullName));
         }
-
+        /// <summary>
+        /// Experimental event pointer, which keeps data in page blob directly
+        /// </summary>
         sealed class TestAzurePointer : IEventPointer
         {
-            CloudPageBlob _blob;
-            byte[] buffer = new byte[512];
+            readonly CloudPageBlob _blob;
+            readonly byte[] _buffer = new byte[512];
             public TestAzurePointer(CloudPageBlob blob)
             {
                 _blob = blob;
@@ -99,8 +97,8 @@ namespace Platform.TestClient.Commands
 
             public void Write(long position)
             {
-                BitConverter.GetBytes(position).CopyTo(buffer,0);
-                using (var stream = new MemoryStream(buffer))
+                BitConverter.GetBytes(position).CopyTo(_buffer,0);
+                using (var stream = new MemoryStream(_buffer))
                 {
                     _blob.WritePages(stream, 0);
                 }
@@ -110,8 +108,8 @@ namespace Platform.TestClient.Commands
 
         sealed class TestEventPointer : IEventPointer
         {
-            IEventPointer _pointer;
-            Action _onDisposal;
+            readonly IEventPointer _pointer;
+            readonly Action _onDisposal;
 
             public TestEventPointer(IEventPointer pointer, Action onDisposal)
             {
