@@ -11,43 +11,94 @@ namespace Platform.Node
     // messaging infrastructure needed for SEDA architecture
 
     /// <summary>
-    /// Base class for messages
+    /// Base class for messages (explicit). It is abstract class
+    /// to avoid introducing <code>class</code> constraints on all
+    /// generic handlers that use this as Type constraint
     /// </summary>
     public abstract class Message
     {
     }
     /// <summary>
-    /// Defines instance of the message handling object
+    /// Defines instance of the message handling object (class which
+    /// contains code to be executed when some message arrives)
     /// </summary>
     internal interface IMessageHandler
     {
+        /// <summary>
+        /// Name of this handler (for debugging purposes)
+        /// </summary>
         string HandlerName { get; }
+        /// <summary>
+        /// Attempts to handle the message
+        /// </summary>
+        /// <param name="message">actuall message to handle</param>
+        /// <returns>True if handled</returns>
         bool TryHandle(Message message);
+        /// <summary>
+        /// Explicit comparison between multiple handlers (to allow
+        /// preventing multiple calls in complex subscription scenarios)
+        /// </summary>
+        /// <param name="handler">another handler object</param>
+        /// <returns>True if both handlers are the same</returns>
         bool IsSame(object handler);
     }
-
-    public interface IHandle<T> where T : Message
+    /// <summary>
+    /// Marks the class with the capability to handle message <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="TMessage">type of the message this class can handle</typeparam>
+    public interface IHandle<TMessage> where TMessage : Message
     {
-        void Handle(T message);
+        void Handle(TMessage message);
     }
 
+    /// <summary>
+    /// Inheritors can manage subscriptions for various handlers
+    /// </summary>
     public interface ISubscriber
     {
+        /// <summary>
+        /// Subscribes handler (capable of handling messages of <typeparamref name="T"/>)
+        /// to appropriate messages
+        /// </summary>
+        /// <typeparam name="T">type of message to subscribe to</typeparam>
+        /// <param name="handler">instance of the handler to subscribe</param>
         void Subscribe<T>(IHandle<T> handler) where T : Message;
+        /// <summary>
+        /// Unsubscribes handler from all messages
+        /// </summary>
+        /// <typeparam name="T">type of the messages this handler can deal with</typeparam>
+        /// <param name="handler">actual instance of handler to unsubscribe</param>
         void Unsubscribe<T>(IHandle<T> handler) where T : Message;
     }
+    /// <summary>
+    /// Provides publishing interface (can accept message and send them around)
+    /// </summary>
     public interface IPublisher
     {
+        /// <summary>
+        /// Publishes instance of the message
+        /// </summary>
         void Publish(Message message);
     }
 
 
-
+    /// <summary>
+    /// Named instance, which can both publish messages and sibscribe handlers to them
+    /// </summary>
     public interface IBus : IPublisher, ISubscriber
     {
-        string Name { get; }
+        /// <summary>
+        /// Human-readable name for debugging purposes
+        /// </summary>
+        string BusName { get; }
     }
 
+    /// <summary>
+    /// Possible implementation of typed <see cref="IMessageHandler"/>
+    /// which can handle only a single type of message and allows providing 
+    /// human-readable name
+    /// </summary>
+    /// <typeparam name="T">type of the message this class can deal with</typeparam>
     public sealed class MessageHandler<T> : IMessageHandler where T : Message
     {
 
@@ -60,6 +111,12 @@ namespace Platform.Node
         }
 
         public string HandlerName { get; private set; }
+
+        /// <summary>
+        /// Attempts to handle the message
+        /// </summary>
+        /// <param name="message">actuall message to handle</param>
+        /// <returns>True if handled</returns>
         public bool TryHandle(Message message)
         {
             var msg = message as T;
@@ -72,6 +129,12 @@ namespace Platform.Node
             return false;
         }
 
+        /// <summary>
+        /// Explicit comparison between multiple handlers (to allow
+        /// preventing multiple calls in complex subscription scenarios)
+        /// </summary>
+        /// <param name="handler">another handler object</param>
+        /// <returns>True if both handlers are the same</returns>
         public bool IsSame(object handler)
         {
             return ReferenceEquals(_handler, handler);
@@ -83,6 +146,10 @@ namespace Platform.Node
         }
     }
 
+    /// <summary>
+    /// Implementation of <see cref="IEnvelope"/> which simply provides
+    /// specific publisher as recipient for replies.
+    /// </summary>
     public class PublishEnvelope : IEnvelope
     {
         private readonly IPublisher _publisher;
@@ -92,17 +159,29 @@ namespace Platform.Node
             _publisher = publisher;
         }
 
-        public void ReplyWith<T>(T message) where T : Message
+        /// <summary>
+        /// Sends back message of type <typeparamref name="TMessage"/> back to the original sender
+        /// </summary>
+        /// <typeparam name="TMessage">type of the message to send back</typeparam>
+        /// <param name="message">message that is being sent as reply</param>
+        public void ReplyWith<TMessage>(TMessage message) where TMessage : Message
         {
             _publisher.Publish(message);
         }
     }
 
 
-
+    /// <summary>
+    /// Allows sending messages back to the original sender.
+    /// </summary>
     public interface IEnvelope
     {
-        void ReplyWith<T>(T message) where T : Message;
+        /// <summary>
+        /// Sends back message of type <typeparamref name="TMessage"/> back to the original sender
+        /// </summary>
+        /// <typeparam name="TMessage">type of the message to send back</typeparam>
+        /// <param name="message">message that is being sent as reply</param>
+        void ReplyWith<TMessage>(TMessage message) where TMessage : Message;
     }
 
     /// <summary>
@@ -116,6 +195,12 @@ namespace Platform.Node
 
         private readonly Dictionary<Type, List<IMessageHandler>> _typeLookup = new Dictionary<Type, List<IMessageHandler>>();
 
+        /// <summary>
+        /// Subscribes handler (capable of handling messages of <typeparamref name="T"/>)
+        /// to appropriate messages that go through this bus
+        /// </summary>
+        /// <typeparam name="T">type of message to subscribe to</typeparam>
+        /// <param name="handler">instance of the handler to subscribe</param>
         public void Subscribe<T>(IHandle<T> handler) where T : Message
         {
             Ensure.NotNull(handler, "handler");
@@ -131,6 +216,11 @@ namespace Platform.Node
             }
         }
 
+        /// <summary>
+        /// Unsubscribes handler from all messages
+        /// </summary>
+        /// <typeparam name="T">type of the messages this handler can deal with</typeparam>
+        /// <param name="handler">actual instance of handler to unsubscribe</param>
         public void Unsubscribe<T>(IHandle<T> handler) where T : Message
         {
             Ensure.NotNull(handler, "handler");
@@ -141,19 +231,27 @@ namespace Platform.Node
             }
         }
 
-        public string Name { get; private set; }
+        /// <summary>
+        /// Human-readable name for debugging purposes
+        /// </summary>
+        public string BusName { get; private set; }
 
         public InMemoryBus(string name)
         {
-            Name = name;
+            BusName = name;
         }
 
+        /// <summary>
+        /// Publishes instance of the message to all subscribers
+        /// </summary>
         public void Publish(Message message)
         {
             Ensure.NotNull(message, "message");
             DispatchByType(message);
         }
-
+        /// <summary>
+        /// Publishes instance of the message to all subscribers
+        /// </summary>
         public void Handle(Message message)
         {
             Ensure.NotNull(message, "message");
@@ -181,37 +279,6 @@ namespace Platform.Node
         }
     }
 
-
-    public static class HandleExtensions
-    {
-        /// <summary>
-        /// Narrows down scope of message handler handler from <typeparamref name="TOutput"/>
-        /// to <typeparamref name="TInput"/>
-        /// </summary>
-        public static IHandle<TInput> WidenFrom<TInput, TOutput>(this IHandle<TOutput> handler)
-            where TOutput : Message
-            where TInput : TOutput
-        {
-            return new WideningHandler<TInput, TOutput>(handler);
-        }
-    }
-
-    public class WideningHandler<TInput, TOutput> : IHandle<TInput>
-        where TInput : TOutput
-        where TOutput : Message
-    {
-        private readonly IHandle<TOutput> _handler;
-
-        public WideningHandler(IHandle<TOutput> handler)
-        {
-            _handler = handler;
-        }
-
-        public void Handle(TInput message)
-        {
-            _handler.Handle(message);
-        }
-    }
     /// <summary>
     /// Special handler, which maintains an in-memory queue, sequentially passing
     /// messages to the specified message handler. This is done in a separate
@@ -238,6 +305,9 @@ namespace Platform.Node
             _waitToStopThreadMs = waitToStopThreadMs;
         }
 
+        /// <summary>
+        /// Starts processing of the queue
+        /// </summary>
         public void Start()
         {
             if (null != _thread)
@@ -252,6 +322,9 @@ namespace Platform.Node
             _thread.Start();
         }
 
+        /// <summary>
+        /// Stops processing of the queue
+        /// </summary>
         public void Stop()
         {
             _selfDestruct = true;
@@ -301,7 +374,10 @@ namespace Platform.Node
             Ensure.NotNull(message, "message");
             _queue.Enqueue(message);
         }
-
+        /// <summary>
+        /// Allows adding messages to the queue
+        /// </summary>
+        /// <param name="message"></param>
         public void Enqueue(Message message)
         {
             Ensure.NotNull(message, "message");
