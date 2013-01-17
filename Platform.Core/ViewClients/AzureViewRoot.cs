@@ -23,9 +23,9 @@ namespace Platform.ViewClients
             _client = client;
         }
 
-        public IRawViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string containerName)
         {
-            return new AzureViewContainer(_client.GetBlobDirectoryReference(name));
+            return new AzureViewContainer(_client.GetBlobDirectoryReference(containerName));
         }
 
         public IEnumerable<string> ListContainers(string prefix)
@@ -54,33 +54,33 @@ namespace Platform.ViewClients
             _directory = directory;
         }
 
-        public IRawViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string containerName)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (containerName == null) throw new ArgumentNullException("containerName");
 
-            return new AzureViewContainer(_directory.GetSubdirectory(name));
+            return new AzureViewContainer(_directory.GetSubdirectory(containerName));
         }
 
-        public Stream OpenRead(string name)
+        public Stream OpenRead(string itemName)
         {
-            return _directory.GetBlobReference(name).OpenRead();
+            return _directory.GetBlobReference(itemName).OpenRead();
         }
 
-        public Stream OpenWrite(string name)
+        public Stream OpenWrite(string itemName)
         {
-            return _directory.GetBlobReference(name).OpenWrite();
+            return _directory.GetBlobReference(itemName).OpenWrite();
         }
 
-        public void TryDelete(string name)
+        public void TryDeleteItem(string itemName)
         {
-            _directory.GetBlobReference(name).DeleteIfExists();
+            _directory.GetBlobReference(itemName).DeleteIfExists();
         }
 
-        public bool Exists(string name)
+        public bool ItemExists(string itemName)
         {
             try
             {
-                _directory.GetBlobReference(name).FetchAttributes();
+                _directory.GetBlobReference(itemName).FetchAttributes();
                 return true;
             }
             catch (StorageClientException ex)
@@ -90,7 +90,7 @@ namespace Platform.ViewClients
         }
 
 
-        public IRawViewContainer Create()
+        public IRawViewContainer EnsureContainerExists()
         {
             _directory.Container.CreateIfNotExist();
             return this;
@@ -99,7 +99,7 @@ namespace Platform.ViewClients
         /// <summary>
         /// Deletes this container
         /// </summary>
-        public void Delete()
+        public void DeleteContainer()
         {
             try
             {
@@ -151,15 +151,15 @@ namespace Platform.ViewClients
             }
         }
 
-        public IEnumerable<ViewDetail> ListAllNestedItemsWithDetail()
+        public IEnumerable<ViewItemDetail> ListAllNestedItemsWithDetail()
         {
             try
             {
                 return _directory.ListBlobs(new BlobRequestOptions())
                     .OfType<CloudBlob>()
-                    .Select(item => new ViewDetail()
+                    .Select(item => new ViewItemDetail()
                     {
-                        Name = _directory.Uri.MakeRelativeUri(item.Uri).ToString(),
+                        ItemName = _directory.Uri.MakeRelativeUri(item.Uri).ToString(),
                         LastModifiedUtc = item.Properties.LastModifiedUtc,
                         Length = item.Properties.Length
                     })
@@ -179,7 +179,7 @@ namespace Platform.ViewClients
             }
         }
 
-        public bool Exists()
+        public bool ContainerExists()
         {
             try
             {

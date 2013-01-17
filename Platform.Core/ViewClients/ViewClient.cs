@@ -25,7 +25,7 @@ namespace Platform.ViewClients
         {
             return GetResult(() =>
                 {
-                    if (!Advanced.Exists(name))
+                    if (!Advanced.ItemExists(name))
                         return null;
                     using (var stream = Advanced.OpenRead(name))
                     {
@@ -63,12 +63,12 @@ namespace Platform.ViewClients
 
         internal void CreateContainerIfNeeded()
         {
-            GetResult(() => Advanced.Create());
+            GetResult(() => Advanced.EnsureContainerExists());
         }
 
         public bool Exists(string name)
         {
-            return GetResult(() => Advanced.Exists(name));
+            return GetResult(() => Advanced.ItemExists(name));
         }
 
         public void WriteAsJson<TEntity>(TEntity entity, string name)

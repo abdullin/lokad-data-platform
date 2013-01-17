@@ -30,9 +30,9 @@ namespace Platform.ViewClients
         {
         }
 
-        public IRawViewContainer GetContainer(string name)
+        public IRawViewContainer GetContainer(string containerName)
         {
-            var child = new DirectoryInfo(Path.Combine(_root.FullName, name));
+            var child = new DirectoryInfo(Path.Combine(_root.FullName, containerName));
             return new FileViewRoot(child);
         }
 
@@ -43,50 +43,50 @@ namespace Platform.ViewClients
             return _root.GetDirectories(prefix + "*").Select(d => d.Name);
         }
 
-        public Stream OpenRead(string name)
+        public Stream OpenRead(string itemName)
         {
-            var combine = Path.Combine(_root.FullName, name);
+            var combine = Path.Combine(_root.FullName, itemName);
 
             // we allow concurrent reading
             // no more writers are allowed
             return File.Open(combine, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public Stream OpenWrite(string name)
+        public Stream OpenWrite(string itemName)
         {
-            var combine = Path.Combine(_root.FullName, name);
+            var combine = Path.Combine(_root.FullName, itemName);
 
             // we allow concurrent reading
             // no more writers are allowed
             return File.Open(combine, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         }
 
-        public void TryDelete(string name)
+        public void TryDeleteItem(string itemName)
         {
-            var combine = Path.Combine(_root.FullName, name);
+            var combine = Path.Combine(_root.FullName, itemName);
             File.Delete(combine);
         }
 
-        public bool Exists(string name)
+        public bool ItemExists(string itemName)
         {
-            return File.Exists(Path.Combine(_root.FullName, name));
+            return File.Exists(Path.Combine(_root.FullName, itemName));
         }
 
 
-        public IRawViewContainer Create()
+        public IRawViewContainer EnsureContainerExists()
         {
             _root.Create();
             return this;
         }
 
-        public void Delete()
+        public void DeleteContainer()
         {
             _root.Refresh();
             if (_root.Exists)
                 _root.Delete(true);
         }
 
-        public bool Exists()
+        public bool ContainerExists()
         {
             _root.Refresh();
             return _root.Exists;
@@ -106,15 +106,15 @@ namespace Platform.ViewClients
             }
         }
 
-        public IEnumerable<ViewDetail> ListAllNestedItemsWithDetail()
+        public IEnumerable<ViewItemDetail> ListAllNestedItemsWithDetail()
         {
             try
             {
-                return _root.GetFiles("*", SearchOption.AllDirectories).Select(f => new ViewDetail()
+                return _root.GetFiles("*", SearchOption.AllDirectories).Select(f => new ViewItemDetail()
                     {
                         LastModifiedUtc = f.LastWriteTimeUtc,
                         Length = f.Length,
-                        Name = f.Name
+                        ItemName = f.Name
                     }).ToArray();
             }
             catch (DirectoryNotFoundException e)

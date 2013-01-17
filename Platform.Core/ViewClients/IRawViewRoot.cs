@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Platform.ViewClients
 {
     /// <summary>
-    /// Equivalent of streaming root from Lokad.CQRS. It abstracts away
+    /// Provides access to a list of containers located on on some 
     /// underlying binary storage (can be file, memory or Azure).
     /// </summary>
     public interface IRawViewRoot
@@ -14,9 +14,9 @@ namespace Platform.ViewClients
         /// <summary>
         /// Gets the container reference, identified by it's name.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="containerName">The name.</param>
         /// <returns>new container reference.</returns>
-        IRawViewContainer GetContainer(string name);
+        IRawViewContainer GetContainer(string containerName);
 
         /// <summary>
         /// Get a list of containers from the current root (supply non-null
@@ -28,9 +28,9 @@ namespace Platform.ViewClients
     }
 
     /// <summary>
-    /// Represents storage container reference, equivalent of streaming
-    /// container from Lokad.CQRS. Use <see cref="ViewClient"/> if you need
-    /// to operate views (it will handle exceptions)
+    /// Represents storage container reference with optional nested containers and binary large objects.
+    /// It can correspond to either file system, cloud storage or in-memory, depending on the implementation.
+    /// Use <see cref="ViewClient"/> if you need to operate views (it will handle transient exceptions)
     /// </summary>
     public interface IRawViewContainer
     {
@@ -39,49 +39,58 @@ namespace Platform.ViewClients
         /// <summary>
         /// Gets the child container nested within the current container reference.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="containerName">The name.</param>
         /// <returns></returns>
-        IRawViewContainer GetContainer(string name);
+        IRawViewContainer GetContainer(string containerName);
 
         /// <summary>
         /// Opens file in the current container for reading operation..
         /// </summary>
-        Stream OpenRead(string name);
+        Stream OpenRead(string itemName);
 
         /// <summary>
         /// Open file in the current container for the writing operations.
         /// </summary>
-        Stream OpenWrite(string name);
+        Stream OpenWrite(string itemName);
 
-        void TryDelete(string name);
+        void TryDeleteItem(string itemName);
 
-        bool Exists(string name);
+        bool ItemExists(string itemName);
 
         //void AddOrUpdate(string name, Action<Stream> ifDoesNotExist, Action<Stream, Stream> ifExists);
 
         /// <summary>
         /// Ensures that the current reference represents valid container.
         /// </summary>
-        IRawViewContainer Create();
+        IRawViewContainer EnsureContainerExists();
 
         /// <summary>
         /// Deletes this container.
         /// </summary>
-        void Delete();
+        void DeleteContainer();
 
         /// <summary>
         /// Checks if the underlying container exists.
         /// </summary>
-        bool Exists();
+        bool ContainerExists();
 
         IEnumerable<string> ListAllNestedItems();
-        IEnumerable<ViewDetail> ListAllNestedItemsWithDetail();
+        IEnumerable<ViewItemDetail> ListAllNestedItemsWithDetail();
     }
 
-    public sealed class ViewDetail
+    public sealed class ViewItemDetail
     {
-        public string Name;
+        /// <summary>
+        /// Name of the item
+        /// </summary>
+        public string ItemName;
+        /// <summary>
+        /// Last modification date
+        /// </summary>
         public DateTime LastModifiedUtc;
+        /// <summary>
+        /// Size in bytes
+        /// </summary>
         public long Length;
     }
 
