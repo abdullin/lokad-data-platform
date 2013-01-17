@@ -62,6 +62,7 @@
     <Compile Include="Commands\Bench\BasicBenchmarkProcessor.cs" />
     <Compile Include="Commands\BasicTestProcessor.cs" />
     <Compile Include="Commands\Bench\SmartAppBenchmarkProcessor.cs" />
+    <Compile Include="Commands\EventPointerFloodProcessor.cs" />
     <Compile Include="Commands\EnumerateProcessor.cs" />
     <Compile Include="Commands\ExitProcessor.cs" />
     <Compile Include="Commands\UsingProcessor.cs" />

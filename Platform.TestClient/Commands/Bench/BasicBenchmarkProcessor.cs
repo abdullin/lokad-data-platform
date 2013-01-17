@@ -41,6 +41,8 @@ namespace Platform.TestClient.Commands.Bench
             
             list.Add(new EnumerateProcessor(), "75000");
             list.Add(new ViewReadWriteFloodProcessor(), "1024 50 5");
+
+            list.Add(new EventPointerFloodProcessor(), "500");
             try
             {
                 foreach (var task in list.Tasks)

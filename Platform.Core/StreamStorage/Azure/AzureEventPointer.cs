@@ -10,7 +10,7 @@ namespace Platform.StreamStorage.Azure
     /// Maintains a pointer to a specific event within the event store 
     /// using the metadata of a Windows Azure cloud page blob.
     /// </summary>
-    public class AzureEventPointer
+    public class AzureEventPointer : IEventPointer
     {
         readonly CloudPageBlob _blob;
         static readonly ILogger Log = LogManager.GetLoggerFor<AzureEventPointer>();

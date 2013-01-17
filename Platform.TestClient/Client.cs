@@ -58,6 +58,7 @@ namespace Platform.TestClient
 
             _commands.Register(new ViewReadWriteFloodProcessor());
             _commands.Register(new UsingProcessor());
+            _commands.Register(new EventPointerFloodProcessor());
         }
 
          

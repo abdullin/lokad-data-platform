@@ -26,4 +26,10 @@ namespace Platform.StreamStorage
         /// <param name="eventData">Data to be persisted.</param>
         void AppendEventsToStore(EventStoreId storeId, string streamId, IEnumerable<byte[]> eventData);
     }
+
+    public interface IEventPointer : IDisposable
+    {
+        long Read();
+        void Write(long position);
+    }
 }

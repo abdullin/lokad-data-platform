@@ -9,7 +9,7 @@ namespace Platform.StreamStorage.File
     /// Maintains a pointer to a specific event within an event store 
     /// persisted in a single mutable file (in the filesystem).
     /// </summary>
-    public sealed class FileEventPointer : IDisposable
+    public sealed class FileEventPointer : IEventPointer
     {
         readonly FileStream _stream;
         readonly BinaryReader _reader;
