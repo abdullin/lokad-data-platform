@@ -98,6 +98,10 @@ namespace Platform.Node.Services.ServerApi
         protected override object Run(ClientApi.WriteBatch request)
         {
             var token = new ManualResetEventSlim(false);
+
+            if (request.Length <= 0)
+                return Error("WriteBatch request must have length more than 0 bytes");
+
             var container = EventStoreId.Parse(request.StoreId);
             _publisher.Publish(new ClientMessage.ImportEvents(container, request.StreamId, request.BatchLocation, request.Length, s => token.Set()));
 
@@ -117,6 +121,15 @@ namespace Platform.Node.Services.ServerApi
                         token.Dispose();
                     }
                 });
+        }
+
+        static ClientApi.WriteBatchResponse Error(string result)
+        {
+            return new ClientApi.WriteBatchResponse()
+                {
+                    Success = false,
+                    Result = result
+                };
         }
     }
 
