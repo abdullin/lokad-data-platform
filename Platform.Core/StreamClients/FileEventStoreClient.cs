@@ -9,7 +9,6 @@ namespace Platform.StreamClients
 {
     public class FileEventStoreClient : JsonEventStoreClientBase, IRawEventStoreClient
     {
-
         readonly string _serverFolder;
 
         public FileEventStoreClient(string serverFolder, EventStoreId storeId, string serverEndpoint = null) : base(storeId, serverEndpoint)

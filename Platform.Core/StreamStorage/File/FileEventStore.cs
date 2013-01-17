@@ -11,14 +11,21 @@ namespace Platform.StreamStorage.File
     /// </summary>
     public sealed class FileEventStore : IDisposable
     {
-        public EventStoreId Container;
-        public FileEventStoreChunk Store;
-        public FileEventPointer Checkpoint;
+        public readonly EventStoreId Container;
+        readonly FileEventStoreChunk _store;
+        readonly FileEventPointer _checkpoint;
+
+        public FileEventStore(EventStoreId container, FileEventStoreChunk store, FileEventPointer checkpoint)
+        {
+            Container = container;
+            _store = store;
+            _checkpoint = checkpoint;
+        }
 
         public void Write(string streamId, IEnumerable<byte[]> eventData)
         {
-            var result = Store.Append(streamId, eventData);
-            Checkpoint.Write(result.ChunkPosition);
+            var result = _store.Append(streamId, eventData);
+            _checkpoint.Write(result.ChunkPosition);
         }
 
         public static bool ExistsValid(string root, EventStoreId container)
@@ -40,26 +47,15 @@ namespace Platform.StreamStorage.File
 
             var check = FileEventPointer.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
             var store = FileEventStoreChunk.CreateNew(Path.Combine(folder, "stream.dat"));
-            return new FileEventStore
-            {
-                Container = container,
-                Checkpoint = check,
-                Store = store
-            };
+            return new FileEventStore(container,store,check);
         }
         public static FileEventStore OpenExistingForWriting(string root, EventStoreId container)
         {
             var folder = Path.Combine(root, container.Name);
             var check = FileEventPointer.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
-            var store = FileEventStoreChunk.OpenExistingForWriting(Path.Combine(folder, "stream.dat"),
-                check.Read());
+            var store = FileEventStoreChunk.OpenExistingForWriting(Path.Combine(folder, "stream.dat"), check.Read());
 
-            return new FileEventStore
-            {
-                Checkpoint = check,
-                Container = container,
-                Store = store
-            };
+            return new FileEventStore(container, store, check);
         }
 
 
@@ -69,13 +65,7 @@ namespace Platform.StreamStorage.File
             var check = FileEventPointer.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
             var store = FileEventStoreChunk.OpenForReading(Path.Combine(folder, "stream.dat"));
 
-            return new FileEventStore
-            {
-                Checkpoint = check,
-                Container = container,
-                Store = store
-            };
-
+            return new FileEventStore(container, store, check);
         }
 
         public IEnumerable<RetrievedEventsWithMetaData> ReadAll(EventStoreOffset startOffset, int maxRecordCount)
@@ -83,14 +73,14 @@ namespace Platform.StreamStorage.File
             Ensure.Nonnegative(maxRecordCount, "maxRecordCount");
 
 
-            var maxOffset = Checkpoint.Read();
+            var maxOffset = _checkpoint.Read();
 
             // nothing to read from here
             if (startOffset >= new EventStoreOffset(maxOffset))
                 yield break;
 
             int recordCount = 0;
-            foreach (var msg in Store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
+            foreach (var msg in _store.ReadAll(startOffset.OffsetInBytes, maxRecordCount))
             {
                 yield return msg;
                 if (++recordCount >= maxRecordCount)
@@ -104,8 +94,8 @@ namespace Platform.StreamStorage.File
 
         public void Reset()
         {
-            Checkpoint.Write(0);
-            Store.Reset();
+            _checkpoint.Write(0);
+            _store.Reset();
         }
 
 
@@ -116,8 +106,8 @@ namespace Platform.StreamStorage.File
         {
             if (_disposed)
                 return;
-            using (Checkpoint)
-            using (Store)
+            using (_checkpoint)
+            using (_store)
             {
                 _disposed = true;
             }
