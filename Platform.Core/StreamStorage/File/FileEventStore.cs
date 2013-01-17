@@ -11,13 +11,13 @@ namespace Platform.StreamStorage.File
     /// </summary>
     public sealed class FileEventStore : IDisposable
     {
-        public readonly EventStoreId Container;
+        public readonly EventStoreId StoreId;
         readonly FileEventStoreChunk _store;
         readonly FileEventPointer _checkpoint;
 
-        public FileEventStore(EventStoreId container, FileEventStoreChunk store, FileEventPointer checkpoint)
+        public FileEventStore(EventStoreId storeId, FileEventStoreChunk store, FileEventPointer checkpoint)
         {
-            Container = container;
+            StoreId = storeId;
             _store = store;
             _checkpoint = checkpoint;
         }
@@ -28,9 +28,9 @@ namespace Platform.StreamStorage.File
             _checkpoint.Write(result.ChunkPosition);
         }
 
-        public static bool ExistsValid(string root, EventStoreId container)
+        public static bool ExistsValid(string root, EventStoreId storeId)
         {
-            var folder = Path.Combine(root, container.Name);
+            var folder = Path.Combine(root, storeId.Name);
             if (!Directory.Exists(folder))
                 return false;
 
@@ -39,33 +39,33 @@ namespace Platform.StreamStorage.File
             return (System.IO.File.Exists(check) && System.IO.File.Exists(store));
         }
 
-        public static FileEventStore CreateNew(string root, EventStoreId container)
+        public static FileEventStore CreateNew(string root, EventStoreId storeId)
         {
-            var folder = Path.Combine(root, container.Name);
+            var folder = Path.Combine(root, storeId.Name);
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
             var check = FileEventPointer.OpenOrCreateForWriting((Path.Combine(folder, "stream.chk")));
             var store = FileEventStoreChunk.CreateNew(Path.Combine(folder, "stream.dat"));
-            return new FileEventStore(container,store,check);
+            return new FileEventStore(storeId,store,check);
         }
-        public static FileEventStore OpenExistingForWriting(string root, EventStoreId container)
+        public static FileEventStore OpenExistingForWriting(string root, EventStoreId storeId)
         {
-            var folder = Path.Combine(root, container.Name);
+            var folder = Path.Combine(root, storeId.Name);
             var check = FileEventPointer.OpenOrCreateForWriting(Path.Combine(folder, "stream.chk"));
             var store = FileEventStoreChunk.OpenExistingForWriting(Path.Combine(folder, "stream.dat"), check.Read());
 
-            return new FileEventStore(container, store, check);
+            return new FileEventStore(storeId, store, check);
         }
 
 
-        public static FileEventStore OpenForReading(string root, EventStoreId container)
+        public static FileEventStore OpenForReading(string root, EventStoreId storeId)
         {
-            var folder = Path.Combine(root, container.Name);
+            var folder = Path.Combine(root, storeId.Name);
             var check = FileEventPointer.OpenOrCreateForReading(Path.Combine(folder, "stream.chk"));
             var store = FileEventStoreChunk.OpenForReading(Path.Combine(folder, "stream.dat"));
 
-            return new FileEventStore(container, store, check);
+            return new FileEventStore(storeId, store, check);
         }
 
         public IEnumerable<RetrievedEventsWithMetaData> ReadAll(EventStoreOffset startOffset, int maxRecordCount)
