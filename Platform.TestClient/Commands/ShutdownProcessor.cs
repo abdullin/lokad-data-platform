@@ -14,7 +14,7 @@ namespace Platform.TestClient.Commands
             try
             {
                 var result =
-                    new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientDto.ShutdownServerResponse>(
+                    new JsonServiceClient(context.Client.ClientHttpBase).Get<ClientApi.ShutdownServerResponse>(
                         "/system/shutdown/");
 
                 token.WaitHandle.WaitOne(2000);

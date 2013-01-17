@@ -24,8 +24,8 @@ namespace Platform.StreamClients
             ThrowIfClientNotInitialized();
             try
             {
-                var response = WriteClient.Post<ClientDto.WriteBatchResponse>(ClientDto.WriteBatch.Url,
-                    new ClientDto.WriteBatch
+                var response = WriteClient.Post<ClientApi.WriteBatchResponse>(ClientApi.WriteBatch.Url,
+                    new ClientApi.WriteBatch
                         {
                             StoreId = StoreId.Name,
                             StreamId = streamId,
@@ -49,8 +49,8 @@ namespace Platform.StreamClients
             ThrowIfClientNotInitialized();
             try
             {
-                var response = WriteClient.Post<ClientDto.WriteEventResponse>(ClientDto.WriteEvent.Url,
-                    new ClientDto.WriteEvent
+                var response = WriteClient.Post<ClientApi.WriteEventResponse>(ClientApi.WriteEvent.Url,
+                    new ClientApi.WriteEvent
                         {
                             StoreId = StoreId.Name,
                             StreamId = streamId,

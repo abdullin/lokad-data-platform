@@ -25,17 +25,17 @@ namespace Platform.Node.Services.ServerApi
         {
             LoadPlugin(new TaskSupport());
             Routes
-                .Add<ClientDto.WriteEvent>(ClientDto.WriteEvent.Url, "POST")
-                .Add<ClientDto.WriteBatch>(ClientDto.WriteBatch.Url, "POST")
-                .Add<ClientDto.ResetStore>(ClientDto.ResetStore.Url, "POST")
-                .Add<ClientDto.ShutdownServer>(ClientDto.ShutdownServer.Url, "GET");
+                .Add<ClientApi.WriteEvent>(ClientApi.WriteEvent.Url, "POST")
+                .Add<ClientApi.WriteBatch>(ClientApi.WriteBatch.Url, "POST")
+                .Add<ClientApi.ResetStore>(ClientApi.ResetStore.Url, "POST")
+                .Add<ClientApi.ShutdownServer>(ClientApi.ShutdownServer.Url, "GET");
 
             container.Register(_publisher);
         }
     }
 
 
-    public class SystemService : ServiceBase<ClientDto.ShutdownServer>
+    public class SystemService : ServiceBase<ClientApi.ShutdownServer>
     {
         readonly IPublisher _publisher;
         public SystemService(IPublisher publisher)
@@ -43,17 +43,17 @@ namespace Platform.Node.Services.ServerApi
             _publisher = publisher;
         }
 
-        protected override object Run(ClientDto.ShutdownServer request)
+        protected override object Run(ClientApi.ShutdownServer request)
         {
             _publisher.Publish(new ClientMessage.RequestShutdown());
-            return new ClientDto.ShutdownServerResponse()
+            return new ClientApi.ShutdownServerResponse()
                 {
                     Success = true
                 };
         }
     }
 
-    public class ResetStoreService : ServiceBase<ClientDto.ResetStore>
+    public class ResetStoreService : ServiceBase<ClientApi.ResetStore>
     {
         readonly IPublisher _publisher;
 
@@ -62,7 +62,7 @@ namespace Platform.Node.Services.ServerApi
             _publisher = publisher;
         }
 
-        protected override object Run(ClientDto.ResetStore request)
+        protected override object Run(ClientApi.ResetStore request)
         {
             var token = new ManualResetEventSlim(false);
 
@@ -73,7 +73,7 @@ namespace Platform.Node.Services.ServerApi
                     try
                     {
                         token.Wait();
-                        return new ClientDto.ResetStoreResponse
+                        return new ClientApi.ResetStoreResponse
                             {
                                 Result = "Completed",
                                 Success = true
@@ -87,7 +87,7 @@ namespace Platform.Node.Services.ServerApi
         }
     }
 
-    public class ImportService : ServiceBase<ClientDto.WriteBatch>
+    public class ImportService : ServiceBase<ClientApi.WriteBatch>
     {
         readonly IPublisher _publisher;
 
@@ -95,7 +95,7 @@ namespace Platform.Node.Services.ServerApi
         {
             _publisher = publisher;
         }
-        protected override object Run(ClientDto.WriteBatch request)
+        protected override object Run(ClientApi.WriteBatch request)
         {
             var token = new ManualResetEventSlim(false);
             var container = EventStoreId.Create(request.StoreId);
@@ -106,7 +106,7 @@ namespace Platform.Node.Services.ServerApi
                     try
                     {
                         token.Wait();
-                        return new ClientDto.WriteBatchResponse()
+                        return new ClientApi.WriteBatchResponse()
                             {
                                 Result = "Completed",
                                 Success = true
@@ -120,7 +120,7 @@ namespace Platform.Node.Services.ServerApi
         }
     }
 
-    public class StreamService : ServiceBase<ClientDto.WriteEvent>
+    public class StreamService : ServiceBase<ClientApi.WriteEvent>
     {
         readonly IPublisher _publisher;
 
@@ -130,7 +130,7 @@ namespace Platform.Node.Services.ServerApi
         }
 
 
-        protected override object Run(ClientDto.WriteEvent request)
+        protected override object Run(ClientApi.WriteEvent request)
         {
             var token = new ManualResetEventSlim(false);
             var name = EventStoreId.Create(request.StoreId);
@@ -145,7 +145,7 @@ namespace Platform.Node.Services.ServerApi
                 try
                 {
                     token.Wait();
-                    return new ClientDto.WriteEventResponse()
+                    return new ClientApi.WriteEventResponse()
                     {
                         Result = "Completed",
                         Success = true

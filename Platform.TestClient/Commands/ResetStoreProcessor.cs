@@ -28,7 +28,7 @@ namespace Platform.TestClient.Commands
             try
             {
                 var result = new JsonServiceClient(context.Client.ClientHttpBase)
-                    .Post<ClientDto.ResetStoreResponse>(ClientDto.ResetStore.Url, new ClientDto.ResetStore());
+                    .Post<ClientApi.ResetStoreResponse>(ClientApi.ResetStore.Url, new ClientApi.ResetStore());
 
                 return result.Success;
             }

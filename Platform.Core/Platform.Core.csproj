@@ -67,7 +67,7 @@
     <Compile Include="EventStoreId.cs" />
     <Compile Include="StreamStorage\File\FileEventStore.cs" />
     <Compile Include="StreamStorage\File\FileEventStoreManager.cs" />
-    <Compile Include="ClientDto.cs" />
+    <Compile Include="ClientApi.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
     <Compile Include="StreamStorage\IEventStoreManager.cs" />
     <Compile Include="ViewClients\AzureViewRoot.cs" />
