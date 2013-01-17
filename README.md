@@ -40,19 +40,40 @@ Data Platform is represented by:
   responsible for coordinating multiple writers. Lokad Data Platform servers
   can host multiple event stores, which are isolated from each other. 
 
-**Event Store** - set of events which are physically and logically grouped 
-  together (e.g. belong to the same subsystem or subdomain). Single event store can keep 
+**Event Store** - set of events which are physically grouped together (e.g. 
+  belong to the same subsystem or subdomain). Single event store can keep 
   multiple event streams for different aggregates). Each event store has
   it's own version (which increments, as new events are added to it).
 
-**Event Stream** - group of events within a single event store, which are 
-  identified by the same stream identifier (or id). If you are applying Domain-
+**Event Stream** - logical group of events within a single event store, which are 
+  identified by the same stream identifier (or streamId). If you are applying Domain-
   Driven Design with Event Sourcing, then such event stream would represent 
   a single entity.
 
-**Checkpoint** - pointer to some event (either using it's sequential number
+**Event Pointer** - pointer to some event (either using it's sequential number
   or as direct byte offset in a file). It can be used by event storage to
   record last committed (and flushed) event.
+
+### Stores vs streams.
+
+Data platform can host multiple event stores (identified by `EventStoreId`), 
+where each store is located and managed independently from each others. For 
+instance, it can be removed completely, backed up or manually replaced with
+a different file set. For example a company can have 3 stores which correspond
+to 3 distinct bounded contexts:
+
+* Inventory Management ("inventory")
+* Sales history ("sales")
+* Promotions history ("promotions").
+
+This way, if there is a need to back up or correct 17GB "sales" history event 
+store, this can be done without affecting all other stores. Event store is 
+a unit of deployment and maintenance.
+
+Each store can still have multiple logical event streams, identified by stream
+ids (e.g.: matching to entity ids).
+
+![Stores and Streams](https://raw.github.com/Lokad/lokad-data-platform/master/Library/Images/stores_streams.png)
 
 ### References
 
