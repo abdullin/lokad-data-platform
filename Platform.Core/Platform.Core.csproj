@@ -63,6 +63,7 @@
     <Compile Include="StreamStorage\Azure\AzureEventStore.cs" />
     <Compile Include="StreamStorage\Azure\AzureEventStoreManager.cs" />
     <Compile Include="StreamStorage\Azure\AzureEventPointer.cs" />
+    <Compile Include="StreamStorage\ChunkAppendResult.cs" />
     <Compile Include="StreamStorage\File\FileEventPointer.cs" />
     <Compile Include="EventStoreId.cs" />
     <Compile Include="StreamStorage\File\FileEventStore.cs" />
