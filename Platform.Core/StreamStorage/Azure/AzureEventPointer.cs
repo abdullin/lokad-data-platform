@@ -26,7 +26,7 @@ namespace Platform.StreamStorage.Azure
         {
             if (_readOnly)
                 throw new NotSupportedException("This checkpoint is not writeable.");
-            Log.Debug("Set checkpoint to {0}", checkpoint);
+            //Log.Debug("Set checkpoint to {0}", checkpoint);
             _blob.Metadata["committedsize"] = checkpoint.ToString(CultureInfo.InvariantCulture);
             _blob.SetMetadata();
         }
