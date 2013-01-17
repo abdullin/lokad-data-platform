@@ -71,31 +71,29 @@ namespace Platform.StreamStorage.Azure
         {
             const int limit = 4 * 1024 * 1024 - 1024; // mind the 512 boundaries
             long writtenBytes = 0;
-            using (var stream = new MemoryStream())
+            using (var bufferMemory = new MemoryStream())
+            using (var bufferWriter = new BinaryWriter(bufferMemory))
             {
-                using (var writer = new BinaryWriter(stream))
+                foreach (var record in eventData)
                 {
-                    foreach (var record in eventData)
+                    var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(streamId) + 4 + record.Length;
+                    if (bufferMemory.Position + newSizeEstimate >= limit)
                     {
-                        var newSizeEstimate = 4 + Encoding.UTF8.GetByteCount(streamId) + 4 + record.Length;
-                        if (stream.Position + newSizeEstimate >= limit)
-                        {
-                            writer.Flush();
-                            _pageWriter.Write(stream.ToArray(), 0, stream.Position);
-                            _pageWriter.Flush();
-                            writtenBytes += stream.Position;
-                            stream.Seek(0, SeekOrigin.Begin);
-                        }
-
-                        writer.Write(streamId);
-                        writer.Write((int)record.Length);
-                        writer.Write(record);
+                        bufferWriter.Flush();
+                        _pageWriter.Write(bufferMemory.ToArray(), 0, bufferMemory.Position);
+                        _pageWriter.Flush();
+                        writtenBytes += bufferMemory.Position;
+                        bufferMemory.Seek(0, SeekOrigin.Begin);
                     }
-                    writer.Flush();
-                    _pageWriter.Write(stream.ToArray(), 0, stream.Position);
-                    _pageWriter.Flush();
-                    writtenBytes += stream.Position;
+
+                    bufferWriter.Write(streamId);
+                    bufferWriter.Write((int)record.Length);
+                    bufferWriter.Write(record);
                 }
+                bufferWriter.Flush();
+                _pageWriter.Write(bufferMemory.ToArray(), 0, bufferMemory.Position);
+                _pageWriter.Flush();
+                writtenBytes += bufferMemory.Position;
             }
             _blobContentSize += writtenBytes;
 
