@@ -41,9 +41,9 @@ namespace Platform.TestClient.Commands
                 blob.Create(512);
                 try
                 {
-                    using (var azurePointer = new TestAzurePointer(blob))
+                    using (var pointer = new TestAzurePointer(blob))
                     {
-                        TestPointer(context, azurePointer, repeat, "page");
+                        TestPointer(context, pointer, repeat, "page");
                     }
                     using (var pointer = AzureEventPointer.OpenWriteable(blob))
                     {
@@ -99,7 +99,8 @@ namespace Platform.TestClient.Commands
 
 
         /// <summary>
-        /// Experimental event pointer, which keeps data in page blob directly
+        /// Experimental event pointer, which keeps data in page blob directly.
+        /// It might be faster than metadata pointer
         /// </summary>
         sealed class TestAzurePointer : IEventPointer
         {
@@ -108,7 +109,6 @@ namespace Platform.TestClient.Commands
             public TestAzurePointer(CloudPageBlob blob)
             {
                 _blob = blob;
-
             }
 
             public void Dispose()
@@ -130,7 +130,5 @@ namespace Platform.TestClient.Commands
                 }
             }
         }
-
-
     }
 }
