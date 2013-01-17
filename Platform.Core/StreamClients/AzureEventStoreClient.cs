@@ -48,15 +48,18 @@ namespace Platform.StreamClients
 
             var uri = string.Format("{0:yyyy-MM-dd}-{1}.stage",DateTime.UtcNow, Guid.NewGuid().ToString().ToLowerInvariant());
             var tempBlob = container.GetPageBlobReference(uri);
+
+            Log.Debug("Uploading staging to {0}", uri);
+
             try
             {
-                Log.Debug("Uploading staging to {0}", uri);
                 var size = PrepareStaging(eventData, tempBlob);
                 ImportEventsInternal(streamId, uri, size);
             }
-            finally
+            catch (PlatformClientException)
             {
-                //tempBlob.Delete();
+                tempBlob.DeleteIfExists();
+                throw;
             }
         }
 
@@ -65,12 +68,18 @@ namespace Platform.StreamClients
             using (var fs = AzureEventStoreChunk.CreateNewForWriting(blob))
             {
                 var result = fs.Append("", events.Select(r =>
-                    {
-                        if (r.Length > MessageSizeLimit)
-                            throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
+                {
+                    if (r.Length > MessageSizeLimit)
+                        throw new PlatformClientException(
+                            string.Format("Messages can't be larger than {0} bytes",
+                                MessageSizeLimit));
 
-                        return r;
-                    }));
+                    return r;
+                }));
+
+                if (result.WrittenEvents == 0)
+                    throw new PlatformClientException("More than 0 events are expected in input collection");
+
                 return result.ChunkPosition;
             }
         }

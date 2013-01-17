@@ -49,6 +49,7 @@ namespace Platform.StreamClients
         /// <param name="streamId">Name of the stream to upload to</param>
         /// <param name="eventData">Enumeration of the events to upload (can be lazy)</param>
         /// <exception cref="PlatformClientException">if this is read-only client</exception>
+        /// <exception cref="PlatformClientException">if there are no events</exception>
         void WriteEventsInLargeBatch(string streamId, IEnumerable<byte[]> eventData);
     }
 

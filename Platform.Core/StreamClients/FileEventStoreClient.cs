@@ -52,33 +52,30 @@ namespace Platform.StreamClients
                 var length = PrepareStaging(eventData, location);
                 ImportEventsInternal(streamId, location, length);
             }
-            finally
+            catch(PlatformClientException)
             {
-                //File.Delete(location);
+                File.Delete(location);
+                throw;
             }
         }
 
         static long PrepareStaging(IEnumerable<byte[]> eventData, string location)
         {
-            try
+            using (var fs = FileEventStoreChunk.CreateNew(location))
             {
-                using (var fs = FileEventStoreChunk.CreateNew(location))
+                var result = fs.Append("", eventData.Select(r =>
                 {
-                    var result = fs.Append("", eventData.Select(r =>
-                        {
-                            if (r.Length > MessageSizeLimit)
-                                throw new ArgumentException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
+                    if (r.Length > MessageSizeLimit)
+                        throw new PlatformClientException(string.Format("Messages can't be larger than {0} bytes", MessageSizeLimit));
 
-                            return r;
-                        }));
-                    return result.WrittenBytes;
-                }
+                    return r;
+                }));
+
+                if (result.WrittenEvents == 0)
+                    throw new PlatformClientException("At least one event is expected in batch");
+                return result.WrittenBytes;
             }
-            catch(Exception)
-            {
-                File.Delete(location);
-                throw;
-            }
+            
         }
     }
 }
