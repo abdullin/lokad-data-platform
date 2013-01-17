@@ -74,7 +74,14 @@ namespace Platform.ViewClients
         /// </summary>
         bool ContainerExists();
 
+        /// <summary>
+        /// Lists relative names of all items within this container
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ViewContainerNotFoundException">If current container does not exist</exception>
         IEnumerable<string> ListAllNestedItems();
+        /// <summary>Fetchs names, modification dates and sizes of all items within this container</summary>
+        /// <exception cref="ViewContainerNotFoundException">If current container does not exist</exception>
         IEnumerable<ViewItemDetail> ListAllNestedItemsWithDetail();
     }
 
@@ -94,48 +101,20 @@ namespace Platform.ViewClients
         public long Length;
     }
 
-    [Serializable]
-    public abstract class ViewException : Exception
-    {
-        protected ViewException(string message)
-            : base(message)
-        {
-        }
-
-        public ViewException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-        protected ViewException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
+  
 
     [Serializable]
-    public class ViewNotFoundException : ViewException
-    {
-        public ViewNotFoundException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-        protected ViewNotFoundException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public class ViewContainerNotFoundException : ViewException
+    public class ViewContainerNotFoundException : Exception
     {
         public ViewContainerNotFoundException(string message, Exception inner)
             : base(message, inner)
+        {
+        }
+
+        protected ViewContainerNotFoundException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }
