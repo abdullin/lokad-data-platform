@@ -25,7 +25,7 @@ namespace Platform
         /// <returns>new instance of the client that can read and write events.</returns>
         public static IRawEventStoreClient ConnectToEventStore(string storageConfiguration, string storeId, string platformServerEndpoint)
         {
-            var container = EventStoreId.Create(storeId);
+            var container = EventStoreId.Parse(storeId);
 
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storageConfiguration,out configuration))
@@ -46,7 +46,7 @@ namespace Platform
             string storageConfiguration, 
             string storeId)
         {
-            var container = EventStoreId.Create(storeId);
+            var container = EventStoreId.Parse(storeId);
             AzureStoreConfiguration configuration;
             if (!AzureStoreConfiguration.TryParse(storageConfiguration, out configuration))
             {

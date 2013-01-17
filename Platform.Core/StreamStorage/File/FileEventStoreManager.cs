@@ -34,7 +34,7 @@ namespace Platform.StreamStorage.File
                     Log.Error("Skipping invalid folder {0}", child.Name);
                     continue;
                 }
-                var container = EventStoreId.Create(child.Name);
+                var container = EventStoreId.Parse(child.Name);
                 if (FileEventStore.ExistsValid(rootDirectory, container))
                 {
                     var writer = FileEventStore.OpenExistingForWriting(rootDirectory, container);

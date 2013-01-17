@@ -14,7 +14,7 @@ namespace Platform
             Name = name;
         }
 
-        public static EventStoreId Create(string name)
+        public static EventStoreId Parse(string name)
         {
             ThrowIfInvalid(name);
             return new EventStoreId(name);

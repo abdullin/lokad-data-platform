@@ -29,7 +29,7 @@ namespace Platform.StreamStorage.Azure
             container = null;
             if (EventStoreId.IsValid(topic)!= EventStoreId.Rule.Valid)
                 return false;
-            container = EventStoreId.Create(topic);
+            container = EventStoreId.Parse(topic);
             return IsValid(config, container);
         }
 
