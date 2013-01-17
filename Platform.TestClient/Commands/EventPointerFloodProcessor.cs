@@ -66,12 +66,44 @@ namespace Platform.TestClient.Commands
                 blob.Create(512);
 
 
-                return new TestEventPointer(AzureEventPointer.OpenWriteable(blob), () => blob.DeleteIfExists());
+                //var azurePointer = AzureEventPointer.OpenWriteable(blob);
+                var azurePointer = new TestAzurePointer(blob);
+                return new TestEventPointer(azurePointer, () => blob.DeleteIfExists());
             }
             else
             {
                 var fullName = Path.Combine(location, checkpointName);
                 return new TestEventPointer(FileEventPointer.OpenOrCreateForWriting(fullName), () => File.Delete(fullName));
+            }
+        }
+
+        sealed class TestAzurePointer : IEventPointer
+        {
+            CloudPageBlob _blob;
+            byte[] buffer = new byte[512];
+            public TestAzurePointer(CloudPageBlob blob)
+            {
+                _blob = blob;
+
+            }
+
+            public void Dispose()
+            {
+                
+            }
+
+            public long Read()
+            {
+                throw new NotSupportedException();
+            }
+
+            public void Write(long position)
+            {
+                BitConverter.GetBytes(position).CopyTo(buffer,0);
+                using (var stream = new MemoryStream(buffer))
+                {
+                    _blob.WritePages(stream, 0);
+                }
             }
         }
 
