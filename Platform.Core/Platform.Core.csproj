@@ -70,6 +70,7 @@
     <Compile Include="StreamStorage\File\FileEventStoreManager.cs" />
     <Compile Include="ClientApi.cs" />
     <Compile Include="StreamClients\StreamClient.cs" />
+    <Compile Include="StreamStorage\IEventPointer.cs" />
     <Compile Include="StreamStorage\IEventStoreManager.cs" />
     <Compile Include="ViewClients\AzureViewRoot.cs" />
     <Compile Include="CommandLine.cs" />

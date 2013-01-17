@@ -81,7 +81,7 @@ namespace Platform.TestClient.Commands
             var stop = Stopwatch.StartNew();
             pointer.Write(0);
 
-            for (int i = 0; i < repeat; i++)
+            for (var i = 0; i < repeat; i++)
             {
                 pointer.Write(i);
             }
