@@ -66,10 +66,10 @@ namespace SmartApp.Sample3.Continuous
                     emptyData = false;
                 }
 
-                views.WriteAsJson(processingInfo, TagsDistributionView.FileName + ".info");
-
                 if (emptyData)
                 {
+                    views.WriteAsJson(processingInfo, TagsDistributionView.FileName + ".info");
+
                     Thread.Sleep(1000);
                 }
                 else
@@ -77,6 +77,8 @@ namespace SmartApp.Sample3.Continuous
                     try
                     {
                         views.WriteAsJson(data, TagsDistributionView.FileName);
+
+                        views.WriteAsJson(processingInfo, TagsDistributionView.FileName + ".info");
                     }
                     catch (Exception ex)
                     {
@@ -126,9 +128,10 @@ namespace SmartApp.Sample3.Continuous
 
                 }
 
-                views.WriteAsJson(processingInfo, CommentDistributionView.FileName + ".info");
                 if (emptyData)
                 {
+                    views.WriteAsJson(processingInfo, CommentDistributionView.FileName + ".info");
+
                     Thread.Sleep(1000);
                 }
                 else
@@ -136,6 +139,8 @@ namespace SmartApp.Sample3.Continuous
                     try
                     {
                         views.WriteAsJson(data, CommentDistributionView.FileName);
+
+                        views.WriteAsJson(processingInfo, CommentDistributionView.FileName + ".info");
                     }
                     catch (Exception ex)
                     {
@@ -189,10 +194,10 @@ namespace SmartApp.Sample3.Continuous
                     }
                 }
 
-                views.WriteAsJson(processingInfo, UserCommentsDistributionView.FileName + ".info");
-
                 if (emptyData)
                 {
+                    views.WriteAsJson(processingInfo, UserCommentsDistributionView.FileName + ".info");
+
                     Thread.Sleep(1000);
                 }
                 else
@@ -200,6 +205,8 @@ namespace SmartApp.Sample3.Continuous
                     try
                     {
                         views.WriteAsJson(data, UserCommentsDistributionView.FileName);
+
+                        views.WriteAsJson(processingInfo, UserCommentsDistributionView.FileName + ".info");
                     }
                     catch (Exception ex)
                     {
