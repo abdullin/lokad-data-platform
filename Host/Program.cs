@@ -60,10 +60,11 @@ namespace Host
         {
             int nextOffcet = 0;
             var events = _reader.ReadAllEvents(new EventStoreOffset(nextOffcet), run.MaxBatchSize);
+            bool executeAllEvents = run.FilteredStreamIds == null || run.FilteredStreamIds.Length == 0;
 
             foreach (var @event in events)
             {
-                if (@event.StreamId == run.Name)
+                if (executeAllEvents || run.FilteredStreamIds.Contains(@event.StreamId))
                     run.Execute(@event.EventData);
             }
         }

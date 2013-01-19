@@ -11,6 +11,7 @@ namespace Platform.MafAddInView
     {
         public abstract int MaxBatchSize { get; }
         public abstract string Name { get; }
+        public abstract string[] FilteredStreamIds { get; }
         public abstract void Execute(IEnumerable<byte> messsage);
     }
 }

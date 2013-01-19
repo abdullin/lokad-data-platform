@@ -9,7 +9,8 @@ namespace Platform.MafContract
     public interface IRunContract : IContract
     {
         int MaxBatchSize { get; }
-        string Name { get;}
+        string Name { get; }
+        string[] FilteredStreamIds { get; }
         void Execute(IEnumerable<byte> messsage);
     }
 }
