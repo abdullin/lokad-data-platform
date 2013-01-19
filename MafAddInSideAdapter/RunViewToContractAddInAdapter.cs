@@ -20,6 +20,8 @@ namespace MafAddInSideAdapter
 
         public int MaxBatchSize { get { return _runView.MaxBatchSize; } }
         public string Name { get { return _runView.Name; } }
+        public string[] FilteredStreamIds { get { return _runView.FilteredStreamIds; } }
+
         public void Execute(IEnumerable<byte> messsage)
         {
             _runView.Execute(messsage);

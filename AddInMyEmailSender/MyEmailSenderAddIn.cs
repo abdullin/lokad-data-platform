@@ -20,6 +20,11 @@ namespace AddInMyEmailSender
             get { return "email-sender"; }
         }
 
+        public override string[] FilteredStreamIds
+        {
+            get { return null; }
+        }
+
         public override void Execute(IEnumerable<byte> messsage)
         {
             

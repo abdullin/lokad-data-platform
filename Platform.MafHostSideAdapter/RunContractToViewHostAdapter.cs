@@ -31,6 +31,11 @@ namespace Platform.MafHostSideAdapter
             get { return _contract.Name; }
         }
 
+        public override string[] FilteredStreamIds
+        {
+            get { return _contract.FilteredStreamIds; }
+        }
+
         public override void Execute(IEnumerable<byte> messsage)
         {
             _contract.Execute(messsage);
