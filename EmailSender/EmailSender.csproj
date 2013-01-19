@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2C748E0F-3540-48D5-A646-14B0AB735C2B}</ProjectGuid>
+    <ProjectGuid>{5E35693F-9378-4DE7-AA26-0EC0FA6C1F75}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AddInMyEmailSender</RootNamespace>
-    <AssemblyName>AddInMyEmailSender</AssemblyName>
+    <RootNamespace>EmailSender</RootNamespace>
+    <AssemblyName>EmailSender</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Maf\Pipeline\AddIns\MyEmailSender\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,8 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.AddIn" />
-    <Reference Include="System.AddIn.Contract" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -41,18 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyEmailSenderAddIn.cs" />
+    <Compile Include="EmailSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EmailSender\EmailSender.csproj">
-      <Project>{5e35693f-9378-4de7-aa26-0ec0fa6c1f75}</Project>
-      <Name>EmailSender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform.MafAddInView\Platform.MafAddInView.csproj">
-      <Project>{61df1046-3bda-487e-9c28-91421ea19f69}</Project>
-      <Name>Platform.MafAddInView</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
+      <Project>{39f04669-caa7-4f30-8be2-6cf79f49f2e6}</Project>
+      <Name>Platform.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -22,7 +22,7 @@ namespace Host
         {
             var storePath = ConfigurationManager.AppSettings["StorePath"];
             var storeConnection = ConfigurationManager.AppSettings["StoreConnection"];
-            _reader = PlatformClient.ConnectToEventStore(storePath, "host-run", storeConnection);
+            _reader = PlatformClient.ConnectToEventStore(storePath, "default", storeConnection);
             _views = PlatformClient.ConnectToViewStorage(storePath, "host-run-views");
 
             RebuildRun();
@@ -43,7 +43,7 @@ namespace Host
 
             Parallel.ForEach(tokens, token =>
                 {
-                    var run = token.Activate<MafRun>(AddInSecurityLevel.Internet);
+                    var run = token.Activate<MafRun>(AddInSecurityLevel.FullTrust);
 
                     while (!changeDllFolders)
                     {

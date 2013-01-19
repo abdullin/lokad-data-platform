@@ -22,12 +22,12 @@ namespace AddInMyEmailSender
 
         public override string[] FilteredStreamIds
         {
-            get { return null; }
+            get { return new[] { "send-email" }; }
         }
 
         public override void Execute(IEnumerable<byte> messsage)
         {
-            
+            EmailSender.EmailSender.Send(string.Format("Email sender(v.1): {0}", Encoding.UTF8.GetString(messsage.ToArray())));
         }
     }
 }
