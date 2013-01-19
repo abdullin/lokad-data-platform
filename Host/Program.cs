@@ -29,13 +29,13 @@ namespace Host
         {
             // Assume that the current directory is the application folder,  
             // and that it contains the pipeline folder structure. 
-            String addInRoot = Environment.CurrentDirectory + "\\Pipeline";
+            var addInRoot = Environment.CurrentDirectory + "\\Pipeline";
 
             //Check to see if new add-ins have been installed.
             AddInStore.Rebuild(addInRoot);
 
             //Search for Calculator add-ins.
-            Collection<AddInToken> tokens = AddInStore.FindAddIns(typeof(MafRun), addInRoot);
+            IEnumerable<AddInToken> tokens = GetLastVersionToken(addInRoot);
 
             bool changeDllFolders = false;
 
@@ -52,7 +52,7 @@ namespace Host
                     }
                 });
 
-            if(changeDllFolders)
+            if (changeDllFolders)
                 RebuildRun();
         }
 
@@ -66,6 +66,39 @@ namespace Host
                 if (@event.StreamId == run.Name)
                     run.Execute(@event.EventData);
             }
+        }
+
+        static IEnumerable<AddInToken> GetLastVersionToken(string addInRoot)
+        {
+            Collection<AddInToken> tokens = AddInStore.FindAddIns(typeof(MafRun), addInRoot);
+
+            for (var i = 0; i < tokens.Count - 1; i++)
+            {
+                var token = tokens[i];
+                for (var j = i + 1; j < tokens.Count; j++)
+                {
+                    if (token.Name != tokens[j].Name) 
+                        continue;
+                    
+                    var versionI = new Version(token.Version);
+                    var versionJ = new Version(tokens[j].Version);
+                    if (versionI > versionJ)
+                    {
+                        tokens.RemoveAt(j);
+                        j--;
+                        continue;
+                    }
+                    if (versionI < versionJ)
+                    {
+                        tokens.RemoveAt(j);
+                        i--;
+                        break;
+                    }
+                    throw new Exception(string.Format("two libraries with the same version"));
+                }
+            }
+
+            return tokens;
         }
     }
 }
