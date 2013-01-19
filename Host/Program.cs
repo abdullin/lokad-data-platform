@@ -93,7 +93,7 @@ namespace Host
                     }
                     if (versionI < versionJ)
                     {
-                        tokens.RemoveAt(j);
+                        tokens.RemoveAt(i);
                         i--;
                         break;
                     }
