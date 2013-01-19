@@ -9,18 +9,21 @@ using System.Threading.Tasks;
 using Platform;
 using Platform.MafHVA;
 using Platform.StreamClients;
+using Platform.ViewClients;
 
 namespace Host
 {
     class Program
     {
-        private static IRawEventStoreClient _reader;
+        static IRawEventStoreClient _reader;
+        static ViewClient _views;
 
         static void Main(string[] args)
         {
             var storePath = ConfigurationManager.AppSettings["StorePath"];
             var storeConnection = ConfigurationManager.AppSettings["StoreConnection"];
-            _reader = PlatformClient.ConnectToEventStore(storePath, "sample3", storeConnection);
+            _reader = PlatformClient.ConnectToEventStore(storePath, "host-run", storeConnection);
+            _views = PlatformClient.ConnectToViewStorage(storePath, "host-run-views");
 
             RebuildRun();
         }
@@ -34,18 +37,14 @@ namespace Host
             //Check to see if new add-ins have been installed.
             AddInStore.Rebuild(addInRoot);
 
-            //Search for Calculator add-ins.
             IEnumerable<AddInToken> tokens = GetLastVersionToken(addInRoot);
 
             bool changeDllFolders = false;
 
             Parallel.ForEach(tokens, token =>
                 {
-                    //Activate the selected AddInToken in a new 
-                    //application domain with the Internet trust level.
                     var run = token.Activate<MafRun>(AddInSecurityLevel.Internet);
 
-                    //Run the add-in.
                     while (!changeDllFolders)
                     {
                         Running(run);
@@ -58,15 +57,18 @@ namespace Host
 
         static void Running(MafRun run)
         {
-            int nextOffcet = 0;
-            var events = _reader.ReadAllEvents(new EventStoreOffset(nextOffcet), run.MaxBatchSize);
+            var checkpoint = _views.ReadAsJsonOrGetNew<RunCheckpoint>(run.Name);
+
+            var events = _reader.ReadAllEvents(new EventStoreOffset(checkpoint.NextOffset), run.MaxBatchSize);
             bool executeAllEvents = run.FilteredStreamIds == null || run.FilteredStreamIds.Length == 0;
 
             foreach (var @event in events)
             {
+                checkpoint.NextOffset = @event.Next.OffsetInBytes;
                 if (executeAllEvents || run.FilteredStreamIds.Contains(@event.StreamId))
                     run.Execute(@event.EventData);
             }
+            _views.WriteAsJson(checkpoint, run.Name);
         }
 
         static IEnumerable<AddInToken> GetLastVersionToken(string addInRoot)
@@ -78,9 +80,9 @@ namespace Host
                 var token = tokens[i];
                 for (var j = i + 1; j < tokens.Count; j++)
                 {
-                    if (token.Name != tokens[j].Name) 
+                    if (token.Name != tokens[j].Name)
                         continue;
-                    
+
                     var versionI = new Version(token.Version);
                     var versionJ = new Version(tokens[j].Version);
                     if (versionI > versionJ)
@@ -100,6 +102,11 @@ namespace Host
             }
 
             return tokens;
+        }
+
+        public class RunCheckpoint
+        {
+            public long NextOffset { get; set; }
         }
     }
 }
