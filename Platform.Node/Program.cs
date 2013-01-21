@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using Platform.CommandLine;
-using Platform.Node.Messages;
-using Platform.Node.Services.Timer;
 
 namespace Platform.Node
 {
@@ -51,15 +49,11 @@ namespace Platform.Node
             if (cliOptions.KillSwitch != NodeOptions.KillSwitchDefault)
                 options.KillSwitch = cliOptions.KillSwitch;
 
-            var mainQueue = NodeEntryPoint.StartWithOptions(options);
+            var node = NodeEntryPoint.StartWithOptions(options);
 
             if (options.KillSwitch > 0)
             {
-                var seconds = TimeSpan.FromSeconds(options.KillSwitch);
-                mainQueue.Enqueue(
-                    TimerMessage.Schedule.Create(seconds,
-                        new PublishEnvelope(mainQueue),
-                        new ClientMessage.RequestShutdown()));
+                node.RequestServiceStopIn(options.KillSwitch);
             }
             var interactiveMode = options.KillSwitch <= 0;
 
@@ -68,12 +62,12 @@ namespace Platform.Node
                 Console.Title = String.Format("Test server : {0} : {1}", options.HttpPort, options.StoreLocation);
                 Console.WriteLine("Starting everything. Press enter to initiate shutdown");
                 Console.ReadLine();
-                mainQueue.Enqueue(new ClientMessage.RequestShutdown());
+                node.RequestServiceStop();
                 Console.ReadLine();
             }
             else
             {
-                NodeEntryPoint.WaitForServiceToExit();
+                node.WaitForServiceToExit();
             }
         }
     }

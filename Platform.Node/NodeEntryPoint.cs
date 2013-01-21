@@ -20,19 +20,40 @@ namespace Platform.Node
     public class NodeEntryPoint
     {
         public static readonly ILogger Log = LogManager.GetLoggerFor<Program>();
-        static readonly ManualResetEventSlim ExitWait = new ManualResetEventSlim(false);
+        readonly ManualResetEventSlim _exitWait;
 
-        public static void WaitForServiceToExit()
-        {
-            ExitWait.Wait();
-        }
-
-        public static void RequestServiceStop()
-        {
-            ExitWait.Set();
-        }
-
+        readonly QueuedHandler _handler;
         
+
+        public NodeEntryPoint(QueuedHandler handler, ManualResetEventSlim exitWait)
+        {
+            _handler = handler;
+            _exitWait = exitWait;
+        }
+
+        public void WaitForServiceToExit()
+        {
+            _exitWait.Wait();
+        }
+
+        public bool WaitForServiceToExit(int seconds)
+        {
+            return _exitWait.Wait(seconds);
+        }
+
+        public void RequestServiceStop()
+        {
+            _handler.Enqueue(new ClientMessage.RequestShutdown());
+        }
+
+        public void RequestServiceStopIn(int timeout)
+        {
+            var seconds = TimeSpan.FromSeconds(timeout);
+            _handler.Enqueue(
+                TimerMessage.Schedule.Create(seconds,
+                    new PublishEnvelope(_handler),
+                    new ClientMessage.RequestShutdown()));
+        }
 
         static NodeEntryPoint()
         {
@@ -43,10 +64,9 @@ namespace Platform.Node
         }
 
 
-        public static QueuedHandler StartWithOptions(NodeOptions options)
+        public static NodeEntryPoint StartWithOptions(NodeOptions options)
         {
-            ExitWait.Reset();
-
+            var slim = new ManualResetEventSlim(false);
             var list = String.Join(Environment.NewLine,
                 options.GetPairs().Select(p => String.Format("{0} : {1}", p.Key, p.Value)));
 
@@ -56,7 +76,11 @@ namespace Platform.Node
             var controller = new NodeController(bus);
             var mainQueue = new QueuedHandler(controller, "Main Queue");
             controller.SetMainQueue(mainQueue);
-            Application.Start(ExitAction);
+            Application.Start(i =>
+                {
+                    slim.Set();
+                    Environment.Exit(i);
+                });
 
             var port = options.HttpPort;
 
@@ -92,13 +116,7 @@ namespace Platform.Node
             mainQueue.Start();
 
             mainQueue.Enqueue(new SystemMessage.Init());
-            return mainQueue;
-        }
-
-        static void ExitAction(int i)
-        {
-            ExitWait.Set();
-            Environment.Exit(i);
+            return new NodeEntryPoint(mainQueue,slim);
         }
     }
 }

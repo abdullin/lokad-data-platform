@@ -24,6 +24,7 @@ namespace Platform.Node.Service
 
     public class ServerNode : ServiceControl
     {
+        NodeEntryPoint _entryPoint;
         public bool Start(HostControl hostControl)
         {
             var nodeOptions = new NodeOptions();
@@ -35,15 +36,15 @@ namespace Platform.Node.Service
                 return false;
             }
 
-            NodeEntryPoint.StartWithOptions(nodeOptions);
+            _entryPoint = NodeEntryPoint.StartWithOptions(nodeOptions);
 
             return true;
         }
 
         public bool Stop(HostControl hostControl)
         {
-            NodeEntryPoint.RequestServiceStop();
-            return true;
+            _entryPoint.RequestServiceStop();
+            return _entryPoint.WaitForServiceToExit(5000);
         }
     }
 }

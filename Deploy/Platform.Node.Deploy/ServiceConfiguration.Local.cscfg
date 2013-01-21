@@ -3,8 +3,8 @@
   <Role name="Platform.Node.Worker">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="StorageConnection" value="UseDevelopmentStorage=true" />
-      <Setting name="StorageContainer" value="dp-store" />
+      <Setting name="params" value="-s UseDevelopmentStorage=true" />
+      
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

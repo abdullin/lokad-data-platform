@@ -2,14 +2,14 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using Microsoft.WindowsAzure.ServiceRuntime;
+using Platform.CommandLine;
 
 namespace Platform.Node.Worker
 {
     public class WorkerRole : RoleEntryPoint
     {
-        Host _host;
+        NodeEntryPoint _entryPoint;
         bool _finished;
 
         public override bool OnStart()
@@ -22,14 +22,22 @@ namespace Platform.Node.Worker
             {
                 Trace.WriteLine("OnStart:System is starting up", "Information");
                 var endpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["Http"].IPEndpoint;
-                var storageConnection = AzureSettingsProvider.GetStringOrThrow("StorageConnection");
-                string container;
-                if (!AzureSettingsProvider.TryGetString("StorageContainer", out container))
-                    container = "dp-store";
+                string param;
+                if (!AzureSettingsProvider.TryGetString("params", out param))
+                    param = "";
+
+                
 
                 var endpointUrl = "http://" + endpoint + "/";
                 Trace.WriteLine("Listening on " + endpointUrl, "Information");
-                _host = new Host(storageConnection, container, endpointUrl);
+                var options = new NodeOptions();
+                if (!CommandLineParser.Default.ParseArguments(param.Split(' '), options))
+                    throw new Exception("Failed to parse: " + param);
+
+                options.HttpPort = endpoint.Port;
+
+
+                _entryPoint = NodeEntryPoint.StartWithOptions(options);
             }
             catch (Exception ex)
             {
@@ -42,30 +50,19 @@ namespace Platform.Node.Worker
 
         public override void Run()
         {
-            Trace.WriteLine("Run:Enter", "Information");
-            try
-            {
-                _host.Run();
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine("Run:Failed " + ex, "Information");
-                throw;
-            }
-
-            _finished = true;
+            _entryPoint.WaitForServiceToExit();
         }
 
         public override void OnStop()
         {
-            _host.Cancel();
-
-            var sw = Stopwatch.StartNew();
-            while (!_finished && sw.ElapsedMilliseconds < 100 * 1000)
-                Thread.Sleep(200);
-
-            Trace.WriteLine(_finished ? "OnStop:Worker role shutdown completed" : "OnStop:Forcing worker role shutdown",
+            _entryPoint.RequestServiceStop();
+            var finished = _entryPoint.WaitForServiceToExit(5000);
+            
+            Trace.WriteLine(finished ? 
+                "OnStop:Worker role shutdown completed" : "OnStop:Forcing worker role shutdown",
                 "Information");
+
+            
 
             base.OnStop();
         }
