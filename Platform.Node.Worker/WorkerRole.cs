@@ -28,8 +28,8 @@ namespace Platform.Node.Worker
 
                 
 
-                var endpointUrl = "http://" + endpoint + "/";
-                Trace.WriteLine("Listening on " + endpointUrl, "Information");
+                //var endpointUrl = "http://" + endpoint + "/";
+                Trace.WriteLine("Listening on port" + endpoint.Port, "Information");
                 var options = new NodeOptions();
                 if (!CommandLineParser.Default.ParseArguments(param.Split(' '), options))
                     throw new Exception("Failed to parse: " + param);

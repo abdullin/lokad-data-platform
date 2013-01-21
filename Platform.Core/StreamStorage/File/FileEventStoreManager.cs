@@ -31,7 +31,7 @@ namespace Platform.StreamStorage.File
             {
                 if (EventStoreId.IsValid(child.Name) != EventStoreId.Rule.Valid)
                 {
-                    Log.Error("Skipping invalid folder {0}", child.Name);
+                    Log.Info("Skipping invalid folder {0} (invalid name)", child.Name);
                     continue;
                 }
                 var container = EventStoreId.Parse(child.Name);
@@ -42,7 +42,7 @@ namespace Platform.StreamStorage.File
                 }
                 else
                 {
-                    Log.Error("Skipping invalid folder {0}", child.Name);
+                    Log.Info("Skipping invalid folder {0} (can't open)", child.Name);
                 }
             }
         }

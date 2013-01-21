@@ -38,7 +38,7 @@ namespace Platform.StreamStorage.Azure
                 }
                 else
                 {
-                    Log.Error("Skipping invalid folder {0}", rootAzureContainer.Uri.MakeRelativeUri(dir.Uri));
+                    Log.Info("Skipping invalid folder {0}", rootAzureContainer.Uri.MakeRelativeUri(dir.Uri));
                 }
             }
         }

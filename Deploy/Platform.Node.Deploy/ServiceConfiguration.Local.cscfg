@@ -3,8 +3,7 @@
   <Role name="Platform.Node.Worker">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="params" value="-s UseDevelopmentStorage=true" />
-      
+      <Setting name="params" value="-s UseDevelopmentStorage=true" />      
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
