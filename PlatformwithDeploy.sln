@@ -36,6 +36,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy Azure", "Deploy Azure", "{0B2469CD-474E-4BD3-AAE5-2B56A6EA804E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Platform.Node.Deploy", "Deploy\Platform.Node.Deploy\Platform.Node.Deploy.ccproj", "{3B4B8FF9-B0F7-45A5-AADA-098B7473ED13}"
 EndProject
