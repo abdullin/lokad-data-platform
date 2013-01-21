@@ -4,8 +4,7 @@
     <Imports>
     </Imports>
     <ConfigurationSettings>
-      <Setting name="StorageConnection" />
-      <Setting name="StorageContainer" />
+      <Setting name="params" />
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="Http" protocol="http" port="8080" />
