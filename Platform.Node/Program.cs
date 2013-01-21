@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Platform.CommandLine;
 using Platform.Node.Messages;
 using Platform.Node.Services.Timer;
@@ -13,22 +14,42 @@ namespace Platform.Node
     {
         static void Main(string[] args)
         {
+
             var options = new NodeOptions();
+            var config = ConfigurationManager.AppSettings["params"] ?? "";
+
+            if (!CommandLineParser.Default.ParseArguments(config.Split(' '), options))
+            {
+                Console.WriteLine("Can not parse parameters from configuration file.");
+                return;
+            }
+
+            var cliOptions = new NodeOptions();
 
             var lineAsString = string.Join(" ", args);
 
             if (lineAsString == "/?" || lineAsString == "--help")
             {
                 Console.WriteLine("Usage");
-                Console.WriteLine(options.GetUsage());
+                Console.WriteLine(cliOptions.GetUsage());
                 return;
             }
 
-            if (!CommandLineParser.Default.ParseArguments(args, options))
+            if (!CommandLineParser.Default.ParseArguments(args, cliOptions))
             {
+                Console.WriteLine("Can not parse parameters from command line.");
                 return;
             }
 
+            // Override app.config options with values from command line
+            if (!cliOptions.StoreLocation.Equals(NodeOptions.StoreLocationDefault))
+                options.StoreLocation = cliOptions.StoreLocation;
+
+            if (cliOptions.HttpPort != NodeOptions.HttpPortDefault)
+                options.HttpPort = cliOptions.HttpPort;
+
+            if (cliOptions.KillSwitch != NodeOptions.KillSwitchDefault)
+                options.KillSwitch = cliOptions.KillSwitch;
 
             var mainQueue = NodeEntryPoint.StartWithOptions(options);
 

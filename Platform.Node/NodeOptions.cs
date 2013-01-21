@@ -7,13 +7,17 @@ namespace Platform.Node
     /// </summary>
     public class NodeOptions : CommandLineOptionsBase
     {
-        [Option("k", "killswitch", DefaultValue = -1, HelpText = "Kill server in seconds")]
+        public const int KillSwitchDefault = -1;
+        public const int HttpPortDefault = 8080;
+        public const string StoreLocationDefault = @"C:\LokadData\dp-store";
+
+        [Option("k", "killswitch", DefaultValue = KillSwitchDefault, HelpText = "Kill server in seconds")]
         public int KillSwitch { get; set; }
 
-        [Option("h", "http-port", DefaultValue = 8080, HelpText = "Http Port to use")]
+        [Option("h", "http-port", DefaultValue = HttpPortDefault, HelpText = "Http Port to use")]
         public int HttpPort { get; set; }
 
-        [Option("s", "store", DefaultValue = @"C:\LokadData\dp-store", HelpText = "Location of data store to use")]
+        [Option("s", "store", DefaultValue = StoreLocationDefault, HelpText = "Location of data store to use")]
         public string StoreLocation { get; set; }
     }
 }
