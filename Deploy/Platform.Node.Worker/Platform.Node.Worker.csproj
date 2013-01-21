@@ -34,11 +34,17 @@
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Library\Azure\Microsoft.WindowsAzure.ServiceRuntime.dll</HintPath>
+      <HintPath>..\..\Library\Azure\Microsoft.WindowsAzure.ServiceRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Azure\Microsoft.WindowsAzure.StorageClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureSettingsProvider.cs" />
@@ -50,11 +56,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform.Core\Platform.Core.csproj">
+    <ProjectReference Include="..\..\Platform.Core\Platform.Core.csproj">
       <Project>{39F04669-CAA7-4F30-8BE2-6CF79F49F2E6}</Project>
       <Name>Platform.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platform.Node\Platform.Node.csproj">
+    <ProjectReference Include="..\..\Platform.Node\Platform.Node.csproj">
       <Project>{9B95971F-9DC9-4981-A7CB-8F6576EA39BB}</Project>
       <Name>Platform.Node</Name>
     </ProjectReference>

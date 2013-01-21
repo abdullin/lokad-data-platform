@@ -36,7 +36,7 @@
     <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Platform.Node.Worker\Platform.Node.Worker.csproj">
+    <ProjectReference Include="..\Platform.Node.Worker\Platform.Node.Worker.csproj">
       <Name>Platform.Node.Worker</Name>
       <Project>{c3d8fb9a-7c32-4e3d-b922-1625db81f210}</Project>
       <Private>True</Private>
