@@ -35,6 +35,7 @@ namespace Platform.Node.Worker
                     throw new Exception("Failed to parse: " + param);
 
                 options.HttpPort = endpoint.Port;
+                options.LocalHttpIp = endpoint.Address.ToString();
 
 
                 _entryPoint = NodeEntryPoint.StartWithOptions(options, i => RoleEnvironment.RequestRecycle());

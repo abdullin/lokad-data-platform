@@ -82,9 +82,7 @@ namespace Platform.Node
                     termination(i);
                 });
 
-            var port = options.HttpPort;
-
-            var http = new PlatformServerApiService(mainQueue, String.Format("http://*:{0}/", port));
+            var http = new PlatformServerApiService(mainQueue, String.Format("http://{0}:{1}/", options.LocalHttpIp, options.HttpPort));
 
             bus.Subscribe<SystemMessage.Init>(http);
             bus.Subscribe<SystemMessage.StartShutdown>(http);
