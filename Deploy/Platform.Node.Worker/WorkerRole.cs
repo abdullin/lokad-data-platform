@@ -10,7 +10,6 @@ namespace Platform.Node.Worker
     public class WorkerRole : RoleEntryPoint
     {
         NodeEntryPoint _entryPoint;
-        bool _finished;
 
         public override bool OnStart()
         {
@@ -26,9 +25,6 @@ namespace Platform.Node.Worker
                 if (!AzureSettingsProvider.TryGetString("params", out param))
                     param = "";
 
-                
-
-                //var endpointUrl = "http://" + endpoint + "/";
                 var options = new NodeOptions();
                 if (!CommandLineParser.Default.ParseArguments(param.Split(' '), options))
                     throw new Exception("Failed to parse: " + param);
