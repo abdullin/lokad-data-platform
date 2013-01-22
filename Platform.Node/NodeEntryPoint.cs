@@ -64,7 +64,7 @@ namespace Platform.Node
         }
 
 
-        public static NodeEntryPoint StartWithOptions(NodeOptions options)
+        public static NodeEntryPoint StartWithOptions(NodeOptions options, Action<int> termination)
         {
             var slim = new ManualResetEventSlim(false);
             var list = String.Join(Environment.NewLine,
@@ -79,7 +79,7 @@ namespace Platform.Node
             Application.Start(i =>
                 {
                     slim.Set();
-                    Environment.Exit(i);
+                    termination(i);
                 });
 
             var port = options.HttpPort;

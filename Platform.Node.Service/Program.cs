@@ -36,7 +36,7 @@ namespace Platform.Node.Service
                 return false;
             }
 
-            _entryPoint = NodeEntryPoint.StartWithOptions(nodeOptions);
+            _entryPoint = NodeEntryPoint.StartWithOptions(nodeOptions, i => Environment.Exit(i));
 
             return true;
         }

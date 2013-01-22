@@ -49,7 +49,7 @@ namespace Platform.Node
             if (cliOptions.KillSwitch != NodeOptions.KillSwitchDefault)
                 options.KillSwitch = cliOptions.KillSwitch;
 
-            var node = NodeEntryPoint.StartWithOptions(options);
+            var node = NodeEntryPoint.StartWithOptions(options, i => Environment.Exit(i));
 
             if (options.KillSwitch > 0)
             {

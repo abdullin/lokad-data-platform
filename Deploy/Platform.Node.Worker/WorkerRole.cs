@@ -37,7 +37,7 @@ namespace Platform.Node.Worker
                 options.HttpPort = endpoint.Port;
 
 
-                _entryPoint = NodeEntryPoint.StartWithOptions(options);
+                _entryPoint = NodeEntryPoint.StartWithOptions(options, i => RoleEnvironment.RequestRecycle());
             }
             catch (Exception ex)
             {
