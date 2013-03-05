@@ -23,6 +23,8 @@ namespace Platform.StreamStorage.Azure
 
             var rootAzureContainer = client.GetContainerReference(config.RootBlobContainerName);
 
+            rootAzureContainer.CreateIfNotExist();
+
             foreach (var blob in rootAzureContainer.ListBlobs())
             {
                 var dir = blob as CloudBlobDirectory;
